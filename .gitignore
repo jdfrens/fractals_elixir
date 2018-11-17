@@ -1,1 +1,9 @@
-*~
+/_build
+/cover
+/deps
+erl_crash.dump
+*.ez
+/fractals
+/images
+/test/images
+/logs
