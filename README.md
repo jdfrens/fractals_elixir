@@ -1,10 +1,10 @@
 # Fractals
 
-[![Build
-Status](https://semaphoreci.com/api/v1/jdfrens/mandelbrot/branches/master/badge.svg)](https://semaphoreci.com/jdfrens/mandelbrot)
-[![CircleCI](https://circleci.com/gh/jdfrens/mandelbrot.svg?style=svg)](https://circleci.com/gh/jdfrens/mandelbrot)
-
 Generates escape-time fractals.
+
+[![Build
+Status](https://semaphoreci.com/api/v1/jdfrens/fractals_elixir/branches/master/badge.svg)](https://semaphoreci.com/jdfrens/fractals_elixir)
+[![CircleCI](https://circleci.com/gh/jdfrens/fractals_elixir.svg?style=svg)](https://circleci.com/gh/jdfrens/fractals_elixir)
 
 I'm blogging about this project at [Programming During Recess](http://www.programming-during-recess.net/).
 
