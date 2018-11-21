@@ -13,7 +13,7 @@ defmodule UniprocessEngine.Algorithm do
     Reporters.Broadcaster
   }
 
-  @spec generate(Fracals.Params.t()) :: :ok
+  @spec generate(Fractals.Params.t()) :: :ok
   def generate(params) do
     {params, nil}
     |> grid()

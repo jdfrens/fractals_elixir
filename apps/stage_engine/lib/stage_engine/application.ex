@@ -3,7 +3,12 @@ defmodule StageEngine.Application do
 
   use Application
 
+  alias Fractals.EngineParamsParserRegistry, as: ParserRegistry
+
   def start(_type, _args) do
+    Application.ensure_all_started(:fractals)
+    ParserRegistry.add("stage", StageEngine.Params)
+
     children = [
       StageEngine.GridWorker,
       StageEngine.EscapeTimeWorker,

@@ -5,6 +5,7 @@ defmodule Fractals.Params do
 
   import Complex, only: :macros
 
+  alias Fractals.EngineParamsParserRegistry
   alias Fractals.{Params, Size}
 
   @type fractal_id :: String.t()
@@ -13,8 +14,7 @@ defmodule Fractals.Params do
   @type t :: %__MODULE__{
           id: fractal_id() | nil,
           seed: integer | nil,
-          chunk_size: integer | nil,
-          chunk_count: integer | nil,
+          engine: map() | nil,
           max_iterations: integer | nil,
           cutoff_squared: float | nil,
           fractal: fractal_type | nil,
@@ -38,8 +38,8 @@ defmodule Fractals.Params do
     # operational
     :id,
     :seed,
-    :chunk_size,
-    :chunk_count,
+    :engine,
+    # escape time
     :max_iterations,
     :cutoff_squared,
     # fractal
@@ -70,7 +70,7 @@ defmodule Fractals.Params do
   def default do
     %Params{
       seed: 666,
-      chunk_size: 1000,
+      engine: nil,
       cutoff_squared: 4.0,
       max_iterations: 256,
       fractal: :mandelbrot,
@@ -90,7 +90,6 @@ defmodule Fractals.Params do
 
   @computed_attributes [
     :id,
-    :chunk_count,
     # compute params_filenames before output_filename
     :params_filenames,
     :output_filename,
@@ -108,7 +107,7 @@ defmodule Fractals.Params do
   def process(raw_params, params \\ default()) do
     raw_params
     |> parse(params)
-    |> compute
+    |> compute()
   end
 
   @spec parse(map | keyword, Params.t()) :: Params.t()
@@ -140,7 +139,13 @@ defmodule Fractals.Params do
     %{params | attribute => parse_value(attribute, value)}
   end
 
-  @spec parse_value(atom, String.t()) :: any
+  @spec parse_value(atom, String.t()) :: %{type: atom(), module: module()}
+  defp parse_value(:engine, value) do
+    value[:type]
+    |> EngineParamsParserRegistry.get()
+    |> apply(:parse, [value])
+  end
+
   defp parse_value(:fractal, value) do
     String.to_atom(String.downcase(value))
   end
@@ -170,6 +175,22 @@ defmodule Fractals.Params do
 
   @spec compute(Params.t()) :: Params.t()
   defp compute(params) do
+    params
+    |> compute_attributes()
+    |> compute_engine()
+  end
+
+  @spec compute_engine(Params.t()) :: Params.t()
+  defp compute_engine(%Params{engine: nil} = params) do
+    params
+  end
+
+  defp compute_engine(%Params{engine: %{params_parser: params_parser}} = params) do
+    apply(params_parser, :compute, [params])
+  end
+
+  @spec compute_attributes(Params.t()) :: Params.t()
+  defp compute_attributes(params) do
     Enum.reduce(@computed_attributes, params, &compute_attribute/2)
   end
 
@@ -181,16 +202,6 @@ defmodule Fractals.Params do
   @spec compute_value(atom, Params.t()) :: any
   defp compute_value(:id, _params) do
     UUID.uuid1()
-  end
-
-  defp compute_value(:chunk_count, params) do
-    pixel_count = params.size.width * params.size.height
-
-    if rem(pixel_count, params.chunk_size) == 0 do
-      div(pixel_count, params.chunk_size)
-    else
-      div(pixel_count, params.chunk_size) + 1
-    end
   end
 
   defp compute_value(:params_filenames, %Params{params_filenames: params_filenames}) do

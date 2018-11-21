@@ -18,8 +18,8 @@ defmodule Fractals.Grid do
   @spec chunk(Grid.t(), Params.t()) :: [Chunk.t()]
   def chunk(grid, params) do
     grid
-    |> Stream.chunk_every(params.chunk_size, params.chunk_size, [])
-    |> Stream.zip(1..params.chunk_count)
+    |> Stream.chunk_every(params.engine.chunk_size, params.engine.chunk_size, [])
+    |> Stream.zip(1..params.engine.chunk_count)
     |> Stream.map(fn {data, number} -> %Chunk{number: number, data: data, params: params} end)
     |> Enum.to_list()
   end

@@ -5,6 +5,8 @@ defmodule Fractals.Application do
 
   def start(_type, _args) do
     children = [
+      # registries
+      Fractals.EngineParamsParserRegistry,
       # color
       Fractals.Colorizer.Random,
       # image output

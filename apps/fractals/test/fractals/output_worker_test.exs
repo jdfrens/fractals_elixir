@@ -1,5 +1,7 @@
 defmodule Fractals.OutputWorkerTest do
-  use ExUnit.Case, aysnc: true
+  @moduledoc false
+
+  use ExUnit.Case, async: true
 
   alias Fractals.{Chunk, Params, Size}
   alias Fractals.OutputWorker
@@ -53,7 +55,9 @@ defmodule Fractals.OutputWorkerTest do
     params = %Params{
       output_pid: context.output_pid,
       size: %Size{width: 3, height: 1},
-      chunk_count: context.chunk_count
+      engine: %{
+        chunk_count: context.chunk_count
+      }
     }
 
     [params: params]

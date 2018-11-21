@@ -33,6 +33,7 @@ defmodule CLI.IntegrationTest do
     params =
       Fractals.Params.process(
         output_directory: "test/images",
+        engine: [type: "stage"],
         params_filename: @mandelbrot_input_filename
       )
 

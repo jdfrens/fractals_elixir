@@ -3,9 +3,11 @@ defmodule StageEngine do
   Documentation for StageEngine.
   """
 
+  @behaviour Fractals.Behaviours.Engine
+
   alias StageEngine.GridWorker
 
-  @spec generate(Fractals.Params.t()) :: :ok
+  @impl Fractals.Behaviours.Engine
   def generate(params) do
     GridWorker.work(StageEngine.GridWorker, params)
   end

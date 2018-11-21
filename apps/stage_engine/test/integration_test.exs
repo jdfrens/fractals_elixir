@@ -18,6 +18,7 @@ defmodule StageEngine.IntegrationTest do
     params =
       Params.process(
         output_directory: "test/images",
+        engine: [type: "stage"],
         params_filename: "test/inputs/small-red-mandelbrot.yml"
       )
 

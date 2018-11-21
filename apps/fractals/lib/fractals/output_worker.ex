@@ -87,7 +87,7 @@ defmodule Fractals.OutputWorker do
     PPMFile.start_file(chunk.params)
 
     state =
-      %OutputState{next_number: 1, cache: build_initial_cache(chunk.params)}
+      %OutputState{next_number: 1, cache: build_initial_cache(chunk.params.engine.chunk_count)}
       |> process(chunk, next_stage)
 
     {:noreply, {state, next_stage}}
@@ -133,9 +133,9 @@ defmodule Fractals.OutputWorker do
     end
   end
 
-  @spec build_initial_cache(Params.t()) :: map
-  defp build_initial_cache(params) do
-    %{(params.chunk_count + 1) => :done}
+  @spec build_initial_cache(integer()) :: map
+  defp build_initial_cache(chunk_count) do
+    %{(chunk_count + 1) => :done}
   end
 
   @spec write_chunk(non_neg_integer, [String.t()], Params.t()) :: :ok

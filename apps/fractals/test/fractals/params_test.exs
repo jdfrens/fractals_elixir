@@ -48,11 +48,11 @@ defmodule Fractals.ParamsTest do
       assert Params.process(argv).p == Complex.new(0.3, 0.5)
     end
 
-    test "precomputing the output_filename paramter", %{argv: argv} do
+    test "precomputing the output_filename parameter", %{argv: argv} do
       assert Params.process(argv).output_filename == "test/images/full_params.png"
     end
 
-    test "precomputing the ppm_filename paramter", %{argv: argv} do
+    test "precomputing the ppm_filename parameter", %{argv: argv} do
       assert Params.process(argv).ppm_filename == "test/images/full_params.ppm"
     end
   end
@@ -100,10 +100,6 @@ defmodule Fractals.ParamsTest do
 
     test "defaults the p parameter", %{argv: argv} do
       assert Params.process(argv).p == Complex.new(0.0, 0.0)
-    end
-
-    test "defaults the chunk size", %{argv: argv} do
-      assert Params.process(argv).chunk_size == 1000
     end
 
     test "empty list of params filenames", %{argv: argv} do
@@ -159,20 +155,6 @@ defmodule Fractals.ParamsTest do
 
     test "does not set a default output filename", %{argv: argv} do
       assert Params.process(argv).output_filename == nil
-    end
-  end
-
-  describe "computed chunk count" do
-    test "divides evenly" do
-      assert Params.process(size: "10x2", chunk_size: 5).chunk_count == 4
-    end
-
-    test "adds one for a remainder" do
-      assert Params.process(size: "10x2", chunk_size: 3).chunk_count == 7
-    end
-
-    test "always computes and overrides explicit setting" do
-      assert Params.process(size: "10x2", chunk_size: 3, chunk_count: 99_999).chunk_count == 7
     end
   end
 end
