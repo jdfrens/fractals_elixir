@@ -27,7 +27,7 @@ defmodule Fractals.Params do
           upper_left: Complex.complex() | nil,
           lower_right: Complex.complex() | nil,
           max_intensity: integer | nil,
-          params_filename: String.t() | nil,
+          params_filenames: [String.t()] | nil,
           output_directory: String.t() | nil,
           output_filename: String.t() | nil,
           ppm_filename: String.t() | nil,
@@ -55,7 +55,7 @@ defmodule Fractals.Params do
     :lower_right,
     :max_intensity,
     # input
-    :params_filename,
+    :params_filenames,
     # output
     :output_directory,
     :output_filename,
@@ -83,11 +83,20 @@ defmodule Fractals.Params do
       max_intensity: 255,
       upper_left: Complex.new(5.0, 6.0),
       lower_right: Complex.new(6.0, 5.0),
+      params_filenames: [],
       output_directory: "images"
     }
   end
 
-  @computed_attributes [:id, :chunk_count, :output_filename, :ppm_filename, :output_pid]
+  @computed_attributes [
+    :id,
+    :chunk_count,
+    # compute params_filenames before output_filename
+    :params_filenames,
+    :output_filename,
+    :ppm_filename,
+    :output_pid
+  ]
   @complex_attributes [:upper_left, :lower_right, :c, :p, :r, :z]
   # IDEA: this could be a param
   @output_extension ".png"
@@ -122,7 +131,9 @@ defmodule Fractals.Params do
   defp parse_attribute({:params_filename, filename}, params) do
     with {:ok, raw_yaml} <- YamlElixir.read_from_file(filename),
          yaml <- symbolize(raw_yaml),
-         do: parse(yaml, %{params | params_filename: filename})
+         params_filenames = [filename | params.params_filenames] do
+      parse(yaml, %{params | params_filenames: params_filenames})
+    end
   end
 
   defp parse_attribute({attribute, value}, params) do
@@ -182,13 +193,20 @@ defmodule Fractals.Params do
     end
   end
 
+  defp compute_value(:params_filenames, %Params{params_filenames: params_filenames}) do
+    Enum.reverse(params_filenames)
+  end
+
   defp compute_value(:output_filename, params) do
-    case params.params_filename do
-      nil ->
+    case params.params_filenames do
+      [] ->
         nil
 
-      filename ->
+      [filename] ->
         output_basepath(filename, params) <> @output_extension
+
+      _ ->
+        nil
     end
   end
 

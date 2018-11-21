@@ -106,6 +106,10 @@ defmodule Fractals.ParamsTest do
       assert Params.process(argv).chunk_size == 1000
     end
 
+    test "empty list of params filenames", %{argv: argv} do
+      assert Params.process(argv).params_filenames == []
+    end
+
     test "outputs to images directory", %{argv: argv} do
       assert Params.process(argv).output_directory == "images"
     end
@@ -132,6 +136,29 @@ defmodule Fractals.ParamsTest do
 
     test "recognizes a value overridden by a flag", %{argv: argv} do
       assert Params.process(argv).fractal == :burningship
+    end
+  end
+
+  describe "parsing multiple files" do
+    setup do
+      argv = [
+        params_filename: "test/inputs/simple.yml",
+        params_filename: "test/inputs/partial_params.yml"
+      ]
+
+      [argv: argv]
+    end
+
+    test "first file is used", %{argv: argv} do
+      assert Params.process(argv).size == %Size{width: 720, height: 480}
+    end
+
+    test "second file wins", %{argv: argv} do
+      assert Params.process(argv).fractal == :julia
+    end
+
+    test "does not set a default output filename", %{argv: argv} do
+      assert Params.process(argv).output_filename == nil
     end
   end
 
