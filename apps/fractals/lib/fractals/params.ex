@@ -6,6 +6,7 @@ defmodule Fractals.Params do
   import Complex, only: :macros
 
   alias Fractals.EngineParamsParserRegistry
+  alias Fractals.Engines.DoNothingParams
   alias Fractals.{Params, Size}
 
   @type fractal_id :: String.t()
@@ -70,7 +71,7 @@ defmodule Fractals.Params do
   def default do
     %Params{
       seed: 666,
-      engine: nil,
+      engine: %DoNothingParams{},
       cutoff_squared: 4.0,
       max_iterations: 256,
       fractal: :mandelbrot,

@@ -13,7 +13,13 @@ defmodule Fractals do
       Broadcaster.report(:skipping, params, reason: "fractal not implemented", from: self())
     else
       Broadcaster.report(:starting, params, from: self())
-      engine.generate(params)
+
+      with :ok <- engine.generate(params) do
+        :ok
+      else
+        {:error, reason} ->
+          Broadcaster.report(:skipping, params, reason: reason, from: self())
+      end
     end
 
     :ok

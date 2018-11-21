@@ -1,20 +1,21 @@
 defmodule Fractals.EngineParamsParserRegistry do
   @moduledoc """
-  Keeps track of all of the params parsers for engines; used by  `Fractals.Params` to fill in values for the `:engine` attribute.
+  Keeps track of all of the params parsers for engines; used by  `Fractals.Params` to fill in values for the `:engine`
+  attribute.
 
   The application that implements an engine should add the parser to the registry:
 
   ```elixir
-  Fractals.EngineRegistry.add(BluePicture.ParamsParser)
+  Fractals.EngineParamsParserRegistry.add(CoolEngine.Params)
   ```
 
-  where `BluePicture` is (probably) the name of an engine and `BluePicture.ParamsParser` is the name of the parser that
-  implements the `Fractals.Behaviours.EngineParams` behaviour.
+  where `CoolEngine` is (probably) the name of an engine and `CoolEngine.Params` is the name of the params struct that
+  also implements the `Fractals.Behaviours.EngineParams` behaviour.
   """
 
   use Agent
 
-  @name Fractals.EngineRegistry
+  @name Fractals.EngineParamsParserRegistry
 
   @doc """
   Starts the broker; `engines` is a list of initial engines.

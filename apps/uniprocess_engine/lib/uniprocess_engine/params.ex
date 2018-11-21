@@ -14,7 +14,7 @@ defmodule UniprocessEngine.Params do
   defstruct type: :uniprocess, module: UniprocessEngine, params_parser: UniprocessEngine.Params
 
   @impl Fractals.Behaviours.EngineParamsParser
-  def parse(_map) do
+  def parse(_raw_params) do
     %__MODULE__{}
   end
 end

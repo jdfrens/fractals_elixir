@@ -25,10 +25,10 @@ defmodule StageEngine.Params do
             chunk_count: nil
 
   @impl Fractals.Behaviours.EngineParamsParser
-  def parse(raw_engine_params) do
+  def parse(raw_params) do
     initial_params = %__MODULE__{}
 
-    Enum.reduce(raw_engine_params, initial_params, fn {attribute, value}, params ->
+    Enum.reduce(raw_params, initial_params, fn {attribute, value}, params ->
       %{params | attribute => parse_value(attribute, value)}
     end)
   end
