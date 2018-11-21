@@ -1,4 +1,4 @@
-defmodule Chunk do
+defmodule Fractals.Chunk do
   @moduledoc """
   Defines a chunk of work.
   """

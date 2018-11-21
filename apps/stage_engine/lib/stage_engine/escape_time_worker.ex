@@ -5,7 +5,7 @@ defmodule StageEngine.EscapeTimeWorker do
 
   use GenStage
 
-  alias Fractals.EscapeTime
+  alias Fractals.{Chunk, EscapeTime}
 
   # Client
 

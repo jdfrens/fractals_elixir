@@ -7,7 +7,7 @@ defmodule Fractals.OutputWorker do
 
   use GenServer
 
-  alias Fractals.{ConversionWorker, Params}
+  alias Fractals.{Chunk, ConversionWorker, Params}
   alias Fractals.Output.{OutputState, PPMFile}
   alias Fractals.Reporters.Broadcaster
 

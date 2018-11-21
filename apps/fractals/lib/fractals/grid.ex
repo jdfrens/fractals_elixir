@@ -6,7 +6,7 @@ defmodule Fractals.Grid do
 
   @type t :: [Complex.complex()]
 
-  alias Fractals.{Grid, Params}
+  alias Fractals.{Chunk, Grid, Params}
 
   import Complex, only: :macros
 
