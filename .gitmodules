@@ -1,3 +1,3 @@
 [submodule "data"]
-	path = data
+	path = inputs/data
 	url = git@github.com:jdfrens/fractals_data.git
