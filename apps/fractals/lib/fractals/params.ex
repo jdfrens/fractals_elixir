@@ -14,11 +14,11 @@ defmodule Fractals.Params do
   @type color :: :black_on_white | :white_on_black | :gray | :red | :green | :blue | :random
   @type t :: %__MODULE__{
           id: fractal_id() | nil,
-          seed: integer | nil,
+          seed: integer() | nil,
           engine: map() | nil,
-          max_iterations: integer | nil,
-          cutoff_squared: float | nil,
-          fractal: fractal_type | nil,
+          max_iterations: integer() | nil,
+          cutoff_squared: float() | nil,
+          fractal: fractal_type() | nil,
           c: Complex.complex() | nil,
           z: Complex.complex() | nil,
           r: Complex.complex() | nil,
@@ -27,12 +27,12 @@ defmodule Fractals.Params do
           color: color() | nil,
           upper_left: Complex.complex() | nil,
           lower_right: Complex.complex() | nil,
-          max_intensity: integer | nil,
+          max_intensity: integer() | nil,
           params_filenames: [String.t()] | nil,
           output_directory: String.t() | nil,
           output_filename: String.t() | nil,
           ppm_filename: String.t() | nil,
-          output_pid: pid | nil
+          output_pid: pid() | nil
         }
 
   defstruct [
@@ -142,9 +142,12 @@ defmodule Fractals.Params do
 
   @spec parse_value(atom, String.t()) :: %{type: atom(), module: module()}
   defp parse_value(:engine, value) do
-    value[:type]
+    raw_engine_params = symbolize(value)
+
+    raw_engine_params
+    |> Map.get(:type)
     |> EngineParamsParserRegistry.get()
-    |> apply(:parse, [value])
+    |> apply(:parse, [raw_engine_params])
   end
 
   defp parse_value(:fractal, value) do
@@ -210,15 +213,19 @@ defmodule Fractals.Params do
   end
 
   defp compute_value(:output_filename, params) do
-    case params.params_filenames do
-      [] ->
-        nil
+    if params.output_filename == nil do
+      case params.params_filenames do
+        [] ->
+          nil
 
-      [filename] ->
-        output_basepath(filename, params) <> @output_extension
+        [filename] ->
+          output_basepath(filename, params) <> @output_extension
 
-      _ ->
-        nil
+        _ ->
+          nil
+      end
+    else
+      Path.join(params.output_directory, params.output_filename)
     end
   end
 

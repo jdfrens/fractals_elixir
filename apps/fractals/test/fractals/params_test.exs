@@ -48,12 +48,12 @@ defmodule Fractals.ParamsTest do
       assert Params.process(argv).p == Complex.new(0.3, 0.5)
     end
 
-    test "precomputing the output_filename parameter", %{argv: argv} do
-      assert Params.process(argv).output_filename == "test/images/full_params.png"
+    test "parsed output_filename parameter", %{argv: argv} do
+      assert Params.process(argv).output_filename == "test/images/the-output.png"
     end
 
-    test "precomputing the ppm_filename parameter", %{argv: argv} do
-      assert Params.process(argv).ppm_filename == "test/images/full_params.ppm"
+    test "precomputing the ppm_filename parameter (cannot be overridden)", %{argv: argv} do
+      assert Params.process(argv).ppm_filename == "test/images/the-output.ppm"
     end
   end
 

@@ -10,3 +10,4 @@ r:          9.9+3.3i
 p:          0.3+0.5i
 output_directory: "test/images"
 output_filename: "the-output.png"
+ppm_filename: "why-different-names.ppm"

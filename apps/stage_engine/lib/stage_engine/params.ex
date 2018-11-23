@@ -46,8 +46,12 @@ defmodule StageEngine.Params do
     }
   end
 
-  defp parse_value(:chunk_size, chunk_size) do
+  defp parse_value(:chunk_size, chunk_size) when is_binary(chunk_size) do
     String.to_integer(chunk_size)
+  end
+
+  defp parse_value(:chunk_size, chunk_size) do
+    chunk_size
   end
 
   defp parse_value(:type, "stage") do

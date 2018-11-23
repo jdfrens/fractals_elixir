@@ -39,8 +39,8 @@ defmodule CLI.IntegrationTest do
 
     ExUnit.CaptureIO.capture_io(fn ->
       Broadcaster.add_reporter(Countdown, %{params_list: [params], for: self()})
-      Fractals.fractalize(params, StageEngine)
-      CLI.wait()
+      Fractals.fractalize(params)
+      CLI.wait(params)
     end)
 
     output = File.read!(@mandelbrot_output_filename)
