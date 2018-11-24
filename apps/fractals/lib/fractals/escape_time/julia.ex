@@ -7,12 +7,23 @@ defmodule Fractals.EscapeTime.Julia do
 
   use Fractals.EscapeTime
 
-  @spec iterate(Complex.complex(), Fractals.Params.t()) :: Enumerable.t()
-  def iterate(grid_point, params) do
-    Stream.iterate(grid_point, &iterator(&1, params.c))
+  @behaviour Fractals.EscapeTime.Fractal
+
+  @impl Fractals.EscapeTime.Fractal
+  def parse_algorithm(params) do
+    %Fractals.EscapeTime.Algorithm{
+      type: :mandelbrot,
+      module: __MODULE__,
+      algorithm_params: %{c: Complex.parse(params[:c])}
+    }
   end
 
-  @spec iterator(Complex.complex(), Complex.complex()) :: Complex.complex()
+  @impl Fractals.EscapeTime.Fractal
+  def iterate(grid_point, algorithm) do
+    Stream.iterate(grid_point, &iterator(&1, algorithm.c))
+  end
+
+  @impl Fractals.EscapeTime.Fractal
   def iterator(z, c) do
     z |> square |> add(c)
   end

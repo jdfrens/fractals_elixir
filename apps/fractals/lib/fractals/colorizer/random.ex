@@ -8,7 +8,7 @@ defmodule Fractals.Colorizer.Random do
 
   import Fractals.EscapeTime.Helpers
 
-  alias Fractals.Params
+  alias Fractals.Job
 
   ## Client
 
@@ -16,9 +16,9 @@ defmodule Fractals.Colorizer.Random do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  @spec at(pid | atom, integer, Params.t()) :: PPM.color()
-  def at(pid, iterations, params) do
-    GenServer.call(pid, {:at, iterations, params})
+  @spec at(pid | atom, integer, Job.t()) :: PPM.color()
+  def at(pid, iterations, job) do
+    GenServer.call(pid, {:at, iterations, job})
   end
 
   ## Server
@@ -29,8 +29,8 @@ defmodule Fractals.Colorizer.Random do
   end
 
   @impl GenServer
-  def handle_call({:at, iterations, params}, _, colors) do
-    color = colors |> pick_color(iterations, params) |> PPM.ppm()
+  def handle_call({:at, iterations, job}, _, colors) do
+    color = colors |> pick_color(iterations, job) |> PPM.ppm()
     {:reply, color, colors}
   end
 
@@ -38,14 +38,14 @@ defmodule Fractals.Colorizer.Random do
 
   @max_colors 2048
 
-  @spec pick_color([[float]], integer, Params.t()) :: [integer]
-  def pick_color(colors, iterations, params) do
-    if inside?(iterations, params.max_iterations) do
+  @spec pick_color([[float]], integer, Job.t()) :: [integer]
+  def pick_color(colors, iterations, job) do
+    if inside?(iterations, job.max_iterations) do
       [0, 0, 0]
     else
       colors
       |> Enum.at(iterations)
-      |> Enum.map(&round(&1 * params.max_intensity))
+      |> Enum.map(&round(&1 * job.max_intensity))
     end
   end
 

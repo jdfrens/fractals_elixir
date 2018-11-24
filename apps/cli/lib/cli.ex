@@ -18,22 +18,22 @@ defmodule CLI do
   @spec add_reporters(Args.t()) :: Args.t()
   defp add_reporters(args) do
     Broadcaster.add_reporter(Stdout)
-    Broadcaster.add_reporter(Countdown, %{params_list: args.params_list, for: self()})
+    Broadcaster.add_reporter(Countdown, %{jobs: args.jobs, for: self()})
 
     args
   end
 
   @spec fractalize(Args.t()) :: Args.t()
-  defp fractalize(%Args{params_list: params_list} = args) do
-    Enum.each(params_list, fn params ->
-      Broadcaster.report(:starting, params, from: self())
+  defp fractalize(%Args{jobs: jobs} = args) do
+    Enum.each(jobs, fn job ->
+      Broadcaster.report(:starting, job, from: self())
 
-      case Fractals.fractalize(params) do
+      case Fractals.fractalize(job) do
         :ok ->
           :ok
 
         {:error, reason} ->
-          Broadcaster.report(:skipping, params, reason: reason, from: self())
+          Broadcaster.report(:skipping, job, reason: reason, from: self())
       end
     end)
 

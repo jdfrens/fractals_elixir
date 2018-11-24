@@ -5,7 +5,7 @@ defmodule Fractals.Reporters.Broadcaster do
 
   use GenServer
 
-  alias Fractals.Params
+  alias Fractals.Job
   alias Fractals.Reporters.Supervisor
 
   # client
@@ -19,9 +19,9 @@ defmodule Fractals.Reporters.Broadcaster do
     GenServer.call(__MODULE__, {:add, reporter, args})
   end
 
-  @spec report(atom, Params.t(), keyword) :: :ok
-  def report(tag, params, opts \\ []) do
-    GenServer.cast(__MODULE__, {:report, {tag, params, opts}})
+  @spec report(atom, Job.t(), keyword) :: :ok
+  def report(tag, job, opts \\ []) do
+    GenServer.cast(__MODULE__, {:report, {tag, job, opts}})
   end
 
   # server
@@ -39,9 +39,9 @@ defmodule Fractals.Reporters.Broadcaster do
   end
 
   @impl GenServer
-  def handle_cast({:report, {tag, params, opts}}, reporters) do
+  def handle_cast({:report, {tag, job, opts}}, reporters) do
     Enum.each(reporters, fn reporter ->
-      GenServer.cast(reporter, {tag, params, opts})
+      GenServer.cast(reporter, {tag, job, opts})
     end)
 
     {:noreply, reporters}

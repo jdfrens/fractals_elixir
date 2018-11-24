@@ -1,7 +1,7 @@
-defmodule Fractals.ParamsTest do
+defmodule Fractals.JobTest do
   use ExUnit.Case, async: true
 
-  alias Fractals.{Params, Size}
+  alias Fractals.{Job, Size}
 
   describe ".process a full set of params" do
     setup do
@@ -9,51 +9,51 @@ defmodule Fractals.ParamsTest do
     end
 
     test "parsing the fractal type", %{argv: argv} do
-      assert Params.process(argv).fractal == :mandelbrot
+      assert Job.process(argv).fractal == :mandelbrot
     end
 
     test "parsing the image size", %{argv: argv} do
-      assert Params.process(argv).size == %Size{width: 720, height: 480}
+      assert Job.process(argv).size == %Size{width: 720, height: 480}
     end
 
     test "parsing the color scheme", %{argv: argv} do
-      assert Params.process(argv).color == :blue
+      assert Job.process(argv).color == :blue
     end
 
     test "parsing the random seed", %{argv: argv} do
-      assert Params.process(argv).seed == 12_345
+      assert Job.process(argv).seed == 12_345
     end
 
     test "parsing the upper-left corner", %{argv: argv} do
-      assert Params.process(argv).upper_left == Complex.new(0.0, 55.2)
+      assert Job.process(argv).upper_left == Complex.new(0.0, 55.2)
     end
 
     test "parsing the lower-right corder", %{argv: argv} do
-      assert Params.process(argv).lower_right == Complex.new(92.3, 120.3)
+      assert Job.process(argv).lower_right == Complex.new(92.3, 120.3)
     end
 
     test "parsing the c parameter", %{argv: argv} do
-      assert Params.process(argv).c == Complex.new(3.14, 4.13)
+      assert Job.process(argv).c == Complex.new(3.14, 4.13)
     end
 
     test "parsing the z parameter", %{argv: argv} do
-      assert Params.process(argv).z == Complex.new(4.4, 1.1)
+      assert Job.process(argv).z == Complex.new(4.4, 1.1)
     end
 
     test "parsing the r parameter", %{argv: argv} do
-      assert Params.process(argv).r == Complex.new(9.9, 3.3)
+      assert Job.process(argv).r == Complex.new(9.9, 3.3)
     end
 
     test "parsing the p parameter", %{argv: argv} do
-      assert Params.process(argv).p == Complex.new(0.3, 0.5)
+      assert Job.process(argv).p == Complex.new(0.3, 0.5)
     end
 
     test "parsed output_filename parameter", %{argv: argv} do
-      assert Params.process(argv).output_filename == "test/images/the-output.png"
+      assert Job.process(argv).output_filename == "test/images/the-output.png"
     end
 
     test "precomputing the ppm_filename parameter (cannot be overridden)", %{argv: argv} do
-      assert Params.process(argv).ppm_filename == "test/images/the-output.ppm"
+      assert Job.process(argv).ppm_filename == "test/images/the-output.ppm"
     end
   end
 
@@ -63,51 +63,51 @@ defmodule Fractals.ParamsTest do
     end
 
     test "defaults to Mandelbrot", %{argv: argv} do
-      assert Params.process(argv).fractal == :mandelbrot
+      assert Job.process(argv).fractal == :mandelbrot
     end
 
     test "defaults the image size", %{argv: argv} do
-      assert Params.process(argv).size == %Size{width: 512, height: 384}
+      assert Job.process(argv).size == %Size{width: 512, height: 384}
     end
 
     test "defaults the color scheme", %{argv: argv} do
-      assert Params.process(argv).color == :black_on_white
+      assert Job.process(argv).color == :black_on_white
     end
 
     test "defaults the random seed", %{argv: argv} do
-      assert Params.process(argv).seed == 666
+      assert Job.process(argv).seed == 666
     end
 
     test "still parsing the upper-left corner", %{argv: argv} do
-      assert Params.process(argv).upper_left == Complex.new(5.0, 6.0)
+      assert Job.process(argv).upper_left == Complex.new(5.0, 6.0)
     end
 
     test "still parsing the lower-right corder", %{argv: argv} do
-      assert Params.process(argv).lower_right == Complex.new(6.0, 5.0)
+      assert Job.process(argv).lower_right == Complex.new(6.0, 5.0)
     end
 
     test "defaults the c parameter", %{argv: argv} do
-      assert Params.process(argv).c == Complex.new(1.0, 0.0)
+      assert Job.process(argv).c == Complex.new(1.0, 0.0)
     end
 
     test "defaults the z parameter", %{argv: argv} do
-      assert Params.process(argv).z == Complex.new(0.0, 0.0)
+      assert Job.process(argv).z == Complex.new(0.0, 0.0)
     end
 
     test "defaults the r parameter", %{argv: argv} do
-      assert Params.process(argv).r == Complex.new(0.0, 0.0)
+      assert Job.process(argv).r == Complex.new(0.0, 0.0)
     end
 
     test "defaults the p parameter", %{argv: argv} do
-      assert Params.process(argv).p == Complex.new(0.0, 0.0)
+      assert Job.process(argv).p == Complex.new(0.0, 0.0)
     end
 
     test "empty list of params filenames", %{argv: argv} do
-      assert Params.process(argv).params_filenames == []
+      assert Job.process(argv).params_filenames == []
     end
 
     test "outputs to images directory", %{argv: argv} do
-      assert Params.process(argv).output_directory == "images"
+      assert Job.process(argv).output_directory == "images"
     end
   end
 
@@ -123,15 +123,15 @@ defmodule Fractals.ParamsTest do
     end
 
     test "recognizes the early flag", %{argv: argv} do
-      assert Params.process(argv).c == Complex.new(99.0)
+      assert Job.process(argv).c == Complex.new(99.0)
     end
 
     test "recognizes a value from the file", %{argv: argv} do
-      assert Params.process(argv).color == :blue
+      assert Job.process(argv).color == :blue
     end
 
     test "recognizes a value overridden by a flag", %{argv: argv} do
-      assert Params.process(argv).fractal == :burningship
+      assert Job.process(argv).fractal == :burningship
     end
   end
 
@@ -146,15 +146,15 @@ defmodule Fractals.ParamsTest do
     end
 
     test "first file is used", %{argv: argv} do
-      assert Params.process(argv).size == %Size{width: 720, height: 480}
+      assert Job.process(argv).size == %Size{width: 720, height: 480}
     end
 
     test "second file wins", %{argv: argv} do
-      assert Params.process(argv).fractal == :julia
+      assert Job.process(argv).fractal == :julia
     end
 
     test "does not set a default output filename", %{argv: argv} do
-      assert Params.process(argv).output_filename == nil
+      assert Job.process(argv).output_filename == nil
     end
   end
 end

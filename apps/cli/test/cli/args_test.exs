@@ -29,33 +29,33 @@ defmodule CLI.ArgsTest do
     end
   end
 
-  describe "parse_filename_groups" do
+  describe "parse_argv/1" do
     test "parses no groups" do
       args = Args.to_struct([], @no_errors)
 
       assert %Args{
-               raw_params_list: []
-             } = Args.parse_filename_groups(args)
+               params_list: []
+             } = Args.parse_argv(args)
     end
 
     test "parses one group" do
       args = Args.to_struct(["one"], @no_errors)
 
       assert %Args{
-               raw_params_list: [[params_filename: "one"]]
-             } = Args.parse_filename_groups(args)
+               params_list: [[params_filename: "one"]]
+             } = Args.parse_argv(args)
     end
 
     test "parses many groups" do
       args = Args.to_struct(["one", "two", "three"], @no_errors)
 
       assert %Args{
-               raw_params_list: [
+               params_list: [
                  [params_filename: "one"],
                  [params_filename: "two"],
                  [params_filename: "three"]
                ]
-             } = Args.parse_filename_groups(args)
+             } = Args.parse_argv(args)
     end
 
     test "parses the individual groups" do
@@ -68,7 +68,7 @@ defmodule CLI.ArgsTest do
       args = Args.to_struct(argv, @no_errors)
 
       assert %Args{
-               raw_params_list: [
+               params_list: [
                  [params_filename: "one", params_filename: "two"],
                  [params_filename: "three"],
                  [
@@ -77,7 +77,17 @@ defmodule CLI.ArgsTest do
                    params_filename: "six"
                  ]
                ]
-             } = Args.parse_filename_groups(args)
+             } = Args.parse_argv(args)
+    end
+  end
+
+  describe "parse_group_element/1" do
+    test "parses output_file param" do
+      assert {:output_filename, "foo.png"} == Args.parse_group_element("output_filename:foo.png")
+    end
+
+    test "parses params_filename" do
+      assert {:params_filename, "foo.yml"} == Args.parse_group_element("foo.yml")
     end
   end
 end

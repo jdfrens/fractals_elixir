@@ -3,8 +3,20 @@ defmodule UniprocessEngine do
   Documentation for UniprocessEngine.
   """
 
-  @behaviour Fractals.Behaviours.Engine
+  use Fractals.Engine
 
-  @impl Fractals.Behaviours.Engine
-  defdelegate generate(params), to: UniprocessEngine.Algorithm
+  @type t :: %__MODULE__{
+          type: :uniprocess,
+          module: UniprocessEngine
+        }
+
+  defstruct type: :uniprocess, module: UniprocessEngine
+
+  @impl Fractals.Engine
+  def parse_engine(_params) do
+    %__MODULE__{}
+  end
+
+  @impl Fractals.Engine
+  defdelegate generate(job), to: UniprocessEngine.Algorithm
 end

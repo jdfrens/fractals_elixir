@@ -9,21 +9,21 @@ defmodule Fractals.Colorizer.WarpPov do
   Taken from http://warp.povusers.org/Mandelbrot/
   """
 
-  alias Fractals.Params
+  alias Fractals.Job
 
   import Fractals.EscapeTime.Helpers
 
-  @spec red(non_neg_integer, Params.t()) :: String.t()
+  @spec red(non_neg_integer, Job.t()) :: String.t()
   def red(iterations, params) do
     permute_red(intensities(iterations, params))
   end
 
-  @spec green(non_neg_integer, Params.t()) :: String.t()
+  @spec green(non_neg_integer, Job.t()) :: String.t()
   def green(iterations, params) do
     permute_green(intensities(iterations, params))
   end
 
-  @spec blue(non_neg_integer, Params.t()) :: String.t()
+  @spec blue(non_neg_integer, Job.t()) :: String.t()
   def blue(iterations, params) do
     permute_blue(intensities(iterations, params))
   end
@@ -43,8 +43,8 @@ defmodule Fractals.Colorizer.WarpPov do
     PPM.ppm(secondary, secondary, primary)
   end
 
-  @spec intensities(non_neg_integer, Params.t()) :: {non_neg_integer, non_neg_integer}
-  def intensities(iterations, %Params{max_iterations: max_iterations})
+  @spec intensities(non_neg_integer, Job.t()) :: {non_neg_integer, non_neg_integer}
+  def intensities(iterations, %Job{max_iterations: max_iterations})
       when inside?(iterations, max_iterations),
       do: {0, 0}
 
@@ -58,7 +58,7 @@ defmodule Fractals.Colorizer.WarpPov do
     end
   end
 
-  @spec scale(float, Params) :: non_neg_integer
+  @spec scale(float, Job) :: non_neg_integer
   def scale(i, params) do
     round(2.0 * (i - 1) / params.max_iterations * params.max_intensity)
   end

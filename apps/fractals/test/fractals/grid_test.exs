@@ -2,10 +2,10 @@ defmodule Fractals.GridTest do
   use ExUnit.Case, async: true
 
   alias Fractals.Grid
-  alias Fractals.Params
+  alias Fractals.Job
 
-  def params do
-    %Params{
+  def job do
+    %Job{
       size: %Fractals.Size{width: 2, height: 3},
       upper_left: Complex.new(-1.0, 1.0),
       lower_right: Complex.new(1.0, -1.0)
@@ -14,29 +14,29 @@ defmodule Fractals.GridTest do
 
   describe ".chunk" do
     test "chunking evenly" do
-      params = %Params{engine: %{chunk_size: 3, chunk_count: 2}}
-      chunks = [:a, :b, :c, :d, :e, :f] |> Grid.chunk(params) |> Enum.to_list()
+      job = %Job{engine: %{chunk_size: 3, chunk_count: 2}}
+      chunks = [:a, :b, :c, :d, :e, :f] |> Grid.chunk(job) |> Enum.to_list()
 
       assert chunks == [
-               %Fractals.Chunk{number: 1, data: [:a, :b, :c], params: params},
-               %Fractals.Chunk{number: 2, data: [:d, :e, :f], params: params}
+               %Fractals.Chunk{number: 1, data: [:a, :b, :c], job: job},
+               %Fractals.Chunk{number: 2, data: [:d, :e, :f], job: job}
              ]
     end
 
     test "chunking unevenly" do
-      params = %Params{engine: %{chunk_size: 3, chunk_count: 2}}
-      chunks = [:a, :b, :c, :xyz] |> Grid.chunk(params) |> Enum.to_list()
+      job = %Job{engine: %{chunk_size: 3, chunk_count: 2}}
+      chunks = [:a, :b, :c, :xyz] |> Grid.chunk(job) |> Enum.to_list()
 
       assert chunks == [
-               %Fractals.Chunk{number: 1, data: [:a, :b, :c], params: params},
-               %Fractals.Chunk{number: 2, data: [:xyz], params: params}
+               %Fractals.Chunk{number: 1, data: [:a, :b, :c], job: job},
+               %Fractals.Chunk{number: 2, data: [:xyz], job: job}
              ]
     end
   end
 
   describe ".grid" do
     test "generate a grid" do
-      assert Grid.grid(params()) == [
+      assert Grid.grid(job()) == [
                Complex.new(-1.0, 1.0),
                Complex.new(1.0, 1.0),
                Complex.new(-1.0, 0.0),
@@ -49,13 +49,13 @@ defmodule Fractals.GridTest do
 
   describe ".xs" do
     test "generate left-right based on corners and width" do
-      assert Grid.xs(params()) == [-1.0, 1.0]
+      assert Grid.xs(job()) == [-1.0, 1.0]
     end
   end
 
   describe ".ys" do
     test "generate top-down based on corners and height" do
-      assert Grid.ys(params()) == [1.0, 0.0, -1.0]
+      assert Grid.ys(job()) == [1.0, 0.0, -1.0]
     end
   end
 

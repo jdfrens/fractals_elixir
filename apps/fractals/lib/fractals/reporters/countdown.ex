@@ -8,14 +8,14 @@ defmodule Fractals.Reporters.Countdown do
 
   use GenServer
 
-  alias Fractals.Params
+  alias Fractals.Job
 
-  @type state :: %{params_list: [Params.t()], for: pid()}
+  @type state :: %{jobs: [Job.t()], for: pid()}
 
   # client
 
   @spec start_link(state) :: GenServer.on_start()
-  def start_link(%{params_list: _params_list, for: _pid} = opts) do
+  def start_link(%{jobs: _jobs, for: _pid} = opts) do
     GenServer.start_link(__MODULE__, opts)
   end
 
@@ -29,21 +29,21 @@ defmodule Fractals.Reporters.Countdown do
   end
 
   @impl GenServer
-  def handle_cast({:done, params, _opts}, state) do
+  def handle_cast({:done, job, _opts}, state) do
     state
-    |> fractal_done(params)
+    |> fractal_done(job)
     |> response
   end
 
   @impl GenServer
-  def handle_cast({:skipping, params, _opts}, state) do
+  def handle_cast({:skipping, job, _opts}, state) do
     state
-    |> fractal_done(params)
+    |> fractal_done(job)
     |> response
   end
 
   @impl GenServer
-  def handle_cast({tag, _params, _opts}, state) when tag in @ignored_tags do
+  def handle_cast({tag, _job, _opts}, state) when tag in @ignored_tags do
     response(state)
   end
 
@@ -52,15 +52,15 @@ defmodule Fractals.Reporters.Countdown do
     send(pid, {:filenames_empty, reason})
   end
 
-  @spec fractal_done(state(), Params.t()) :: state()
-  def fractal_done(state, params) do
+  @spec fractal_done(state(), Job.t()) :: state()
+  def fractal_done(state, job) do
     state
-    |> Map.get_and_update(:params_list, &{&1, List.delete(&1, params)})
+    |> Map.get_and_update(:jobs, &{&1, List.delete(&1, job)})
     |> elem(1)
   end
 
   @spec response(state()) :: {:stop, String.t(), state()} | {:noreply, state()}
-  def response(%{params_list: []} = state) do
+  def response(%{jobs: []} = state) do
     {:stop, :normal, state}
   end
 

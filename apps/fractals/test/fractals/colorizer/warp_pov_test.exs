@@ -2,10 +2,10 @@ defmodule Fractals.Colorizer.WarpPovTest do
   use ExUnit.Case, async: true
 
   alias Fractals.Colorizer.WarpPov
-  alias Fractals.Params
+  alias Fractals.Job
 
   setup do
-    [params: Params.default()]
+    [params: Job.default()]
   end
 
   describe ".red" do

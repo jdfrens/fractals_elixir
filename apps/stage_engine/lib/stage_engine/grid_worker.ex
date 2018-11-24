@@ -5,7 +5,7 @@ defmodule StageEngine.GridWorker do
 
   use GenStage
 
-  alias Fractals.{Grid, Params}
+  alias Fractals.{Grid, Job}
 
   # Client
 
@@ -14,9 +14,9 @@ defmodule StageEngine.GridWorker do
     GenStage.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  @spec work(pid | atom, Params.t()) :: :ok
-  def work(pid, params) do
-    GenStage.call(pid, {:work, params})
+  @spec work(pid | atom, Job.t()) :: :ok
+  def work(pid, job) do
+    GenStage.call(pid, {:work, job})
   end
 
   # Callbacks
@@ -29,9 +29,8 @@ defmodule StageEngine.GridWorker do
   # Server
 
   @impl GenStage
-  def handle_call({:work, params}, _from, {queue, pending_demand}) do
-    new_queue =
-      Enum.reduce(Grid.chunked_grid(params), queue, fn chunk, q -> :queue.in(chunk, q) end)
+  def handle_call({:work, job}, _from, {queue, pending_demand}) do
+    new_queue = Enum.reduce(Grid.chunked_grid(job), queue, fn chunk, q -> :queue.in(chunk, q) end)
 
     {demanded, cached} =
       :queue.split(

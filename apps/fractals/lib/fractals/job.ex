@@ -1,13 +1,13 @@
-defmodule Fractals.Params do
+defmodule Fractals.Job do
   @moduledoc """
-  Structure for params when generating fractals.
+  Structure for a job to construct a fractal.
   """
 
   import Complex, only: :macros
 
-  alias Fractals.EngineParamsParserRegistry
-  alias Fractals.Engines.DoNothingParams
-  alias Fractals.{Params, Size}
+  alias Fractals.EngineRegistry
+  alias Fractals.Engines.DoNothingEngine
+  alias Fractals.{Job, Size}
 
   @type fractal_id :: String.t()
   @type fractal_type :: :mandelbrot | :julia
@@ -67,11 +67,11 @@ defmodule Fractals.Params do
   @zero Complex.new(0.0)
   @one Complex.new(1.0)
 
-  @spec default :: Params.t()
+  @spec default :: Job.t()
   def default do
-    %Params{
+    %Job{
       seed: 666,
-      engine: %DoNothingParams{},
+      engine: %DoNothingEngine{},
       cutoff_squared: 4.0,
       max_iterations: 256,
       fractal: :mandelbrot,
@@ -104,50 +104,54 @@ defmodule Fractals.Params do
   # IDEA: don't let user set some values (like output_pid)
   # IDEA: add `postcheck` after `compute` to check necessary values
 
-  @spec process(map | keyword, Params.t()) :: Params.t()
-  def process(raw_params, params \\ default()) do
-    raw_params
-    |> parse(params)
+  @spec process(map | keyword, Job.t()) :: Job.t()
+  def process(params, base_job \\ default()) do
+    params
+    |> parse(base_job)
     |> compute()
   end
 
-  @spec parse(map | keyword, Params.t()) :: Params.t()
-  def parse(raw_params, params \\ default()) do
-    raw_params
-    |> Enum.reduce(params, &parse_attribute/2)
+  @spec parse(map | keyword, Job.t()) :: Job.t()
+  def parse(params, base_job \\ default()) do
+    params
+    |> Enum.reduce(base_job, &parse_attribute/2)
   end
 
-  @spec close(Params.t()) :: Params.t()
-  def close(params) do
-    :ok = File.close(params.output_pid)
-    params
+  @spec close(Job.t()) :: Job.t()
+  def close(job) do
+    :ok = File.close(job.output_pid)
+    job
   end
 
   # *******
   # Parsing
   # *******
 
-  @spec parse_attribute({atom, any}, Params.t()) :: Params.t()
-  defp parse_attribute({:params_filename, filename}, params) do
+  @spec parse_attribute({atom, any}, Job.t()) :: Job.t()
+  defp parse_attribute({:params_filename, filename}, job) do
     with {:ok, raw_yaml} <- YamlElixir.read_from_file(filename),
          yaml <- symbolize(raw_yaml),
-         params_filenames = [filename | params.params_filenames] do
-      parse(yaml, %{params | params_filenames: params_filenames})
+         params_filenames = [filename | job.params_filenames],
+         %Job{} = parsed <- parse(yaml, %{job | params_filenames: params_filenames}) do
+      parsed
+    else
+      {:error, reason} ->
+        {:error, "could not parse #{filename}: #{reason}"}
     end
   end
 
-  defp parse_attribute({attribute, value}, params) do
-    %{params | attribute => parse_value(attribute, value)}
+  defp parse_attribute({attribute, value}, job) do
+    %{job | attribute => parse_value(attribute, value)}
   end
 
   @spec parse_value(atom, String.t()) :: %{type: atom(), module: module()}
   defp parse_value(:engine, value) do
-    raw_engine_params = symbolize(value)
+    engine_params = symbolize(value)
 
-    raw_engine_params
+    engine_params
     |> Map.get(:type)
-    |> EngineParamsParserRegistry.get()
-    |> apply(:parse, [raw_engine_params])
+    |> EngineRegistry.get()
+    |> apply(:parse_engine, [engine_params])
   end
 
   defp parse_value(:fractal, value) do
@@ -177,70 +181,70 @@ defmodule Fractals.Params do
   # Compute
   # **********
 
-  @spec compute(Params.t()) :: Params.t()
-  defp compute(params) do
-    params
+  @spec compute(Job.t()) :: Job.t()
+  defp compute(job) do
+    job
     |> compute_attributes()
     |> compute_engine()
   end
 
-  @spec compute_engine(Params.t()) :: Params.t()
-  defp compute_engine(%Params{engine: nil} = params) do
-    params
+  @spec compute_engine(Job.t()) :: Job.t()
+  defp compute_engine(%Job{engine: nil} = job) do
+    job
   end
 
-  defp compute_engine(%Params{engine: %{params_parser: params_parser}} = params) do
-    apply(params_parser, :compute, [params])
+  defp compute_engine(%Job{engine: %{module: module}} = job) do
+    apply(module, :compute_parsed, [job])
   end
 
-  @spec compute_attributes(Params.t()) :: Params.t()
-  defp compute_attributes(params) do
-    Enum.reduce(@computed_attributes, params, &compute_attribute/2)
+  @spec compute_attributes(Job.t()) :: Job.t()
+  defp compute_attributes(job) do
+    Enum.reduce(@computed_attributes, job, &compute_attribute/2)
   end
 
-  @spec compute_attribute(atom, Params.t()) :: Params.t()
-  defp compute_attribute(attribute, params) do
-    %{params | attribute => compute_value(attribute, params)}
+  @spec compute_attribute(atom, Job.t()) :: Job.t()
+  defp compute_attribute(attribute, job) do
+    %{job | attribute => compute_value(attribute, job)}
   end
 
-  @spec compute_value(atom, Params.t()) :: any
-  defp compute_value(:id, _params) do
+  @spec compute_value(atom, Job.t()) :: any
+  defp compute_value(:id, _job) do
     UUID.uuid1()
   end
 
-  defp compute_value(:params_filenames, %Params{params_filenames: params_filenames}) do
+  defp compute_value(:params_filenames, %Job{params_filenames: params_filenames}) do
     Enum.reverse(params_filenames)
   end
 
-  defp compute_value(:output_filename, params) do
-    if params.output_filename == nil do
-      case params.params_filenames do
+  defp compute_value(:output_filename, job) do
+    if job.output_filename == nil do
+      case job.params_filenames do
         [] ->
           nil
 
         [filename] ->
-          output_basepath(filename, params) <> @output_extension
+          output_basepath(filename, job) <> @output_extension
 
         _ ->
           nil
       end
     else
-      Path.join(params.output_directory, params.output_filename)
+      Path.join(job.output_directory, job.output_filename)
     end
   end
 
-  defp compute_value(:ppm_filename, params) do
-    case params.output_filename do
+  defp compute_value(:ppm_filename, job) do
+    case job.output_filename do
       nil ->
         nil
 
       filename ->
-        output_basepath(filename, params) <> ".ppm"
+        output_basepath(filename, job) <> ".ppm"
     end
   end
 
-  defp compute_value(:output_pid, params) do
-    case params.ppm_filename do
+  defp compute_value(:output_pid, job) do
+    case job.ppm_filename do
       nil ->
         nil
 
@@ -249,9 +253,9 @@ defmodule Fractals.Params do
     end
   end
 
-  @spec output_basepath(String.t(), Params.t()) :: String.t()
-  defp output_basepath(filename, params) do
-    Path.join(params.output_directory, basename(filename))
+  @spec output_basepath(String.t(), Job.t()) :: String.t()
+  defp output_basepath(filename, job) do
+    Path.join(job.output_directory, basename(filename))
   end
 
   @spec basename(String.t()) :: String.t()
@@ -267,8 +271,8 @@ defmodule Fractals.Params do
   # *******
 
   @spec symbolize(Enumerable.t()) :: map
-  defp symbolize(params) do
-    for {key, val} <- params, into: %{}, do: {to_atom(key), val}
+  defp symbolize(job) do
+    for {key, val} <- job, into: %{}, do: {to_atom(key), val}
   end
 
   @spec to_atom(atom | String.t()) :: atom

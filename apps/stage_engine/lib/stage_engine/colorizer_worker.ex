@@ -5,7 +5,7 @@ defmodule StageEngine.ColorizerWorker do
 
   use GenStage
 
-  alias Fractals.Colorizer
+  alias Fractals.{Colorizer, Job}
 
   # Client
 
@@ -25,14 +25,14 @@ defmodule StageEngine.ColorizerWorker do
   def handle_events(events, _from, :ok) do
     colorized =
       Enum.map(events, fn chunk ->
-        %{chunk | data: colorize(chunk.data, chunk.params)}
+        %{chunk | data: colorize(chunk.data, chunk.job)}
       end)
 
     {:noreply, colorized, :ok}
   end
 
-  @spec colorize({atom, {non_neg_integer, list}}, Params) :: list(String.t())
-  def colorize(data, params) do
-    Enum.map(data, &Colorizer.color_point(&1, params))
+  @spec colorize({atom, {non_neg_integer, list}}, Job.t()) :: list(String.t())
+  def colorize(data, job) do
+    Enum.map(data, &Colorizer.color_point(&1, job))
   end
 end

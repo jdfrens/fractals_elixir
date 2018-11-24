@@ -3,20 +3,20 @@ defmodule Fractals do
   The application.
   """
 
-  alias Fractals.Params
+  alias Fractals.Job
 
   @unimplemented Application.get_env(:fractals, :unimplemented)
 
-  @spec fractalize(Fractals.Params.t()) :: :ok | {:error, String.t()}
-  def fractalize(params) do
-    if unimplemented?(params.fractal) do
+  @spec fractalize(Fractals.Job.t()) :: :ok | {:error, String.t()}
+  def fractalize(job) do
+    if unimplemented?(job.fractal) do
       {:error, "fractal not implemented"}
     else
-      params.engine.module.generate(params)
+      job.engine.module.generate(job)
     end
   end
 
-  @spec unimplemented?(Params.fractal_type()) :: boolean
+  @spec unimplemented?(Job.fractal_type()) :: boolean
   defp unimplemented?(fractal) do
     Enum.member?(@unimplemented, fractal)
   end

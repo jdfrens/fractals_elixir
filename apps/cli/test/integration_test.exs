@@ -30,17 +30,17 @@ defmodule CLI.IntegrationTest do
   test "generates a pretty picture" do
     alias Fractals.Reporters.{Broadcaster, Countdown}
 
-    params =
-      Fractals.Params.process(
+    job =
+      Fractals.Job.process(
         output_directory: "test/images",
         engine: [type: "stage"],
         params_filename: @mandelbrot_input_filename
       )
 
     ExUnit.CaptureIO.capture_io(fn ->
-      Broadcaster.add_reporter(Countdown, %{params_list: [params], for: self()})
-      Fractals.fractalize(params)
-      CLI.wait(params)
+      Broadcaster.add_reporter(Countdown, %{jobs: [job], for: self()})
+      Fractals.fractalize(job)
+      CLI.wait(nil)
     end)
 
     output = File.read!(@mandelbrot_output_filename)

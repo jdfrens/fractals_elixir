@@ -1,16 +1,24 @@
 defmodule CLI.Args do
-  alias Fractals.Params
+  @moduledoc """
+  Functions to process command-line arguments.
 
-  @type filename_group :: [String.t()]
+  The `fractal` takes a list of "job groups" on the command-line.  A job consists of a comma-separated list of elements.
+  An element can be
+  * a plain filename as a `:params_filename` entry for a `Job`, or
+  * a plain filename prefixed with `"output_filename:" to specify an output filename.
+  """
+
+  alias Fractals.Job
+
   @type t :: %__MODULE__{
           valid?: boolean(),
           argv: OptionParser.argv(),
           errors: OptionParser.errors(),
-          raw_params_list: [keyword()] | nil,
-          params_list: [Params.t()] | nil
+          params_list: [keyword()] | nil,
+          jobs: [Job.t()] | nil
         }
 
-  defstruct valid?: true, argv: [], errors: [], raw_params_list: nil, params_list: nil
+  defstruct valid?: true, argv: [], errors: [], params_list: nil, jobs: nil
 
   alias CLI.Args
 
@@ -19,8 +27,8 @@ defmodule CLI.Args do
     raw_args
     |> OptionParser.parse(switches: [])
     |> to_struct()
-    |> parse_filename_groups()
-    |> process_raw_params()
+    |> parse_argv()
+    |> process_params_list()
   end
 
   @spec to_struct({OptionParser.parsed(), OptionParser.argv(), OptionParser.errors()}) :: t()
@@ -37,41 +45,38 @@ defmodule CLI.Args do
     }
   end
 
-  @spec parse_filename_groups(t()) :: t()
-  def parse_filename_groups(%Args{valid?: true, argv: argv} = args) do
-    raw_params_list =
+  @spec parse_argv(t()) :: t()
+  def parse_argv(%Args{valid?: true, argv: argv} = args) do
+    params_list =
       argv
       |> Enum.map(&String.split(&1, ","))
-      |> Enum.map(&parse_filename_group/1)
+      |> Enum.map(&parse_group/1)
 
-    Map.put(args, :raw_params_list, raw_params_list)
+    Map.put(args, :params_list, params_list)
   end
 
-  def parse_params_groups(args), do: args
+  def parse_argv(args), do: args
 
-  @spec parse_filename_group(filename_group()) :: keyword()
-  def parse_filename_group(group) do
+  @spec parse_group([String.t()]) :: keyword()
+  def parse_group(group) do
     Enum.map(group, &parse_group_element/1)
   end
 
   @spec parse_group_element(String.t()) :: {atom(), any()}
   def parse_group_element(group_element) do
-    cond do
-      # TODO: untested
-      String.starts_with?(group_element, "output_file:") ->
-        {:output_filename, String.replace_leading(group_element, "output_file:", "")}
-
-      true ->
-        {:params_filename, group_element}
+    if String.starts_with?(group_element, "output_filename:") do
+      {:output_filename, String.replace_leading(group_element, "output_filename:", "")}
+    else
+      {:params_filename, group_element}
     end
   end
 
-  @spec process_raw_params(t()) :: t()
-  def process_raw_params(%Args{raw_params_list: raw_params_list} = args) do
-    params_list =
-      raw_params_list
-      |> Enum.map(&Params.process(&1))
+  @spec process_params_list(t()) :: t()
+  def process_params_list(%Args{params_list: params_list} = args) do
+    jobs =
+      params_list
+      |> Enum.map(&Job.process(&1))
 
-    Map.put(args, :params_list, params_list)
+    Map.put(args, :jobs, jobs)
   end
 end

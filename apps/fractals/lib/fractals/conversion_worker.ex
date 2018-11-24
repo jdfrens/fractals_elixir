@@ -5,7 +5,7 @@ defmodule Fractals.ConversionWorker do
 
   use GenServer
 
-  alias Fractals.{ImageMagick, Params, Reporters.Broadcaster}
+  alias Fractals.{ImageMagick, Job, Reporters.Broadcaster}
 
   # Client
 
@@ -23,7 +23,7 @@ defmodule Fractals.ConversionWorker do
     GenServer.start_link(__MODULE__, state, name: name)
   end
 
-  @spec convert(pid | atom, Params.t()) :: :ok
+  @spec convert(pid | atom, Job.t()) :: :ok
   def convert(pid \\ __MODULE__, params) do
     GenServer.cast(pid, {:convert, params})
   end
@@ -45,7 +45,7 @@ defmodule Fractals.ConversionWorker do
     {:noreply, state}
   end
 
-  @spec convert_to(String.t(), Params.t(), (String.t(), String.t() -> any)) :: Params.t()
+  @spec convert_to(String.t(), Job.t(), (String.t(), String.t() -> any)) :: Job.t()
   defp convert_to(".ppm", params, _convert) do
     # OutputWorker already wrote a PPM file
     params
@@ -63,7 +63,7 @@ defmodule Fractals.ConversionWorker do
     params
   end
 
-  @spec done((atom, Params.t(), keyword -> any), Params.t()) :: any
+  @spec done((atom, Job.t(), keyword -> any), Job.t()) :: any
   defp done(broadcast, params) do
     broadcast.(:done, params, from: self())
   end

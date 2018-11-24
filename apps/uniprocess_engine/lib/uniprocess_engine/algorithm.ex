@@ -8,14 +8,14 @@ defmodule UniprocessEngine.Algorithm do
     EscapeTime,
     Grid,
     ImageMagick,
+    Job,
     Output.PPMFile,
-    Params,
     Reporters.Broadcaster
   }
 
-  @spec generate(Fractals.Params.t()) :: :ok
-  def generate(params) do
-    {params, nil}
+  @spec generate(Job.t()) :: :ok
+  def generate(job) do
+    {job, nil}
     |> grid()
     |> pixels()
     |> colors()
@@ -26,53 +26,53 @@ defmodule UniprocessEngine.Algorithm do
     :ok
   end
 
-  @spec grid({Params.t(), nil}) :: {Params.t(), Grid.t()}
-  def grid({params, nil}) do
-    {params, Grid.grid(params)}
+  @spec grid({Job.t(), nil}) :: {Job.t(), Grid.t()}
+  def grid({job, nil}) do
+    {job, Grid.grid(job)}
   end
 
-  @spec pixels({Params.t(), Grid.t()}) :: {Params.t(), EscapeTime.t()}
-  def pixels({params, grid}) do
-    {params, EscapeTime.pixels(params.fractal, grid, params)}
+  @spec pixels({Job.t(), Grid.t()}) :: {Job.t(), EscapeTime.t()}
+  def pixels({job, grid}) do
+    {job, EscapeTime.pixels(job.fractal, grid, job)}
   end
 
-  @spec colors({Params.t(), EscapeTime.t()}) :: {Params.t(), [PPM.color()]}
-  def colors({params, pixels}) do
-    {params, Enum.map(pixels, &Colorizer.color_point(&1, params))}
+  @spec colors({Job.t(), EscapeTime.t()}) :: {Job.t(), [PPM.color()]}
+  def colors({job, pixels}) do
+    {job, Enum.map(pixels, &Colorizer.color_point(&1, job))}
   end
 
-  @spec write({Params.t(), [PPM.color()]}) :: {Params.t(), nil}
-  def write({params, colors}) do
-    PPMFile.write_file(params, colors)
-    Params.close(params)
-    {params, nil}
+  @spec write({Job.t(), [PPM.color()]}) :: {Job.t(), nil}
+  def write({job, colors}) do
+    PPMFile.write_file(job, colors)
+    Job.close(job)
+    {job, nil}
   end
 
-  @spec convert({Params.t(), nil}) :: {Params.t(), nil}
-  def convert({params, nil}) do
-    params.output_filename
+  @spec convert({Job.t(), nil}) :: {Job.t(), nil}
+  def convert({job, nil}) do
+    job.output_filename
     |> Path.extname()
-    |> convert_to(params)
+    |> convert_to(job)
 
-    {params, nil}
+    {job, nil}
   end
 
-  @spec done({Params.t(), nil}) :: {Params.t(), nil}
-  def done({params, nil}) do
-    Broadcaster.report(:done, params, from: self())
-    {params, nil}
+  @spec done({Job.t(), nil}) :: {Job.t(), nil}
+  def done({job, nil}) do
+    Broadcaster.report(:done, job, from: self())
+    {job, nil}
   end
 
-  @spec convert_to(String.t(), Params.t()) :: Params.t()
-  defp convert_to(".png", params) do
+  @spec convert_to(String.t(), Job.t()) :: Job.t()
+  defp convert_to(".png", job) do
     root_filename =
-      params.output_filename
+      job.output_filename
       |> Path.rootname(".png")
       |> Path.rootname(".ppm")
 
     ppm_filename = root_filename <> ".ppm"
-    ImageMagick.convert(ppm_filename, params.output_filename)
+    ImageMagick.convert(ppm_filename, job.output_filename)
 
-    params
+    job
   end
 end

@@ -21,33 +21,38 @@ defmodule Fractals.Reporters.Stdout do
   end
 
   @impl GenServer
-  def handle_cast({:starting, params, _opts}, state) do
-    state[:puts].("starting #{params.output_filename}")
+  def handle_cast({:starting, job, _opts}, state) do
+    puts(state, "starting #{job.output_filename}")
     {:noreply, state}
   end
 
   @impl GenServer
-  def handle_cast({:writing, params, opts}, state) do
+  def handle_cast({:writing, job, opts}, state) do
     chunk_number = Keyword.get(opts, :chunk_number)
-    chunk_count = params.engine.chunk_count
+    chunk_count = job.engine.chunk_count
 
     if Integer.mod(chunk_number, 20) == 0 or chunk_number == chunk_count do
-      state[:puts].("writing #{chunk_number}/#{chunk_count} to #{params.ppm_filename}")
+      puts(state, "writing #{chunk_number}/#{chunk_count} to #{job.ppm_filename}")
     end
 
     {:noreply, state}
   end
 
   @impl GenServer
-  def handle_cast({:skipping, params, opts}, state) do
+  def handle_cast({:skipping, job, opts}, state) do
     reason = Keyword.get(opts, :reason)
-    state[:puts].("skipping #{params.output_filename}: #{reason}")
+    puts(state, "skipping #{job.output_filename}: #{reason}")
     {:noreply, state}
   end
 
   @impl GenServer
-  def handle_cast({:done, params, _opts}, state) do
-    state[:puts].("finished #{params.output_filename}")
+  def handle_cast({:done, job, _opts}, state) do
+    puts(state, "finished #{job.output_filename}")
     {:noreply, state}
+  end
+
+  @spec puts(keyword, String.t()) :: :ok
+  defp puts(state, message) do
+    state[:puts].(message)
   end
 end

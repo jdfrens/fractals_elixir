@@ -6,10 +6,10 @@ defmodule Fractals.Chunk do
   @type t :: %__MODULE__{
           number: integer,
           data: list,
-          params: Fractals.Params.t()
+          job: Fractals.Job.t()
         }
 
-  defstruct number: nil, data: [], params: nil
+  defstruct number: nil, data: [], job: nil
 
   @doc """
   Computes the number of chunks based on the width and height of the image and the chunk size.

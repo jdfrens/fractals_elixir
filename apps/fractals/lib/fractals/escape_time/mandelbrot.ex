@@ -7,14 +7,24 @@ defmodule Fractals.EscapeTime.Mandelbrot do
 
   use Fractals.EscapeTime
 
+  @behaviour Fractals.EscapeTime.Fractal
+
   @zero Complex.new(0.0, 0.0)
 
-  @spec iterate(Complex.complex(), Fractals.Params.t()) :: Enumerable.t()
-  def iterate(grid_point, _params) do
+  @impl Fractals.EscapeTime.Fractal
+  def parse_algorithm(_params) do
+    %Fractals.EscapeTime.Algorithm{
+      type: :mandelbrot,
+      module: __MODULE__
+    }
+  end
+
+  @impl Fractals.EscapeTime.Fractal
+  def iterate(grid_point, _algorithm) do
     Stream.iterate(@zero, &iterator(&1, grid_point))
   end
 
-  @spec iterator(Complex.complex(), Complex.complex()) :: Complex.complex()
+  @impl Fractals.EscapeTime.Fractal
   def iterator(z, c) do
     z |> square |> add(c)
   end

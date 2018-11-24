@@ -6,12 +6,12 @@ defmodule Fractals.Output.PPMFile do
   @type pixel :: String.t()
   @type pixels :: [pixel()]
 
-  alias Fractals.Params
+  alias Fractals.Job
 
   @doc """
   Writes all of the `pixels` to a new file.
   """
-  @spec write_file(Params.t(), pixels()) :: :ok
+  @spec write_file(Job.t(), pixels()) :: :ok
   def write_file(params, pixels) do
     start_file(params)
     write_pixels(params, pixels)
@@ -20,7 +20,7 @@ defmodule Fractals.Output.PPMFile do
   @doc """
   Writes the PPM header to a new file.
   """
-  @spec start_file(Params.t()) :: :ok
+  @spec start_file(Job.t()) :: :ok
   def start_file(params) do
     lines_to_file(params, header(params))
   end
@@ -32,12 +32,12 @@ defmodule Fractals.Output.PPMFile do
     lines_to_file(params, pixels)
   end
 
-  @spec header(Params.t()) :: [String.t()]
+  @spec header(Job.t()) :: [String.t()]
   defp header(params) do
     PPM.p3_header(params.size.width, params.size.height)
   end
 
-  @spec lines_to_file(Params.t(), [String.t()]) :: :ok
+  @spec lines_to_file(Job.t(), [String.t()]) :: :ok
   defp lines_to_file(params, lines) do
     IO.write(params.output_pid, add_newlines(lines))
   end
