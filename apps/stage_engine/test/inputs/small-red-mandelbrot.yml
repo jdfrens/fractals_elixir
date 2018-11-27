@@ -1,4 +1,5 @@
-fractal: Mandelbrot
+fractal:
+  type: Mandelbrot
 color: Red
 size: 100x100
 upperLeft: -2.0+1.2i

@@ -5,7 +5,6 @@ defmodule UniprocessEngine.Algorithm do
 
   alias Fractals.{
     Colorizer,
-    EscapeTime,
     Grid,
     ImageMagick,
     Job,
@@ -17,7 +16,7 @@ defmodule UniprocessEngine.Algorithm do
   def generate(job) do
     {job, nil}
     |> grid()
-    |> pixels()
+    |> fractal()
     |> colors()
     |> write()
     |> convert()
@@ -31,12 +30,12 @@ defmodule UniprocessEngine.Algorithm do
     {job, Grid.grid(job)}
   end
 
-  @spec pixels({Job.t(), Grid.t()}) :: {Job.t(), EscapeTime.t()}
-  def pixels({job, grid}) do
-    {job, EscapeTime.pixels(job.fractal, grid, job)}
+  @spec fractal({Job.t(), Grid.t()}) :: {Job.t(), Fractals.Fractal.complex_grid()}
+  def fractal({job, grid}) do
+    {job, job.fractal.module.generate(grid, job.fractal)}
   end
 
-  @spec colors({Job.t(), EscapeTime.t()}) :: {Job.t(), [PPM.color()]}
+  @spec colors({Job.t(), Fractals.Fractal.complex_grid()}) :: {Job.t(), [PPM.color()]}
   def colors({job, pixels}) do
     {job, Enum.map(pixels, &Colorizer.color_point(&1, job))}
   end

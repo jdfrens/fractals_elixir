@@ -1,7 +1,7 @@
 defmodule Fractals.JobTest do
   use ExUnit.Case, async: true
 
-  alias Fractals.{Job, Size}
+  alias Fractals.{Fractal, Job, Size}
 
   describe ".process a full set of params" do
     setup do
@@ -9,7 +9,10 @@ defmodule Fractals.JobTest do
     end
 
     test "parsing the fractal type", %{argv: argv} do
-      assert Job.process(argv).fractal == :mandelbrot
+      assert Job.process(argv).fractal == %Fractal{
+               type: :mandelbrot,
+               module: Fractals.EscapeTime.Mandelbrot
+             }
     end
 
     test "parsing the image size", %{argv: argv} do
@@ -32,22 +35,6 @@ defmodule Fractals.JobTest do
       assert Job.process(argv).lower_right == Complex.new(92.3, 120.3)
     end
 
-    test "parsing the c parameter", %{argv: argv} do
-      assert Job.process(argv).c == Complex.new(3.14, 4.13)
-    end
-
-    test "parsing the z parameter", %{argv: argv} do
-      assert Job.process(argv).z == Complex.new(4.4, 1.1)
-    end
-
-    test "parsing the r parameter", %{argv: argv} do
-      assert Job.process(argv).r == Complex.new(9.9, 3.3)
-    end
-
-    test "parsing the p parameter", %{argv: argv} do
-      assert Job.process(argv).p == Complex.new(0.3, 0.5)
-    end
-
     test "parsed output_filename parameter", %{argv: argv} do
       assert Job.process(argv).output_filename == "test/images/the-output.png"
     end
@@ -63,7 +50,10 @@ defmodule Fractals.JobTest do
     end
 
     test "defaults to Mandelbrot", %{argv: argv} do
-      assert Job.process(argv).fractal == :mandelbrot
+      assert Job.process(argv).fractal == %Fractal{
+               type: :mandelbrot,
+               module: Fractals.EscapeTime.Mandelbrot
+             }
     end
 
     test "defaults the image size", %{argv: argv} do
@@ -86,22 +76,6 @@ defmodule Fractals.JobTest do
       assert Job.process(argv).lower_right == Complex.new(6.0, 5.0)
     end
 
-    test "defaults the c parameter", %{argv: argv} do
-      assert Job.process(argv).c == Complex.new(1.0, 0.0)
-    end
-
-    test "defaults the z parameter", %{argv: argv} do
-      assert Job.process(argv).z == Complex.new(0.0, 0.0)
-    end
-
-    test "defaults the r parameter", %{argv: argv} do
-      assert Job.process(argv).r == Complex.new(0.0, 0.0)
-    end
-
-    test "defaults the p parameter", %{argv: argv} do
-      assert Job.process(argv).p == Complex.new(0.0, 0.0)
-    end
-
     test "empty list of params filenames", %{argv: argv} do
       assert Job.process(argv).params_filenames == []
     end
@@ -114,16 +88,18 @@ defmodule Fractals.JobTest do
   describe "parsing flags and input file" do
     setup do
       argv = [
-        c: "99.0+0.0i",
+        seed: 700,
         params_filename: "test/inputs/partial_params.yml",
-        fractal: "Burningship"
+        fractal: [
+          type: "burning_ship"
+        ]
       ]
 
       [argv: argv]
     end
 
     test "recognizes the early flag", %{argv: argv} do
-      assert Job.process(argv).c == Complex.new(99.0)
+      assert Job.process(argv).seed == 700
     end
 
     test "recognizes a value from the file", %{argv: argv} do
@@ -131,7 +107,10 @@ defmodule Fractals.JobTest do
     end
 
     test "recognizes a value overridden by a flag", %{argv: argv} do
-      assert Job.process(argv).fractal == :burningship
+      assert Job.process(argv).fractal == %Fractal{
+               type: :burning_ship,
+               module: Fractals.EscapeTime.BurningShip
+             }
     end
   end
 
@@ -150,7 +129,13 @@ defmodule Fractals.JobTest do
     end
 
     test "second file wins", %{argv: argv} do
-      assert Job.process(argv).fractal == :julia
+      assert Job.process(argv).fractal == %Fractal{
+               type: :julia,
+               module: Fractals.EscapeTime.Julia,
+               algorithm_params: %{
+                 c: Complex.new(1.0)
+               }
+             }
     end
 
     test "does not set a default output filename", %{argv: argv} do

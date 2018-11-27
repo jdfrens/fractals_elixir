@@ -40,7 +40,7 @@ defmodule Fractals.Colorizer.Random do
 
   @spec pick_color([[float]], integer, Job.t()) :: [integer]
   def pick_color(colors, iterations, job) do
-    if inside?(iterations, job.max_iterations) do
+    if inside?(iterations, job.fractal.max_iterations) do
       [0, 0, 0]
     else
       colors

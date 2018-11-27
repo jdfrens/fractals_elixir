@@ -25,14 +25,14 @@ defmodule Fractals.Colorizer.RandomTest do
     end
 
     test "returning black for max iterations" do
-      assert Random.at(Random, Job.default().max_iterations, Job.default()) == PPM.black()
+      assert Random.at(Random, Job.default().fractal.max_iterations, Job.default()) == PPM.black()
     end
   end
 
   describe ".pick_colors" do
     test "scales based on max_intensity" do
       colors = [[0.2, 0.5, 0.8]]
-      job = %Job{max_intensity: 256}
+      job = %{Job.default() | max_intensity: 256}
       assert Random.pick_color(colors, 0, job) == [51, 128, 205]
     end
   end

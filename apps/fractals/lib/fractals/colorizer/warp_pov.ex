@@ -9,23 +9,24 @@ defmodule Fractals.Colorizer.WarpPov do
   Taken from http://warp.povusers.org/Mandelbrot/
   """
 
-  alias Fractals.Job
-
   import Fractals.EscapeTime.Helpers
 
+  alias Fractals.Fractal
+  alias Fractals.Job
+
   @spec red(non_neg_integer, Job.t()) :: String.t()
-  def red(iterations, params) do
-    permute_red(intensities(iterations, params))
+  def red(iterations, job) do
+    permute_red(intensities(iterations, job))
   end
 
   @spec green(non_neg_integer, Job.t()) :: String.t()
-  def green(iterations, params) do
-    permute_green(intensities(iterations, params))
+  def green(iterations, job) do
+    permute_green(intensities(iterations, job))
   end
 
   @spec blue(non_neg_integer, Job.t()) :: String.t()
-  def blue(iterations, params) do
-    permute_blue(intensities(iterations, params))
+  def blue(iterations, job) do
+    permute_blue(intensities(iterations, job))
   end
 
   @spec permute_red({non_neg_integer, non_neg_integer}) :: String.t()
@@ -44,22 +45,22 @@ defmodule Fractals.Colorizer.WarpPov do
   end
 
   @spec intensities(non_neg_integer, Job.t()) :: {non_neg_integer, non_neg_integer}
-  def intensities(iterations, %Job{max_iterations: max_iterations})
+  def intensities(iterations, %Job{fractal: %Fractal{max_iterations: max_iterations}})
       when inside?(iterations, max_iterations),
       do: {0, 0}
 
-  def intensities(iterations, params) do
-    half_iterations = params.max_iterations / 2 - 1
+  def intensities(iterations, job) do
+    half_iterations = job.fractal.max_iterations / 2 - 1
 
     if iterations <= half_iterations do
-      {scale(max(1, iterations), params), 0}
+      {scale(max(1, iterations), job), 0}
     else
-      {params.max_intensity, scale(iterations - half_iterations, params)}
+      {job.max_intensity, scale(iterations - half_iterations, job)}
     end
   end
 
   @spec scale(float, Job) :: non_neg_integer
-  def scale(i, params) do
-    round(2.0 * (i - 1) / params.max_iterations * params.max_intensity)
+  def scale(i, job) do
+    round(2.0 * (i - 1) / job.fractal.max_iterations * job.max_intensity)
   end
 end

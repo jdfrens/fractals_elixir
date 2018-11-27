@@ -3,11 +3,11 @@ defmodule UniprocessEngine.Application do
 
   use Application
 
-  alias Fractals.EngineRegistry, as: ParserRegistry
+  alias Fractals.EngineRegistry
 
   def start(_type, _args) do
     Application.ensure_all_started(:fractals)
-    ParserRegistry.add("uniprocess", UniprocessEngine)
+    EngineRegistry.add("uniprocess", UniprocessEngine)
 
     children = []
 

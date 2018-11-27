@@ -3,10 +3,6 @@ defmodule Fractals do
   The application.
   """
 
-  alias Fractals.Job
-
-  @unimplemented Application.get_env(:fractals, :unimplemented)
-
   @spec fractalize(Fractals.Job.t()) :: :ok | {:error, String.t()}
   def fractalize(job) do
     if unimplemented?(job.fractal) do
@@ -16,8 +12,8 @@ defmodule Fractals do
     end
   end
 
-  @spec unimplemented?(Job.fractal_type()) :: boolean
+  @spec unimplemented?(atom()) :: boolean
   defp unimplemented?(fractal) do
-    Enum.member?(@unimplemented, fractal)
+    fractal.type == :unimplemented
   end
 end

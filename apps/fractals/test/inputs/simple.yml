@@ -1,4 +1,5 @@
-fractal:    Mandelbrot
+fractal:
+  type: mandelbrot
 size:       720x480
 color:      Blue
 seed:       12345

@@ -5,24 +5,17 @@ defmodule Fractals.Job do
 
   import Complex, only: :macros
 
-  alias Fractals.EngineRegistry
+  alias Fractals.{EngineRegistry, FractalRegistry}
   alias Fractals.Engines.DoNothingEngine
-  alias Fractals.{Job, Size}
+  alias Fractals.{Fractal, Job, Size}
 
   @type fractal_id :: String.t()
-  @type fractal_type :: :mandelbrot | :julia
   @type color :: :black_on_white | :white_on_black | :gray | :red | :green | :blue | :random
   @type t :: %__MODULE__{
           id: fractal_id() | nil,
           seed: integer() | nil,
           engine: map() | nil,
-          max_iterations: integer() | nil,
-          cutoff_squared: float() | nil,
-          fractal: fractal_type() | nil,
-          c: Complex.complex() | nil,
-          z: Complex.complex() | nil,
-          r: Complex.complex() | nil,
-          p: Complex.complex() | nil,
+          fractal: Fractals.Fractal.t() | nil,
           size: Size.t() | nil,
           color: color() | nil,
           upper_left: Complex.complex() | nil,
@@ -40,15 +33,7 @@ defmodule Fractals.Job do
     :id,
     :seed,
     :engine,
-    # escape time
-    :max_iterations,
-    :cutoff_squared,
-    # fractal
     :fractal,
-    :c,
-    :z,
-    :r,
-    :p,
     # image
     :size,
     :color,
@@ -64,21 +49,15 @@ defmodule Fractals.Job do
     :output_pid
   ]
 
-  @zero Complex.new(0.0)
-  @one Complex.new(1.0)
-
   @spec default :: Job.t()
   def default do
     %Job{
       seed: 666,
       engine: %DoNothingEngine{},
-      cutoff_squared: 4.0,
-      max_iterations: 256,
-      fractal: :mandelbrot,
-      p: @zero,
-      r: @zero,
-      z: @zero,
-      c: @one,
+      fractal: %Fractal{
+        type: :mandelbrot,
+        module: Fractals.EscapeTime.Mandelbrot
+      },
       size: %Size{width: 512, height: 384},
       color: :black_on_white,
       max_intensity: 255,
@@ -155,7 +134,13 @@ defmodule Fractals.Job do
   end
 
   defp parse_value(:fractal, value) do
-    String.to_atom(String.downcase(value))
+    fractal_params = symbolize(value)
+
+    fractal_params
+    |> Map.get(:type)
+    |> String.downcase()
+    |> FractalRegistry.get()
+    |> apply(:parse, [fractal_params])
   end
 
   defp parse_value(:color, color) do

@@ -16,7 +16,7 @@ defmodule Fractals.EngineRegistry do
   @name Fractals.EngineRegistry
 
   @doc """
-  Starts the broker; `engines` is a list of initial engines.
+  Starts the registry.
   """
   @spec start_link(any()) :: GenServer.on_start()
   def start_link(_) do
