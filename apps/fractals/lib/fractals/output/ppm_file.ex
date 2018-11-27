@@ -12,24 +12,24 @@ defmodule Fractals.Output.PPMFile do
   Writes all of the `pixels` to a new file.
   """
   @spec write_file(Job.t(), pixels()) :: :ok
-  def write_file(params, pixels) do
-    start_file(params)
-    write_pixels(params, pixels)
+  def write_file(job, pixels) do
+    start_file(job)
+    write_pixels(job, pixels)
   end
 
   @doc """
   Writes the PPM header to a new file.
   """
   @spec start_file(Job.t()) :: :ok
-  def start_file(params) do
-    lines_to_file(params, header(params))
+  def start_file(job) do
+    lines_to_file(job, header(job))
   end
 
   @doc """
   Writes pixels to file that has been started with `start_file/1`.
   """
-  def write_pixels(params, pixels) do
-    lines_to_file(params, pixels)
+  def write_pixels(job, pixels) do
+    lines_to_file(job, pixels)
   end
 
   @spec header(Job.t()) :: [String.t()]
@@ -38,8 +38,8 @@ defmodule Fractals.Output.PPMFile do
   end
 
   @spec lines_to_file(Job.t(), [String.t()]) :: :ok
-  defp lines_to_file(params, lines) do
-    IO.write(params.output_pid, add_newlines(lines))
+  defp lines_to_file(job, lines) do
+    IO.write(job.output.pid, add_newlines(lines))
   end
 
   @spec add_newlines([String.t()]) :: [[String.t()]]

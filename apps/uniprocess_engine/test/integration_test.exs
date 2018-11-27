@@ -14,7 +14,7 @@ defmodule UniprocessEngine.IntegrationTest do
   test "small, red Mandelbrot" do
     job =
       Job.process(
-        output_directory: "test/images",
+        output: [directory: "test/images"],
         params_filename: "test/inputs/small-red-mandelbrot.yml"
       )
 

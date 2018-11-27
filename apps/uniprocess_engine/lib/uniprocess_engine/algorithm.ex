@@ -49,7 +49,7 @@ defmodule UniprocessEngine.Algorithm do
 
   @spec convert({Job.t(), nil}) :: {Job.t(), nil}
   def convert({job, nil}) do
-    job.output_filename
+    job.output.filename
     |> Path.extname()
     |> convert_to(job)
 
@@ -65,12 +65,12 @@ defmodule UniprocessEngine.Algorithm do
   @spec convert_to(String.t(), Job.t()) :: Job.t()
   defp convert_to(".png", job) do
     root_filename =
-      job.output_filename
+      job.output.filename
       |> Path.rootname(".png")
       |> Path.rootname(".ppm")
 
     ppm_filename = root_filename <> ".ppm"
-    ImageMagick.convert(ppm_filename, job.output_filename)
+    ImageMagick.convert(ppm_filename, job.output.filename)
 
     job
   end

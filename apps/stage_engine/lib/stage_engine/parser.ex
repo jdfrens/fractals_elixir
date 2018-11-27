@@ -16,18 +16,13 @@ defmodule StageEngine.Parser do
     end)
   end
 
-  def compute_parsed(
-        %Fractals.Job{
-          engine: %StageEngine{chunk_size: chunk_size} = engine,
-          image: %Image{
-            size: %Fractals.Size{width: width, height: height}
-          }
-        } = job
-      ) do
-    %{
-      job
-      | engine: %{engine | chunk_count: Chunk.chunk_count(width, height, chunk_size)}
-    }
+  def compute_parsed(%Fractals.Job{
+        engine: %StageEngine{chunk_size: chunk_size} = engine,
+        image: %Image{
+          size: %Fractals.Size{width: width, height: height}
+        }
+      }) do
+    %{engine | chunk_count: Chunk.chunk_count(width, height, chunk_size)}
   end
 
   defp parse_value(:chunk_size, chunk_size) when is_binary(chunk_size) do

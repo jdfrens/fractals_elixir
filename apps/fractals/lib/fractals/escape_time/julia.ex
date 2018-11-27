@@ -17,8 +17,8 @@ defmodule Fractals.EscapeTime.Julia do
   end
 
   @impl Fractals.EscapeTime
-  def iterate(grid_point, algorithm) do
-    Stream.iterate(grid_point, &iterator(&1, algorithm.c))
+  def iterate(grid_point, fractal) do
+    Stream.iterate(grid_point, &iterator(&1, fractal.algorithm_params.c))
   end
 
   def iterator(z, c) do

@@ -3,6 +3,9 @@ defmodule Fractals.ConversionWorker do
   Process that converts image files to other formats (e.g., PPM to PNG).
   """
 
+  @type convert :: (String.t(), String.t() -> any)
+  @type broadcast :: (atom, Fractals.Job.t(), keyword -> any)
+
   use GenServer
 
   alias Fractals.{ImageMagick, Job, Reporters.Broadcaster}
@@ -24,8 +27,8 @@ defmodule Fractals.ConversionWorker do
   end
 
   @spec convert(pid | atom, Job.t()) :: :ok
-  def convert(pid \\ __MODULE__, params) do
-    GenServer.cast(pid, {:convert, params})
+  def convert(pid \\ __MODULE__, job) do
+    GenServer.cast(pid, {:convert, job})
   end
 
   # Server
@@ -36,35 +39,34 @@ defmodule Fractals.ConversionWorker do
   end
 
   @impl GenServer
-  def handle_cast({:convert, params}, %{convert: convert, broadcast: broadcast} = state) do
-    params.output_filename
-    |> Path.extname()
-    |> convert_to(params, convert)
+  def handle_cast({:convert, job}, %{convert: convert, broadcast: broadcast} = state) do
+    extension = Path.extname(job.output.filename)
+    convert_to(job.output, extension, convert)
+    done(broadcast, job)
 
-    done(broadcast, params)
     {:noreply, state}
   end
 
-  @spec convert_to(String.t(), Job.t(), (String.t(), String.t() -> any)) :: Job.t()
-  defp convert_to(".ppm", params, _convert) do
+  @spec convert_to(Fractals.Output.t(), String.t(), convert()) :: Fractals.Output.t()
+  defp convert_to(output, ".ppm", _convert) do
     # OutputWorker already wrote a PPM file
-    params
+    output
   end
 
-  defp convert_to(".png", params, convert) do
+  defp convert_to(output, ".png", convert) do
     root_filename =
-      params.output_filename
+      output.filename
       |> Path.rootname(".png")
       |> Path.rootname(".ppm")
 
     ppm_filename = root_filename <> ".ppm"
-    convert.(ppm_filename, params.output_filename)
+    convert.(ppm_filename, output.filename)
 
-    params
+    output
   end
 
-  @spec done((atom, Job.t(), keyword -> any), Job.t()) :: any
-  defp done(broadcast, params) do
-    broadcast.(:done, params, from: self())
+  @spec done(broadcast(), Job.t()) :: any
+  defp done(broadcast, job) do
+    broadcast.(:done, job, from: self())
   end
 end

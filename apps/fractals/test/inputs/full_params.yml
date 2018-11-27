@@ -7,6 +7,7 @@ image:
 color:
   type: Blue
 seed:       12345
-output_directory: "test/images"
-output_filename: "the-output.png"
-ppm_filename: "why-different-names.ppm"
+output:
+  directory: "test/images"
+  filename: "the-output.png"
+  ppm_filename: "why-different-names.ppm"

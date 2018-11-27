@@ -7,7 +7,7 @@ defmodule Fractals.Job do
 
   alias Fractals.{ColorRegistry, EngineRegistry, FractalRegistry}
   alias Fractals.Engines.DoNothingEngine
-  alias Fractals.{Color, Fractal, Image, Job, Size}
+  alias Fractals.{Color, Fractal, Image, Job, Output, Size}
 
   @type fractal_id :: String.t()
   @type t :: %__MODULE__{
@@ -18,27 +18,18 @@ defmodule Fractals.Job do
           fractal: Fractals.Fractal.t() | nil,
           color: Color.t() | nil,
           params_filenames: [String.t()] | nil,
-          output_directory: String.t() | nil,
-          output_filename: String.t() | nil,
-          ppm_filename: String.t() | nil,
-          output_pid: pid() | nil
+          output: Output.t() | nil
         }
 
   defstruct [
-    # operational
     :id,
     :seed,
     :engine,
     :fractal,
     :image,
     :color,
-    # input
-    :params_filenames,
-    # output
-    :output_directory,
-    :output_filename,
-    :ppm_filename,
-    :output_pid
+    :output,
+    :params_filenames
   ]
 
   @spec default :: Job.t()
@@ -61,20 +52,19 @@ defmodule Fractals.Job do
         max_intensity: 255
       },
       params_filenames: [],
-      output_directory: "images"
+      output: %Output{
+        directory: "images"
+      }
     }
   end
 
   @computed_attributes [
     :id,
-    # compute params_filenames before output_filename
+    :fractal,
+    :engine,
     :params_filenames,
-    :output_filename,
-    :ppm_filename,
-    :output_pid
+    :output
   ]
-  # IDEA: this could be a param
-  @output_extension ".png"
 
   # IDEA: don't let user set some values (like output_pid)
   # IDEA: add `postcheck` after `compute` to check necessary values
@@ -94,7 +84,7 @@ defmodule Fractals.Job do
 
   @spec close(Job.t()) :: Job.t()
   def close(job) do
-    :ok = File.close(job.output_pid)
+    :ok = File.close(job.output.pid)
     job
   end
 
@@ -144,13 +134,17 @@ defmodule Fractals.Job do
 
     fractal_params
     |> Map.get(:type)
-    |> String.downcase()
+    |> Inflex.underscore()
     |> FractalRegistry.get()
     |> apply(:parse, [fractal_params])
   end
 
   defp parse_value(:image, value) do
     Image.parse(symbolize(value))
+  end
+
+  defp parse_value(:output, value) do
+    Output.parse(symbolize(value))
   end
 
   defp parse_value(_attribute, value), do: value
@@ -161,18 +155,7 @@ defmodule Fractals.Job do
 
   @spec compute(Job.t()) :: Job.t()
   defp compute(job) do
-    job
-    |> compute_attributes()
-    |> compute_engine()
-  end
-
-  @spec compute_engine(Job.t()) :: Job.t()
-  defp compute_engine(%Job{engine: nil} = job) do
-    job
-  end
-
-  defp compute_engine(%Job{engine: %{module: module}} = job) do
-    apply(module, :compute_parsed, [job])
+    compute_attributes(job)
   end
 
   @spec compute_attributes(Job.t()) :: Job.t()
@@ -186,62 +169,28 @@ defmodule Fractals.Job do
   end
 
   @spec compute_value(atom, Job.t()) :: any
+  defp compute_value(:engine, %Job{engine: nil}) do
+    nil
+  end
+
+  defp compute_value(:engine, %Job{engine: %{module: module}} = job) do
+    apply(module, :compute_parsed, [job])
+  end
+
+  defp compute_value(:fractal, job) do
+    job.fractal
+  end
+
   defp compute_value(:id, _job) do
     UUID.uuid1()
   end
 
+  defp compute_value(:output, job) do
+    Output.compute(job)
+  end
+
   defp compute_value(:params_filenames, %Job{params_filenames: params_filenames}) do
     Enum.reverse(params_filenames)
-  end
-
-  defp compute_value(:output_filename, job) do
-    if job.output_filename == nil do
-      case job.params_filenames do
-        [] ->
-          nil
-
-        [filename] ->
-          output_basepath(filename, job) <> @output_extension
-
-        _ ->
-          nil
-      end
-    else
-      Path.join(job.output_directory, job.output_filename)
-    end
-  end
-
-  defp compute_value(:ppm_filename, job) do
-    case job.output_filename do
-      nil ->
-        nil
-
-      filename ->
-        output_basepath(filename, job) <> ".ppm"
-    end
-  end
-
-  defp compute_value(:output_pid, job) do
-    case job.ppm_filename do
-      nil ->
-        nil
-
-      filename ->
-        File.open!(filename, [:write])
-    end
-  end
-
-  @spec output_basepath(String.t(), Job.t()) :: String.t()
-  defp output_basepath(filename, job) do
-    Path.join(job.output_directory, basename(filename))
-  end
-
-  @spec basename(String.t()) :: String.t()
-  defp basename(filename) do
-    filename
-    |> Path.basename(".yml")
-    |> Path.basename(".png")
-    |> Path.basename(".ppm")
   end
 
   # *******

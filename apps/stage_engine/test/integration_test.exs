@@ -17,7 +17,7 @@ defmodule StageEngine.IntegrationTest do
   test "small, red Mandelbrot" do
     job =
       Job.process(
-        output_directory: "test/images",
+        output: [directory: "test/images"],
         engine: [type: "stage"],
         params_filename: "test/inputs/small-red-mandelbrot.yml"
       )

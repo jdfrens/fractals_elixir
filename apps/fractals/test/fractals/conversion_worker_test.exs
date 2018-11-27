@@ -2,7 +2,7 @@ defmodule Fractals.ConversionWorkerTest do
   use ExUnit.Case, async: true
 
   alias Fractals.ConversionWorker
-  alias Fractals.Job
+  alias Fractals.{Job, Output}
 
   setup do
     test_pid = self()
@@ -21,14 +21,14 @@ defmodule Fractals.ConversionWorkerTest do
 
   describe "&convert/1" do
     test "reports done for a PPM file", %{pid: pid} do
-      job = %Job{output_filename: "output.ppm"}
+      job = %Job{output: %Output{filename: "output.ppm"}}
       ConversionWorker.convert(pid, job)
 
       assert_receive {:test_report, {:done, _pid, _job}}
     end
 
     test "calls converter and reports done for a PNG file", %{pid: pid} do
-      job = %Job{output_filename: "output.png"}
+      job = %Job{output: %Output{filename: "output.png"}}
       ConversionWorker.convert(pid, job)
 
       assert_receive {"output.ppm", "output.png"}

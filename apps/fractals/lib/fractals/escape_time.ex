@@ -13,21 +13,21 @@ defmodule Fractals.EscapeTime do
       @behaviour Fractals.EscapeTime
 
       @impl Fractals.Fractal
-      def generate(grid_points, algorithm) do
+      def generate(grid_points, fractal) do
         Enum.map(grid_points, fn grid_point ->
           grid_point
-          |> algorithm.module.iterate(algorithm)
-          |> EscapeTime.escape_time(algorithm)
+          |> fractal.module.iterate(fractal)
+          |> EscapeTime.escape_time(fractal)
         end)
       end
     end
   end
 
   @spec escape_time(Enumerable.t(), Fractals.Fractal.t()) :: Complex.complex()
-  def escape_time(stream, algorithm) do
+  def escape_time(stream, fractal) do
     stream
     |> Stream.with_index()
-    |> Stream.drop_while(fn zi -> !done?(zi, algorithm) end)
+    |> Stream.drop_while(fn zi -> !done?(zi, fractal) end)
     |> Stream.take(1)
     |> Enum.to_list()
     |> List.first()

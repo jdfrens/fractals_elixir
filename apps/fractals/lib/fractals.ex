@@ -6,7 +6,7 @@ defmodule Fractals do
   @spec fractalize(Fractals.Job.t()) :: :ok | {:error, String.t()}
   def fractalize(job) do
     if unimplemented?(job.fractal) do
-      {:error, "fractal not implemented"}
+      {:error, "fractal #{job.fractal.type} not implemented"}
     else
       job.engine.module.generate(job)
     end
@@ -14,6 +14,6 @@ defmodule Fractals do
 
   @spec unimplemented?(atom()) :: boolean
   defp unimplemented?(fractal) do
-    fractal.type == :unimplemented
+    fractal.module == Fractals.UnimplementedFractal
   end
 end

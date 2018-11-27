@@ -24,7 +24,7 @@ defmodule Fractals.Color do
   defp parse_value(:type, value) do
     value
     |> Inflex.underscore()
-    |> String.to_existing_atom()
+    |> String.to_atom()
   end
 
   defp parse_value(:max_intensity, value) do

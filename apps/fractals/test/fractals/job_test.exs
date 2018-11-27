@@ -36,11 +36,11 @@ defmodule Fractals.JobTest do
     end
 
     test "parsed output_filename parameter", %{argv: argv} do
-      assert Job.process(argv).output_filename == "test/images/the-output.png"
+      assert Job.process(argv).output.filename == "test/images/the-output.png"
     end
 
     test "precomputing the ppm_filename parameter (cannot be overridden)", %{argv: argv} do
-      assert Job.process(argv).ppm_filename == "test/images/the-output.ppm"
+      assert Job.process(argv).output.ppm_filename == "test/images/the-output.ppm"
     end
   end
 
@@ -83,7 +83,7 @@ defmodule Fractals.JobTest do
     end
 
     test "outputs to images directory", %{argv: argv} do
-      assert Job.process(argv).output_directory == "images"
+      assert Job.process(argv).output.directory == "images"
     end
   end
 
@@ -141,7 +141,7 @@ defmodule Fractals.JobTest do
     end
 
     test "does not set a default output filename", %{argv: argv} do
-      assert Job.process(argv).output_filename == nil
+      assert Job.process(argv).output.filename == nil
     end
   end
 end

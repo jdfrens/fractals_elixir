@@ -22,7 +22,7 @@ defmodule Fractals.Reporters.Stdout do
 
   @impl GenServer
   def handle_cast({:starting, job, _opts}, state) do
-    puts(state, "starting #{job.output_filename}")
+    puts(state, "starting #{job.output.filename}")
     {:noreply, state}
   end
 
@@ -32,7 +32,7 @@ defmodule Fractals.Reporters.Stdout do
     chunk_count = job.engine.chunk_count
 
     if Integer.mod(chunk_number, 20) == 0 or chunk_number == chunk_count do
-      puts(state, "writing #{chunk_number}/#{chunk_count} to #{job.ppm_filename}")
+      puts(state, "writing #{chunk_number}/#{chunk_count} to #{job.output.ppm_filename}")
     end
 
     {:noreply, state}
@@ -41,13 +41,13 @@ defmodule Fractals.Reporters.Stdout do
   @impl GenServer
   def handle_cast({:skipping, job, opts}, state) do
     reason = Keyword.get(opts, :reason)
-    puts(state, "skipping #{job.output_filename}: #{reason}")
+    puts(state, "skipping #{job.output.filename}: #{reason}")
     {:noreply, state}
   end
 
   @impl GenServer
   def handle_cast({:done, job, _opts}, state) do
-    puts(state, "finished #{job.output_filename}")
+    puts(state, "finished #{job.output.filename}")
     {:noreply, state}
   end
 
