@@ -140,8 +140,8 @@ defmodule Fractals.JobTest do
              }
     end
 
-    test "does not set a default output filename", %{argv: argv} do
-      assert Job.process(argv).output.filename == nil
+    test "uses first params filename to name output", %{argv: argv} do
+      assert Job.process(argv).output.filename == "test/images/simple.png"
     end
   end
 end

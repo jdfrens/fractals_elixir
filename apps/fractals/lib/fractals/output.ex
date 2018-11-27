@@ -41,11 +41,8 @@ defmodule Fractals.Output do
         [] ->
           nil
 
-        [filename] ->
+        [filename | _] ->
           output_basepath(filename, output) <> @output_extension
-
-        _ ->
-          nil
       end
     else
       Path.join(output.directory, output.filename)

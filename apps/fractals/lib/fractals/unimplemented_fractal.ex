@@ -9,9 +9,9 @@ defmodule Fractals.UnimplementedFractal do
   @behaviour Fractals.Fractal
 
   @impl Fractals.Fractal
-  def parse(_params) do
+  def parse(params) do
     %Fractals.Fractal{
-      type: :unimplemented,
+      type: params[:type] |> String.downcase() |> String.to_atom(),
       module: __MODULE__
     }
   end
