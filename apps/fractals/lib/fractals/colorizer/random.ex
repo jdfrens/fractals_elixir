@@ -45,7 +45,7 @@ defmodule Fractals.Colorizer.Random do
     else
       colors
       |> Enum.at(iterations)
-      |> Enum.map(&round(&1 * job.max_intensity))
+      |> Enum.map(&round(&1 * job.image.max_intensity))
     end
   end
 

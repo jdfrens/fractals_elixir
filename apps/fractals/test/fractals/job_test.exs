@@ -1,7 +1,7 @@
 defmodule Fractals.JobTest do
   use ExUnit.Case, async: true
 
-  alias Fractals.{Fractal, Job, Size}
+  alias Fractals.{Color, Fractal, Job, Size}
 
   describe ".process a full set of params" do
     setup do
@@ -16,11 +16,11 @@ defmodule Fractals.JobTest do
     end
 
     test "parsing the image size", %{argv: argv} do
-      assert Job.process(argv).size == %Size{width: 720, height: 480}
+      assert Job.process(argv).image.size == %Size{width: 720, height: 480}
     end
 
     test "parsing the color scheme", %{argv: argv} do
-      assert Job.process(argv).color == :blue
+      assert Job.process(argv).color == %Color{type: :blue}
     end
 
     test "parsing the random seed", %{argv: argv} do
@@ -28,11 +28,11 @@ defmodule Fractals.JobTest do
     end
 
     test "parsing the upper-left corner", %{argv: argv} do
-      assert Job.process(argv).upper_left == Complex.new(0.0, 55.2)
+      assert Job.process(argv).image.upper_left == Complex.new(0.0, 55.2)
     end
 
     test "parsing the lower-right corder", %{argv: argv} do
-      assert Job.process(argv).lower_right == Complex.new(92.3, 120.3)
+      assert Job.process(argv).image.lower_right == Complex.new(92.3, 120.3)
     end
 
     test "parsed output_filename parameter", %{argv: argv} do
@@ -57,11 +57,13 @@ defmodule Fractals.JobTest do
     end
 
     test "defaults the image size", %{argv: argv} do
-      assert Job.process(argv).size == %Size{width: 512, height: 384}
+      assert Job.process(argv).image.size == %Size{width: 512, height: 384}
     end
 
     test "defaults the color scheme", %{argv: argv} do
-      assert Job.process(argv).color == :black_on_white
+      assert Job.process(argv).color == %Color{
+               type: :black_on_white
+             }
     end
 
     test "defaults the random seed", %{argv: argv} do
@@ -69,11 +71,11 @@ defmodule Fractals.JobTest do
     end
 
     test "still parsing the upper-left corner", %{argv: argv} do
-      assert Job.process(argv).upper_left == Complex.new(5.0, 6.0)
+      assert Job.process(argv).image.upper_left == Complex.new(5.0, 6.0)
     end
 
     test "still parsing the lower-right corder", %{argv: argv} do
-      assert Job.process(argv).lower_right == Complex.new(6.0, 5.0)
+      assert Job.process(argv).image.lower_right == Complex.new(6.0, 5.0)
     end
 
     test "empty list of params filenames", %{argv: argv} do
@@ -103,7 +105,7 @@ defmodule Fractals.JobTest do
     end
 
     test "recognizes a value from the file", %{argv: argv} do
-      assert Job.process(argv).color == :blue
+      assert Job.process(argv).color == %Color{type: :blue}
     end
 
     test "recognizes a value overridden by a flag", %{argv: argv} do
@@ -125,7 +127,7 @@ defmodule Fractals.JobTest do
     end
 
     test "first file is used", %{argv: argv} do
-      assert Job.process(argv).size == %Size{width: 720, height: 480}
+      assert Job.process(argv).image.size == %Size{width: 720, height: 480}
     end
 
     test "second file wins", %{argv: argv} do

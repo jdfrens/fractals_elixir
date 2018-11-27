@@ -2,7 +2,7 @@ defmodule Fractals.Colorizer.RandomTest do
   use ExUnit.Case
 
   alias Fractals.Colorizer.Random
-  alias Fractals.Job
+  alias Fractals.{Image, Job}
 
   setup do
     Random.start_link(:ok)
@@ -32,7 +32,8 @@ defmodule Fractals.Colorizer.RandomTest do
   describe ".pick_colors" do
     test "scales based on max_intensity" do
       colors = [[0.2, 0.5, 0.8]]
-      job = %{Job.default() | max_intensity: 256}
+      image = %Image{max_intensity: 256}
+      job = %{Job.default() | image: image}
       assert Random.pick_color(colors, 0, job) == [51, 128, 205]
     end
   end

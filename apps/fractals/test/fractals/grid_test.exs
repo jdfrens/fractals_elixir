@@ -2,13 +2,15 @@ defmodule Fractals.GridTest do
   use ExUnit.Case, async: true
 
   alias Fractals.Grid
-  alias Fractals.Job
+  alias Fractals.{Image, Job}
 
   def job do
     %Job{
-      size: %Fractals.Size{width: 2, height: 3},
-      upper_left: Complex.new(-1.0, 1.0),
-      lower_right: Complex.new(1.0, -1.0)
+      image: %Image{
+        size: %Fractals.Size{width: 2, height: 3},
+        upper_left: Complex.new(-1.0, 1.0),
+        lower_right: Complex.new(1.0, -1.0)
+      }
     }
   end
 
@@ -49,13 +51,13 @@ defmodule Fractals.GridTest do
 
   describe ".xs" do
     test "generate left-right based on corners and width" do
-      assert Grid.xs(job()) == [-1.0, 1.0]
+      assert Grid.xs(job().image) == [-1.0, 1.0]
     end
   end
 
   describe ".ys" do
     test "generate top-down based on corners and height" do
-      assert Grid.ys(job()) == [1.0, 0.0, -1.0]
+      assert Grid.ys(job().image) == [1.0, 0.0, -1.0]
     end
   end
 

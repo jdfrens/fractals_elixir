@@ -29,7 +29,7 @@ defmodule Fractals.Colorizer.BlackAndWhiteAndGray do
 
   def gray(iterations, job) do
     factor = :math.sqrt(iterations / job.fractal.max_iterations)
-    intensity = round(job.max_intensity * factor)
+    intensity = round(job.image.max_intensity * factor)
     PPM.ppm(intensity, intensity, intensity)
   end
 end

@@ -5,22 +5,18 @@ defmodule Fractals.Job do
 
   import Complex, only: :macros
 
-  alias Fractals.{EngineRegistry, FractalRegistry}
+  alias Fractals.{ColorRegistry, EngineRegistry, FractalRegistry}
   alias Fractals.Engines.DoNothingEngine
-  alias Fractals.{Fractal, Job, Size}
+  alias Fractals.{Color, Fractal, Image, Job, Size}
 
   @type fractal_id :: String.t()
-  @type color :: :black_on_white | :white_on_black | :gray | :red | :green | :blue | :random
   @type t :: %__MODULE__{
           id: fractal_id() | nil,
           seed: integer() | nil,
+          image: Image.t() | nil,
           engine: map() | nil,
           fractal: Fractals.Fractal.t() | nil,
-          size: Size.t() | nil,
-          color: color() | nil,
-          upper_left: Complex.complex() | nil,
-          lower_right: Complex.complex() | nil,
-          max_intensity: integer() | nil,
+          color: Color.t() | nil,
           params_filenames: [String.t()] | nil,
           output_directory: String.t() | nil,
           output_filename: String.t() | nil,
@@ -34,12 +30,8 @@ defmodule Fractals.Job do
     :seed,
     :engine,
     :fractal,
-    # image
-    :size,
+    :image,
     :color,
-    :upper_left,
-    :lower_right,
-    :max_intensity,
     # input
     :params_filenames,
     # output
@@ -58,11 +50,16 @@ defmodule Fractals.Job do
         type: :mandelbrot,
         module: Fractals.EscapeTime.Mandelbrot
       },
-      size: %Size{width: 512, height: 384},
-      color: :black_on_white,
-      max_intensity: 255,
-      upper_left: Complex.new(5.0, 6.0),
-      lower_right: Complex.new(6.0, 5.0),
+      image: %Image{
+        lower_right: Complex.new(6.0, 5.0),
+        max_intensity: 255,
+        size: %Size{width: 512, height: 384},
+        upper_left: Complex.new(5.0, 6.0)
+      },
+      color: %Color{
+        type: :black_on_white,
+        max_intensity: 255
+      },
       params_filenames: [],
       output_directory: "images"
     }
@@ -76,7 +73,6 @@ defmodule Fractals.Job do
     :ppm_filename,
     :output_pid
   ]
-  @complex_attributes [:upper_left, :lower_right, :c, :p, :r, :z]
   # IDEA: this could be a param
   @output_extension ".png"
 
@@ -124,6 +120,16 @@ defmodule Fractals.Job do
   end
 
   @spec parse_value(atom, String.t()) :: %{type: atom(), module: module()}
+  defp parse_value(:color, value) do
+    color_params = symbolize(value)
+
+    color_params
+    |> Map.get(:type)
+    |> String.downcase()
+    |> ColorRegistry.get()
+    |> apply(:parse, [color_params])
+  end
+
   defp parse_value(:engine, value) do
     engine_params = symbolize(value)
 
@@ -143,21 +149,8 @@ defmodule Fractals.Job do
     |> apply(:parse, [fractal_params])
   end
 
-  defp parse_value(:color, color) do
-    String.to_atom(Inflex.underscore(color))
-  end
-
-  defp parse_value(attribute, value) when attribute in @complex_attributes do
-    Complex.parse(value)
-  end
-
-  defp parse_value(:size, value) do
-    [_, width, height] = Regex.run(~r/(\d+)x(\d+)/, value)
-
-    %Size{
-      width: String.to_integer(width),
-      height: String.to_integer(height)
-    }
+  defp parse_value(:image, value) do
+    Image.parse(symbolize(value))
   end
 
   defp parse_value(_attribute, value), do: value

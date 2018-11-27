@@ -55,12 +55,12 @@ defmodule Fractals.Colorizer.WarpPov do
     if iterations <= half_iterations do
       {scale(max(1, iterations), job), 0}
     else
-      {job.max_intensity, scale(iterations - half_iterations, job)}
+      {job.image.max_intensity, scale(iterations - half_iterations, job)}
     end
   end
 
   @spec scale(float, Job) :: non_neg_integer
   def scale(i, job) do
-    round(2.0 * (i - 1) / job.fractal.max_iterations * job.max_intensity)
+    round(2.0 * (i - 1) / job.fractal.max_iterations * job.image.max_intensity)
   end
 end

@@ -6,7 +6,7 @@ defmodule StageEngine.Parser do
   `chunk_size` is 1000 by default.
   """
 
-  alias Fractals.Chunk
+  alias Fractals.{Chunk, Image}
 
   def parse_engine(params) do
     initial_engine = %StageEngine{}
@@ -19,7 +19,9 @@ defmodule StageEngine.Parser do
   def compute_parsed(
         %Fractals.Job{
           engine: %StageEngine{chunk_size: chunk_size} = engine,
-          size: %Fractals.Size{width: width, height: height}
+          image: %Image{
+            size: %Fractals.Size{width: width, height: height}
+          }
         } = job
       ) do
     %{

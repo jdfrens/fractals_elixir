@@ -6,7 +6,7 @@ defmodule Fractals.Grid do
 
   @type t :: [Complex.complex()]
 
-  alias Fractals.{Chunk, Grid, Job}
+  alias Fractals.{Chunk, Grid, Image, Job}
 
   import Complex, only: :macros
 
@@ -26,29 +26,29 @@ defmodule Fractals.Grid do
 
   @spec grid(Job.t()) :: Grid.t()
   def grid(job) do
-    for y <- ys(job),
-        x <- xs(job),
+    for y <- ys(job.image),
+        x <- xs(job.image),
         do: Complex.new(x, y)
   end
 
-  @spec xs(Job.t()) :: Enumerable.t()
-  def xs(job) do
-    %Job{
+  @spec xs(Image.t()) :: Enumerable.t()
+  def xs(image) do
+    %Image{
       size: %Fractals.Size{width: width},
       upper_left: %Complex{re: x0},
       lower_right: %Complex{re: x1}
-    } = job
+    } = image
 
     float_sequence(width, x0, x1)
   end
 
-  @spec ys(Job.t()) :: Enumerable.t()
-  def ys(job) do
-    %Job{
+  @spec ys(Image.t()) :: Enumerable.t()
+  def ys(image) do
+    %Image{
       size: %Fractals.Size{height: height},
       upper_left: %Complex{im: y1},
       lower_right: %Complex{im: y0}
-    } = job
+    } = image
 
     float_sequence(height, y1, y0)
   end

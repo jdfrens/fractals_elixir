@@ -7,7 +7,7 @@ defmodule Fractals.Colorizer do
 
   @spec color_point({Complex.complex(), non_neg_integer}, Fractals.Job.t()) :: PPM.color()
   def color_point({_, iterations}, job) do
-    case job.color do
+    case job.color.type do
       :black_on_white -> BlackAndWhiteAndGray.black_on_white(iterations, job)
       :white_on_black -> BlackAndWhiteAndGray.white_on_black(iterations, job)
       :gray -> BlackAndWhiteAndGray.gray(iterations, job)

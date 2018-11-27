@@ -1,10 +1,12 @@
 fractal:
   type: mandelbrot
-size:       720x480
-color:      Blue
+image:
+  size:       720x480
+  upperLeft:  0.0+55.2i
+  lowerRight: 92.3+120.3i
+color:
+  type: Blue
 seed:       12345
-upperLeft:  0.0+55.2i
-lowerRight: 92.3+120.3i
 output_directory: "test/images"
 output_filename: "the-output.png"
 ppm_filename: "why-different-names.ppm"

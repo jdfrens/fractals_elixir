@@ -3,7 +3,7 @@ defmodule Fractals.OutputWorkerTest do
 
   use ExUnit.Case, async: true
 
-  alias Fractals.{Chunk, Job, Size}
+  alias Fractals.{Chunk, Image, Job, Size}
   alias Fractals.OutputWorker
 
   setup do
@@ -54,7 +54,9 @@ defmodule Fractals.OutputWorkerTest do
   defp job(context) do
     job = %Job{
       output_pid: context.output_pid,
-      size: %Size{width: 3, height: 1},
+      image: %Image{
+        size: %Size{width: 3, height: 1}
+      },
       engine: %{
         chunk_count: context.chunk_count
       }

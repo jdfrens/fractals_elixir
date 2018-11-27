@@ -34,7 +34,7 @@ defmodule Fractals.Output.PPMFile do
 
   @spec header(Job.t()) :: [String.t()]
   defp header(params) do
-    PPM.p3_header(params.size.width, params.size.height)
+    PPM.p3_header(params.image.size.width, params.image.size.height)
   end
 
   @spec lines_to_file(Job.t(), [String.t()]) :: :ok
