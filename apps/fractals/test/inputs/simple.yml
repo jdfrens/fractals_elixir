@@ -1,0 +1,7 @@
+fractal:
+  type: mandelbrot
+image:
+  size: 720x480
+color:
+  type: Blue
+seed: 12345

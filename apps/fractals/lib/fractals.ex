@@ -3,24 +3,17 @@ defmodule Fractals do
   The application.
   """
 
-  alias Fractals.{Params, Reporters.Broadcaster}
-
-  @unimplemented Application.get_env(:fractals, :unimplemented)
-
-  @spec fractalize(Fractals.Params.t(), module()) :: :ok
-  def fractalize(params, engine) do
-    if unimplemented?(params.fractal) do
-      Broadcaster.report(:skipping, params, reason: "fractal not implemented", from: self())
+  @spec fractalize(Fractals.Job.t()) :: :ok | {:error, String.t()}
+  def fractalize(job) do
+    if unimplemented?(job.fractal) do
+      {:error, "fractal #{job.fractal.type} not implemented"}
     else
-      Broadcaster.report(:starting, params, from: self())
-      engine.generate(params)
+      job.engine.module.generate(job)
     end
-
-    :ok
   end
 
-  @spec unimplemented?(Params.fractal_type()) :: boolean
+  @spec unimplemented?(atom()) :: boolean
   defp unimplemented?(fractal) do
-    Enum.member?(@unimplemented, fractal)
+    fractal.module == Fractals.UnimplementedFractal
   end
 end

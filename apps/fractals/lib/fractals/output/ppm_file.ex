@@ -6,40 +6,40 @@ defmodule Fractals.Output.PPMFile do
   @type pixel :: String.t()
   @type pixels :: [pixel()]
 
-  alias Fractals.Params
+  alias Fractals.Job
 
   @doc """
   Writes all of the `pixels` to a new file.
   """
-  @spec write_file(Params.t(), pixels()) :: :ok
-  def write_file(params, pixels) do
-    start_file(params)
-    write_pixels(params, pixels)
+  @spec write_file(Job.t(), pixels()) :: :ok
+  def write_file(job, pixels) do
+    start_file(job)
+    write_pixels(job, pixels)
   end
 
   @doc """
   Writes the PPM header to a new file.
   """
-  @spec start_file(Params.t()) :: :ok
-  def start_file(params) do
-    lines_to_file(params, header(params))
+  @spec start_file(Job.t()) :: :ok
+  def start_file(job) do
+    lines_to_file(job, header(job))
   end
 
   @doc """
   Writes pixels to file that has been started with `start_file/1`.
   """
-  def write_pixels(params, pixels) do
-    lines_to_file(params, pixels)
+  def write_pixels(job, pixels) do
+    lines_to_file(job, pixels)
   end
 
-  @spec header(Params.t()) :: [String.t()]
+  @spec header(Job.t()) :: [String.t()]
   defp header(params) do
-    PPM.p3_header(params.size.width, params.size.height)
+    PPM.p3_header(params.image.size.width, params.image.size.height)
   end
 
-  @spec lines_to_file(Params.t(), [String.t()]) :: :ok
-  defp lines_to_file(params, lines) do
-    IO.write(params.output_pid, add_newlines(lines))
+  @spec lines_to_file(Job.t(), [String.t()]) :: :ok
+  defp lines_to_file(job, lines) do
+    IO.write(job.output.pid, add_newlines(lines))
   end
 
   @spec add_newlines([String.t()]) :: [[String.t()]]

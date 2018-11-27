@@ -1,4 +1,6 @@
-fractal:    Mandelbrot
-size:       2x2
-upperLeft:  0.0+1.1i
-lowerRight: 1.1+0.0i
+fractal:
+  type: Mandelbrot
+image:
+  size:       2x2
+  upperLeft:  0.0+1.1i
+  lowerRight: 1.1+0.0i

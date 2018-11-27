@@ -7,11 +7,11 @@ defmodule Fractals.OutputWorker do
 
   use GenServer
 
-  alias Fractals.{ConversionWorker, Params}
+  alias Fractals.{Chunk, ConversionWorker, Job}
   alias Fractals.Output.{OutputState, PPMFile}
   alias Fractals.Reporters.Broadcaster
 
-  @type via_tuple :: {:via, Registry, {Fractals.OutputWorkerRegistry, Params.fractal_id()}}
+  @type via_tuple :: {:via, Registry, {Fractals.OutputWorkerRegistry, Job.fractal_id()}}
 
   # Client API
 
@@ -26,7 +26,7 @@ defmodule Fractals.OutputWorker do
   def write(pid \\ nil, chunk)
 
   def write(nil, chunk) do
-    write(via_tuple(chunk.params.id), chunk)
+    write(via_tuple(chunk.job.id), chunk)
   end
 
   def write(pid, chunk) do
@@ -40,12 +40,12 @@ defmodule Fractals.OutputWorker do
   Don't use this.  It should be used as part of a `DynamicSupervisor` which is handled by `write/1`.  This function is
   useful for testing.
   """
-  @spec start_link({(Params.t() -> any), atom}) :: GenServer.on_start()
+  @spec start_link({(Job.t() -> any), atom}) :: GenServer.on_start()
   def start_link({next_stage, name}) do
     GenServer.start_link(__MODULE__, next_stage, name: name)
   end
 
-  @spec via_tuple(Params.fractal_id()) :: via_tuple()
+  @spec via_tuple(Job.fractal_id()) :: via_tuple()
   defp(via_tuple(fractal_id)) do
     {:via, Registry, {Fractals.OutputWorkerRegistry, fractal_id}}
   end
@@ -68,11 +68,11 @@ defmodule Fractals.OutputWorker do
     end
   end
 
-  # Closes the params (i.e., closes the file).  Triggers the conversion worker.
-  @spec default_next_stage(Params.t()) :: any()
-  defp default_next_stage(params) do
-    Params.close(params)
-    ConversionWorker.convert(params)
+  # Closes the job (i.e., closes the file).  Triggers the conversion worker.
+  @spec default_next_stage(Job.t()) :: any()
+  defp default_next_stage(job) do
+    Job.close(job)
+    ConversionWorker.convert(job)
   end
 
   # Server API
@@ -84,10 +84,10 @@ defmodule Fractals.OutputWorker do
 
   @impl GenServer
   def handle_cast({:write, chunk}, {nil, next_stage}) do
-    PPMFile.start_file(chunk.params)
+    PPMFile.start_file(chunk.job)
 
     state =
-      %OutputState{next_number: 1, cache: build_initial_cache(chunk.params)}
+      %OutputState{next_number: 1, cache: build_initial_cache(chunk.job.engine.chunk_count)}
       |> process(chunk, next_stage)
 
     {:noreply, {state, next_stage}}
@@ -101,11 +101,11 @@ defmodule Fractals.OutputWorker do
 
   # helpers
 
-  @spec process(OutputState.t(), Chunk.t(), (Params.t() -> any)) :: OutputState.t() | nil
+  @spec process(OutputState.t(), Chunk.t(), (Job.t() -> any)) :: OutputState.t() | nil
   defp process(%OutputState{next_number: next_number, cache: cache}, chunk, next_stage) do
     cache
     |> update_cache(chunk)
-    |> output_cache(next_number, chunk.params, next_stage)
+    |> output_cache(next_number, chunk.job, next_stage)
   end
 
   @spec update_cache(map, Chunk.t()) :: map
@@ -113,34 +113,33 @@ defmodule Fractals.OutputWorker do
     Map.put(cache, number, data)
   end
 
-  @spec output_cache(map, non_neg_integer, Params.t(), (Params.t() -> any)) ::
-          OutputState.t() | nil
-  defp output_cache(cache, next_number, params, next_stage) do
+  @spec output_cache(map, non_neg_integer, Job.t(), (Job.t() -> any)) :: OutputState.t() | nil
+  defp output_cache(cache, next_number, job, next_stage) do
     case Map.get(cache, next_number) do
       nil ->
         %OutputState{next_number: next_number, cache: cache}
 
       :done ->
-        next_stage.(params)
+        next_stage.(job)
         nil
 
       data ->
-        write_chunk(next_number, data, params)
+        write_chunk(next_number, data, job)
 
         cache
         |> Map.delete(next_number)
-        |> output_cache(next_number + 1, params, next_stage)
+        |> output_cache(next_number + 1, job, next_stage)
     end
   end
 
-  @spec build_initial_cache(Params.t()) :: map
-  defp build_initial_cache(params) do
-    %{(params.chunk_count + 1) => :done}
+  @spec build_initial_cache(integer()) :: map
+  defp build_initial_cache(chunk_count) do
+    %{(chunk_count + 1) => :done}
   end
 
-  @spec write_chunk(non_neg_integer, [String.t()], Params.t()) :: :ok
-  defp write_chunk(chunk_number, data, params) do
-    Broadcaster.report(:writing, params, chunk_number: chunk_number)
-    PPMFile.write_pixels(params, data)
+  @spec write_chunk(non_neg_integer, [String.t()], Job.t()) :: :ok
+  defp write_chunk(chunk_number, data, job) do
+    Broadcaster.report(:writing, job, chunk_number: chunk_number)
+    PPMFile.write_pixels(job, data)
   end
 end

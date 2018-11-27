@@ -1,3 +1,7 @@
-fractal: Julia
-color:   Blue
-output_directory: "test/images"
+fractal:
+  type: julia
+  c: 1.0+0.0i
+color:
+  type: Blue
+output:
+  directory: "test/images"

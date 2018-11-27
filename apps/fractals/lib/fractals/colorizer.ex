@@ -1,20 +1,20 @@
 defmodule Fractals.Colorizer do
   @moduledoc """
-  This finds the right colorizer as specified in the params.
+  This finds the right colorizer as specified in the job.
   """
 
   alias Fractals.Colorizer.{BlackAndWhiteAndGray, Random, WarpPov}
 
-  @spec color_point({Complex.complex(), non_neg_integer}, Fractals.Params.t()) :: PPM.color()
-  def color_point({_, iterations}, params) do
-    case params.color do
-      :black_on_white -> BlackAndWhiteAndGray.black_on_white(iterations, params)
-      :white_on_black -> BlackAndWhiteAndGray.white_on_black(iterations, params)
-      :gray -> BlackAndWhiteAndGray.gray(iterations, params)
-      :red -> WarpPov.red(iterations, params)
-      :green -> WarpPov.green(iterations, params)
-      :blue -> WarpPov.blue(iterations, params)
-      :random -> Random.at(Random, iterations, params)
+  @spec color_point({Complex.complex(), non_neg_integer}, Fractals.Job.t()) :: PPM.color()
+  def color_point({_, iterations}, job) do
+    case job.color.type do
+      :black_on_white -> BlackAndWhiteAndGray.black_on_white(iterations, job)
+      :white_on_black -> BlackAndWhiteAndGray.white_on_black(iterations, job)
+      :gray -> BlackAndWhiteAndGray.gray(iterations, job)
+      :red -> WarpPov.red(iterations, job)
+      :green -> WarpPov.green(iterations, job)
+      :blue -> WarpPov.blue(iterations, job)
+      :random -> Random.at(Random, iterations, job)
     end
   end
 end

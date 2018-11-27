@@ -5,7 +5,7 @@ defmodule StageEngine.EscapeTimeWorker do
 
   use GenStage
 
-  alias Fractals.EscapeTime
+  alias Fractals.Chunk
 
   # Client
 
@@ -24,8 +24,8 @@ defmodule StageEngine.EscapeTimeWorker do
   @impl GenStage
   def handle_events(events, _from, :ok) do
     escaped =
-      Enum.map(events, fn %Chunk{params: params} = chunk ->
-        %{chunk | data: EscapeTime.pixels(params.fractal, chunk.data, params)}
+      Enum.map(events, fn %Chunk{job: job} = chunk ->
+        %{chunk | data: job.fractal.module.generate(chunk.data, job.fractal)}
       end)
 
     {:noreply, escaped, :ok}

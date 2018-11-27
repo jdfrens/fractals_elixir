@@ -1,0 +1,23 @@
+defmodule Fractals.UnimplementedFractal do
+  @moduledoc """
+  A placeholder for an unimplemented fractal.
+
+  Not all fractals exercised by the data files are implemented.  This is a placeholder so that parsing the job does not
+  blow up.  The CLI filters these fractals out with a "I'm skipping this" message.
+  """
+
+  @behaviour Fractals.Fractal
+
+  @impl Fractals.Fractal
+  def parse(params) do
+    %Fractals.Fractal{
+      type: params[:type] |> String.downcase() |> String.to_atom(),
+      module: __MODULE__
+    }
+  end
+
+  @impl Fractals.Fractal
+  def generate(_, _) do
+    []
+  end
+end

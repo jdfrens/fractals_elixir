@@ -15,8 +15,8 @@ defmodule Fractals.EscapeTime.Helpers do
     end
   end
 
-  @spec done?({Complex.complex(), non_neg_integer}, Fractals.Params.t()) :: boolean
-  def done?({z, iterations}, params) do
-    outside?(z, params.cutoff_squared) || inside?(iterations, params.max_iterations)
+  @spec done?({Complex.complex(), non_neg_integer}, Fractals.Fractal.t()) :: boolean
+  def done?({z, iterations}, algorithm) do
+    outside?(z, algorithm.cutoff_squared) || inside?(iterations, algorithm.max_iterations)
   end
 end

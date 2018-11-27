@@ -3,7 +3,7 @@ defmodule StageEngine.IntegrationTest do
 
   use ExUnit.Case, async: true
 
-  alias Fractals.Params
+  alias Fractals.Job
   alias Fractals.Reporters.{Broadcaster, Countdown}
 
   def assert_same_images(file1, file2) do
@@ -15,15 +15,16 @@ defmodule StageEngine.IntegrationTest do
   end
 
   test "small, red Mandelbrot" do
-    params =
-      Params.process(
-        output_directory: "test/images",
+    job =
+      Job.process(
+        output: [directory: "test/images"],
+        engine: [type: "stage"],
         params_filename: "test/inputs/small-red-mandelbrot.yml"
       )
 
-    Broadcaster.add_reporter(Countdown, %{params_list: [params], for: self()})
+    Broadcaster.add_reporter(Countdown, %{jobs: [job], for: self()})
 
-    StageEngine.generate(params)
+    StageEngine.generate(job)
 
     assert_receive {:filenames_empty, _reason}, 20_000
 
