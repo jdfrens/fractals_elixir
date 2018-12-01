@@ -86,28 +86,4 @@ defmodule PNGTest do
   def list_to_binary(io_list) do
     :erlang.list_to_binary(io_list)
   end
-
-  @tag :skip
-  # check_config() ->
-  test "check config" do
-    #     Config1 = #png_config{},
-    #     ?assertEqual({error, invalid}, png:check_config(Config1)),
-    config1 = PNG.config()
-    assert {:error, :invalid} = PNG.check_config(config1)
-
-    #     Config2 = #png_config{size = {0, 1}},
-    #     ?assertEqual({error, invalid}, png:check_config(Config2)),
-    config2 = PNG.config(size: {0, 1})
-    assert {:error, :invalid} = PNG.check_config(config2)
-
-    #     Config3 = #png_config{size = {1, 1}},
-    #     ?assertEqual(ok, png:check_config(Config3)),
-    config3 = PNG.config(size: {1, 1})
-    assert :ok = PNG.check_config(config3)
-
-    #     Config4 = #png_config{size = {1, 1}, mode = ?PNG_INDEXED_8},
-    #     ?assertEqual(ok, png:check_config(Config4)).
-    config4 = PNG.config(size: {0, 1}, mode: PNG_INDEXED_8)
-    assert :ok = PNG.check_config(config4)
-  end
 end
