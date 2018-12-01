@@ -20,15 +20,12 @@ defmodule PNG.LowLevelTest do
   #      fun rows_IDAT/0,
   #      fun 'PLTE'/0].
 
-  # get_header() ->
-  test "PNG.header/0" do
-    #     Result = png:header(),
-    result = PNG.header()
-    #     Target = <<16#89, 16#50, 16#4E, 16#47, 16#0D, 16#0A, 16#1A, 16#0A>>,
-    target = <<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A>>
-
-    #     [?_assertEqual(Target, Result)].
-    assert target == result
+  describe "header/0" do
+    test "returns static content" do
+      result = PNG.header()
+      target = <<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A>>
+      assert target == result
+    end
   end
 
   @tag :skip
