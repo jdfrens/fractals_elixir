@@ -72,8 +72,6 @@ defmodule PNG.LowLevelTest do
     assert target == result
   end
 
-  @tag :skip
-  # compressed_IDAT() ->
   test "compressed IDAT" do
     #     Data = [<<0, 1, 2, 3>>],
     data = [<<0, 1, 2, 3>>]

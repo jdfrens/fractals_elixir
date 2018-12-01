@@ -41,9 +41,14 @@ defmodule PNG do
   #     chunk('IDAT', {compressed, compress(Data)});
 
   # chunk('IDAT', {compressed, CompressedData}) when is_list(CompressedData) ->
-  #     F = fun(Part) ->
-  #         chunk(<<"IDAT">>, Part) end,
-  #     lists:map(F, CompressedData);
+  def chunk("IDAT", {:compressed, compressed_data}) when is_list(compressed_data) do
+    #     F = fun(Part) ->
+    #         chunk(<<"IDAT">>, Part) end,
+    #     lists:map(F, CompressedData);
+    Enum.map(compressed_data, fn part ->
+      chunk(<<"IDAT">>, part)
+    end)
+  end
 
   # chunk('PLTE', {rgb, BitDepth, ColorTuples}) ->
   #     L = [<<R:BitDepth, G:BitDepth, B:BitDepth>> || {R, G, B} <- ColorTuples],
@@ -51,10 +56,16 @@ defmodule PNG do
 
   # chunk(Type, Data) when is_binary(Type),
   #                        is_binary(Data) ->
-  #     Length = byte_size(Data),
-  #     TypeData = <<Type/binary, Data/binary>>,
-  #     Crc = erlang:crc32(TypeData),
-  #     <<Length:32, TypeData/binary, Crc:32>>.
+  def chunk(type, data) when is_binary(type) and is_binary(data) do
+    #     Length = byte_size(Data),
+    length = byte_size(data)
+    #     TypeData = <<Type/binary, Data/binary>>,
+    type_data = <<type::binary, data::binary>>
+    #     Crc = erlang:crc32(TypeData),
+    crc = :erlang.crc32(type_data)
+    #     <<Length:32, TypeData/binary, Crc:32>>.
+    <<length::32, type_data::binary, crc::32>>
+  end
 
   # chunk('IEND') ->
   #     chunk(<<"IEND">>, <<>>).
