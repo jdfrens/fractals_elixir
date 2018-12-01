@@ -3,6 +3,8 @@ defmodule PNG do
   Documentation for PNG.
   """
 
+  @type chunk :: {:compressed, list()}
+
   @doc """
   Returns the header for a PNG file.
   """
@@ -11,6 +13,7 @@ defmodule PNG do
     <<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A>>
   end
 
+  @spec chunk(String.t(), chunk()) :: binary()
   # chunk('IHDR', #png_config{size = {Width, Height},
   #                           mode = {ColorType, BitDepth}}) ->
   #     % We only support basic compression, filter and interlace methods
@@ -40,11 +43,7 @@ defmodule PNG do
   # chunk('IDAT', {raw, Data}) ->
   #     chunk('IDAT', {compressed, compress(Data)});
 
-  # chunk('IDAT', {compressed, CompressedData}) when is_list(CompressedData) ->
   def chunk("IDAT", {:compressed, compressed_data}) when is_list(compressed_data) do
-    #     F = fun(Part) ->
-    #         chunk(<<"IDAT">>, Part) end,
-    #     lists:map(F, CompressedData);
     Enum.map(compressed_data, fn part ->
       chunk(<<"IDAT">>, part)
     end)
@@ -54,16 +53,10 @@ defmodule PNG do
   #     L = [<<R:BitDepth, G:BitDepth, B:BitDepth>> || {R, G, B} <- ColorTuples],
   #     chunk(<<"PLTE">>, list_to_binary(L));
 
-  # chunk(Type, Data) when is_binary(Type),
-  #                        is_binary(Data) ->
   def chunk(type, data) when is_binary(type) and is_binary(data) do
-    #     Length = byte_size(Data),
     length = byte_size(data)
-    #     TypeData = <<Type/binary, Data/binary>>,
     type_data = <<type::binary, data::binary>>
-    #     Crc = erlang:crc32(TypeData),
     crc = :erlang.crc32(type_data)
-    #     <<Length:32, TypeData/binary, Crc:32>>.
     <<length::32, type_data::binary, crc::32>>
   end
 
