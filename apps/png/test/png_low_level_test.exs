@@ -20,7 +20,6 @@ defmodule PNG.LowLevelTest do
   #      fun rows_IDAT/0,
   #      fun 'PLTE'/0].
 
-  @tag :skip
   # get_header() ->
   test "PNG.header/0" do
     #     Result = png:header(),
