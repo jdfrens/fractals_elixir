@@ -89,20 +89,15 @@ defmodule PNG.LowLevelTest do
     assert target == result
   end
 
-  # rows_IDAT() ->
   test "rows IDAT" do
-    #     Data = [<<1, 2, 3>>],
     data = [<<1, 2, 3>>]
-    #     Result = png:chunk('IDAT', {rows, Data}),
     result = PNG.chunk("IDAT", {:rows, data})
-    #     Target = [<<0,0,0,12,73,68,65,84,120,156,
-    #                 99,96,100,98,6,0,0,14,0,7,215,111,228,120>>],
+
     target = [
       <<0, 0, 0, 12, 73, 68, 65, 84, 120, 156, 99, 96, 100, 98, 6, 0, 0, 14, 0, 7, 215, 111, 228,
         120>>
     ]
 
-    #     [?_assertEqual(Target, Result)].
     assert target == result
   end
 

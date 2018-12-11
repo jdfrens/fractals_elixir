@@ -21,6 +21,7 @@ defmodule PNG do
   blah blah blah
 
   This supports only basic compression, filter, and interlace methods.
+  Only supports scanline filter 0 (i.e., none).
   """
   @spec chunk(String.t(), chunk()) :: binary()
   def chunk(
@@ -55,12 +56,8 @@ defmodule PNG do
     chunk(<<"IHDR">>, data)
   end
 
-  # chunk('IDAT', {rows, Rows}) ->
   def chunk("IDAT", {:rows, rows}) do
-    #     % We don't currently support any scanline filters (other than None)
-    #     Raw = list_to_binary([[?SCANLINE_FILTER, Row] || Row <- Rows]),
     raw = :erlang.list_to_binary(for row <- rows, do: [const(:scanline_filter), row])
-    #     chunk('IDAT', {raw, Raw});
     chunk("IDAT", {:raw, raw})
   end
 
