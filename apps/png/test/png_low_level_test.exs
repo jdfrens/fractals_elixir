@@ -89,7 +89,6 @@ defmodule PNG.LowLevelTest do
     assert target == result
   end
 
-  @tag :skip
   # rows_IDAT() ->
   test "rows IDAT" do
     #     Data = [<<1, 2, 3>>],

@@ -3,6 +3,8 @@ defmodule PNG do
   Documentation for PNG.
   """
 
+  import PNG.Consts
+
   alias PNG.Config
 
   @type chunk :: {:compressed, list()}
@@ -54,9 +56,13 @@ defmodule PNG do
   end
 
   # chunk('IDAT', {rows, Rows}) ->
-  #     % We don't currently support any scanline filters (other than None)
-  #     Raw = list_to_binary([[?SCANLINE_FILTER, Row] || Row <- Rows]),
-  #     chunk('IDAT', {raw, Raw});
+  def chunk("IDAT", {:rows, rows}) do
+    #     % We don't currently support any scanline filters (other than None)
+    #     Raw = list_to_binary([[?SCANLINE_FILTER, Row] || Row <- Rows]),
+    raw = :erlang.list_to_binary(for row <- rows, do: [const(:scanline_filter), row])
+    #     chunk('IDAT', {raw, Raw});
+    chunk("IDAT", {:raw, raw})
+  end
 
   def chunk("IDAT", {:raw, data}) do
     chunk("IDAT", {:compressed, compress(data)})

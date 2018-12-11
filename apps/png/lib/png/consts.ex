@@ -23,4 +23,6 @@ defmodule PNG.Consts do
   defmacro const(:png_rgb_16), do: {:rgb, 16}
   defmacro const(:png_rgba_8), do: {:rgba, 8}
   defmacro const(:png_rgba_16), do: {:rgba, 16}
+
+  defmacro const(:scanline_filter), do: 0
 end
