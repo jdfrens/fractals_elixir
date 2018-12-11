@@ -58,9 +58,7 @@ defmodule PNG do
   #     Raw = list_to_binary([[?SCANLINE_FILTER, Row] || Row <- Rows]),
   #     chunk('IDAT', {raw, Raw});
 
-  # chunk('IDAT', {raw, Data}) ->
   def chunk("IDAT", {:raw, data}) do
-    #     chunk('IDAT', {compressed, compress(Data)});
     chunk("IDAT", {:compressed, compress(data)})
   end
 
@@ -84,21 +82,14 @@ defmodule PNG do
   # chunk('IEND') ->
   #     chunk(<<"IEND">>, <<>>).
 
-  # -spec compress(binary()) -> [binary()].
   @spec compress(binary()) :: [binary()]
-  # compress(Data) ->
   def compress(data) do
-    #   Z = zlib:open(),
-    z = :zlib.open()
-    #   ok = zlib:deflateInit(Z),
-    :ok = :zlib.deflateInit(z)
-    #   Compressed = zlib:deflate(Z, Data, finish),
-    compressed = :zlib.deflate(z, data, :finish)
-    #   ok = zlib:deflateEnd(Z),
-    :ok = :zlib.deflateEnd(z)
-    #   ok = zlib:close(Z),
-    :ok = :zlib.close(z)
-    #   Compressed.
-    compressed
+    with z = :zlib.open(),
+         :ok <- :zlib.deflateInit(z),
+         compressed = :zlib.deflate(z, data, :finish),
+         :ok <- :zlib.deflateEnd(z),
+         :ok <- :zlib.close(z) do
+      compressed
+    end
   end
 end
