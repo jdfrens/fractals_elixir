@@ -59,7 +59,10 @@ defmodule PNG do
   #     chunk('IDAT', {raw, Raw});
 
   # chunk('IDAT', {raw, Data}) ->
-  #     chunk('IDAT', {compressed, compress(Data)});
+  def chunk("IDAT", {:raw, data}) do
+    #     chunk('IDAT', {compressed, compress(Data)});
+    chunk("IDAT", {:compressed, compress(data)})
+  end
 
   def chunk("IDAT", {:compressed, compressed_data}) when is_list(compressed_data) do
     Enum.map(compressed_data, fn part ->
@@ -80,4 +83,22 @@ defmodule PNG do
 
   # chunk('IEND') ->
   #     chunk(<<"IEND">>, <<>>).
+
+  # -spec compress(binary()) -> [binary()].
+  @spec compress(binary()) :: [binary()]
+  # compress(Data) ->
+  def compress(data) do
+    #   Z = zlib:open(),
+    z = :zlib.open()
+    #   ok = zlib:deflateInit(Z),
+    :ok = :zlib.deflateInit(z)
+    #   Compressed = zlib:deflate(Z, Data, finish),
+    compressed = :zlib.deflate(z, data, :finish)
+    #   ok = zlib:deflateEnd(Z),
+    :ok = :zlib.deflateEnd(z)
+    #   ok = zlib:close(Z),
+    :ok = :zlib.close(z)
+    #   Compressed.
+    compressed
+  end
 end

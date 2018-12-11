@@ -77,7 +77,6 @@ defmodule PNG.LowLevelTest do
     assert target == result
   end
 
-  @tag :skip
   # raw_IDAT() ->
   test "raw IDAT" do
     #     Data = <<0, 1, 2, 3>>,
