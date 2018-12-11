@@ -101,7 +101,6 @@ defmodule PNG.LowLevelTest do
     assert target == result
   end
 
-  @tag :skip
   # 'PLTE'() ->
   test "PLTE" do
     #     Result = png:chunk('PLTE', {rgb, 8, [{255, 0, 0}, {0, 0, 255}]}),

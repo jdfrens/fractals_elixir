@@ -72,8 +72,16 @@ defmodule PNG do
   end
 
   # chunk('PLTE', {rgb, BitDepth, ColorTuples}) ->
-  #     L = [<<R:BitDepth, G:BitDepth, B:BitDepth>> || {R, G, B} <- ColorTuples],
-  #     chunk(<<"PLTE">>, list_to_binary(L));
+  def chunk("PLTE", {:rgb, bit_depth, color_tuples}) do
+    #     L = [<<R:BitDepth, G:BitDepth, B:BitDepth>> || {R, G, B} <- ColorTuples],
+    l =
+      for {r, g, b} <- color_tuples do
+        <<r::size(bit_depth), g::size(bit_depth), b::size(bit_depth)>>
+      end
+
+    #     chunk(<<"PLTE">>, list_to_binary(L));
+    chunk("PLTE", :erlang.list_to_binary(l))
+  end
 
   def chunk(type, data) when is_binary(type) and is_binary(data) do
     length = byte_size(data)
