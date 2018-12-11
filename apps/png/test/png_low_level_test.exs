@@ -5,6 +5,10 @@ defmodule PNG.LowLevelTest do
 
   use ExUnit.Case, async: true
 
+  import PNG.Consts
+
+  alias PNG.Config
+
   # -module(png_low_level_tests).
 
   # -include_lib("eunit/include/eunit.hrl").
@@ -57,12 +61,11 @@ defmodule PNG.LowLevelTest do
     assert target == result
   end
 
-  @tag :skip
   # 'IHDR_width_height_bit_depth_color_type'() ->
   test "IHDR width height bit depth color type" do
     #     Result = png:chunk('IHDR', #png_config{size = {32, 16},
     #                                        mode = ?PNG_RGB_8}),
-    result = PNG.chunk("IHDR", PNG.config(size: {32, 26}, mode: PNG_RGB_8))
+    result = PNG.chunk("IHDR", %Config{size: {32, 16}, mode: const(:png_rgb_8)})
     #     Target = <<0,0,0,13,73,72,68,82,0,0,0,
     #                32,0,0,0,16,8,2,0,0,0,248,98,234,14>>,
     target =
