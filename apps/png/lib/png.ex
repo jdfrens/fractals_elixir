@@ -8,7 +8,11 @@ defmodule PNG do
   alias PNG.Config
 
   @type chunk ::
-          {:row, iodata()} | {:rows, iodata()} | {:data, iodata()} | {:compressed, iodata()}
+          {:raw, iodata()}
+          | {:row, iodata()}
+          | {:rows, iodata()}
+          | {:data, iodata()}
+          | {:compressed, iodata()}
 
   @spec create(map()) :: map()
 
@@ -87,7 +91,7 @@ defmodule PNG do
   This supports only basic compression, filter, and interlace methods.
   Only supports scanline filter 0 (i.e., none).
   """
-  @spec chunk(String.t(), chunk()) :: binary()
+  @spec chunk(String.t(), Config.t() | chunk() | binary()) :: binary()
   def chunk(type, data \\ <<>>)
 
   def chunk(
