@@ -7,9 +7,9 @@ defmodule PNG do
 
   alias PNG.Config
 
-  @type chunk :: {:compressed, list()}
+  @type chunk ::
+          {:row, iodata()} | {:rows, iodata()} | {:data, iodata()} | {:compressed, iodata()}
 
-  # -spec create(map()) -> map().
   @spec create(map()) :: map()
 
   # create(#{file := File} = Png) ->
@@ -18,106 +18,58 @@ defmodule PNG do
   #     Png2 = maps:remove(file, Png#{call => Callback}),
   #     create(Png2);
 
-  # create(#{size := {Width, Height} = Size,
-  #          mode := Mode,
-  #          call := Callback} = Png) ->
   def create(%{size: {width, height} = size, mode: mode, call: callback} = png) do
-    #     Config = #png_config{size = {Width, Height},
-    #                          mode = Mode},
     config = %Config{size: {width, height}, mode: mode}
-    #     ok = Callback(header()),
     :ok = callback.(header())
-    #     ok = Callback(chunk('IHDR', Config)),
     :ok = callback.(chunk("IHDR", config))
-    #     ok = append_palette(Png),
     :ok = append_palette(png)
-    #     Z = zlib:open(),
     z = :zlib.open()
-    #     ok = zlib:deflateInit(Z),
     :ok = :zlib.deflateInit(z)
-    #     #{size => Size,
-    #       mode => Mode,
-    #       call => Callback,
-    #       z => Z}.
     %{size: size, mode: mode, call: callback, z: z}
   end
 
-  #   append_palette(#{call := Callback, palette := Palette}) ->
   def append_palette(%{call: callback, palette: palette}) do
-    #     Chunk = chunk('PLTE', Palette),
     chunk = chunk("PLTE", palette)
-    #     ok = Callback(Chunk);
     :ok = callback.(chunk)
   end
 
-  #   append_palette(#{}) ->
   def append_palette(%{}) do
-    #     ok.
     :ok
   end
 
-  # -spec append(map(), {row, iodata()} | {rows, iodata()} | {data, iodata()} |
-  #                     {compressed, iodata()}) -> map().
-  @spec append(
-          map(),
-          {:row, iodata()} | {:rows, iodata()} | {:data, iodata()} | {:compressed, iodata()}
-        ) :: map()
-  # append(Png, {row, Row}) ->
+  @spec append(map(), chunk()) :: map()
   def append(png, {:row, row}) do
-    #     append(Png, {data, [0, Row]});
     append(png, {:data, [0, row]})
   end
 
-  # append(Png, {rows, Rows}) ->
   def append(png, {:rows, rows}) do
-    #     F = fun(Row) ->
-    #         [0, Row] end,
     f = fn row -> [0, row] end
-    #     append(Png, {data, lists:map(F, Rows)});
     append(png, {:data, :lists.map(f, rows)})
   end
 
-  # append(#{z := Z} = Png, {data, RawData}) ->
   def append(%{z: z} = png, {:data, raw_data}) do
-    #     Compressed = zlib:deflate(Z, RawData),
     compressed = :zlib.deflate(z, raw_data)
-    #     append(Png, {compressed, Compressed}),
     append(png, {:compressed, compressed})
-    #     Png;
     png
   end
 
-  # append(Png, {compressed, []}) ->
   def append(png, {:compressed, []}) do
-    #     Png;
     png
   end
 
-  # append(#{call := Callback} = Png, {compressed, Compressed}) ->
   def append(%{call: callback} = png, {:compressed, compressed}) do
-    #     Chunks = chunk('IDAT', {compressed, Compressed}),
     chunks = chunk("IDAT", {:compressed, compressed})
-    #     ok = Callback(Chunks),
     :ok = callback.(chunks)
-    #     Png.
     png
   end
 
-  # -spec close(map()) -> ok.
   @spec close(map) :: :ok
-  # close(#{z := Z, call := Callback} = Png) ->
   def close(%{z: z, call: callback} = png) do
-    #     Compressed = zlib:deflate(Z, <<>>, finish),
     compressed = :zlib.deflate(z, <<>>, :finish)
-    #     append(Png, {compressed, Compressed}),
     append(png, {:compressed, compressed})
-    #     ok = zlib:deflateEnd(Z),
     :ok = :zlib.deflateEnd(z)
-    #     ok = zlib:close(Z),
     :ok = :zlib.close(z)
-    #     ok = Callback(chunk('IEND')),
     :ok = callback.(chunk("IEND"))
-    #     ok.
     :ok
   end
 
