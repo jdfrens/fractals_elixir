@@ -15,26 +15,22 @@ defmodule PNG do
     <<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A>>
   end
 
+  @doc """
+  blah blah blah
+
+  This supports only basic compression, filter, and interlace methods.
+  """
   @spec chunk(String.t(), chunk()) :: binary()
-  # chunk('IHDR', #png_config{size = {Width, Height},
-  #                           mode = {ColorType, BitDepth}}) ->
-  #     % We only support basic compression, filter and interlace methods
-  #     CompressionMethod = 0,
-  #     FilterMethod = 0,
-  #     InterlaceMethod = 0,
   def chunk(
         "IHDR",
         %Config{
           size: {width, height},
-          mode: {color_type, bit_depth}
+          mode: {color_type, bit_depth},
+          compression_method: 0,
+          filter_method: 0,
+          interlace_method: 0
         } = config
       ) do
-    #     ColorTypeByte = case ColorType of
-    #                         grayscale -> 0;
-    #                         rgb -> 2;
-    #                         indexed -> 3;
-    #                         grayscale_alpha -> 4;
-    #                         rgba -> 6 end,
     color_byte_type =
       case color_type do
         :grayscale -> 0
@@ -44,13 +40,6 @@ defmodule PNG do
         :rgba -> 6
       end
 
-    #     Data = <<Width:32,
-    #              Height:32,
-    #              BitDepth:8,
-    #              ColorTypeByte:8,
-    #              CompressionMethod:8,
-    #              FilterMethod:8,
-    #              InterlaceMethod:8>>,
     data = <<
       width::32,
       height::32,
@@ -61,7 +50,6 @@ defmodule PNG do
       config.interlace_method::8
     >>
 
-    #     chunk(<<"IHDR">>, Data);
     chunk(<<"IHDR">>, data)
   end
 

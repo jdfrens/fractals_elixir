@@ -61,28 +61,19 @@ defmodule PNG.LowLevelTest do
     assert target == result
   end
 
-  # 'IHDR_width_height_bit_depth_color_type'() ->
   test "IHDR width height bit depth color type" do
-    #     Result = png:chunk('IHDR', #png_config{size = {32, 16},
-    #                                        mode = ?PNG_RGB_8}),
     result = PNG.chunk("IHDR", %Config{size: {32, 16}, mode: const(:png_rgb_8)})
-    #     Target = <<0,0,0,13,73,72,68,82,0,0,0,
-    #                32,0,0,0,16,8,2,0,0,0,248,98,234,14>>,
+
     target =
       <<0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 32, 0, 0, 0, 16, 8, 2, 0, 0, 0, 248, 98, 234, 14>>
 
-    #     [?_assertEqual(Target, Result)].
     assert target == result
   end
 
   test "compressed IDAT" do
-    #     Data = [<<0, 1, 2, 3>>],
     data = [<<0, 1, 2, 3>>]
-    #     Result = png:chunk('IDAT', {compressed, Data}),
     result = PNG.chunk("IDAT", {:compressed, data})
-    #     Target = [<<0,0,0,4,73,68,65,84,0,1,2,3,64,222,190,8>>],
     target = [<<0, 0, 0, 4, 73, 68, 65, 84, 0, 1, 2, 3, 64, 222, 190, 8>>]
-    #     [?_assertEqual(Target, Result)].
     assert target == result
   end
 
