@@ -71,16 +71,15 @@ defmodule PNG do
     end)
   end
 
-  # chunk('PLTE', {rgb, BitDepth, ColorTuples}) ->
   def chunk("PLTE", {:rgb, bit_depth, color_tuples}) do
-    #     L = [<<R:BitDepth, G:BitDepth, B:BitDepth>> || {R, G, B} <- ColorTuples],
-    l =
-      for {r, g, b} <- color_tuples do
+    data =
+      color_tuples
+      |> Enum.map(fn {r, g, b} ->
         <<r::size(bit_depth), g::size(bit_depth), b::size(bit_depth)>>
-      end
+      end)
+      |> :erlang.list_to_binary()
 
-    #     chunk(<<"PLTE">>, list_to_binary(L));
-    chunk("PLTE", :erlang.list_to_binary(l))
+    chunk("PLTE", data)
   end
 
   def chunk(type, data) when is_binary(type) and is_binary(data) do

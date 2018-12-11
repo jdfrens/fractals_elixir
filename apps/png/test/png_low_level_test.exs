@@ -101,13 +101,9 @@ defmodule PNG.LowLevelTest do
     assert target == result
   end
 
-  # 'PLTE'() ->
   test "PLTE" do
-    #     Result = png:chunk('PLTE', {rgb, 8, [{255, 0, 0}, {0, 0, 255}]}),
     result = PNG.chunk("PLTE", {:rgb, 8, [{255, 0, 0}, {0, 0, 255}]})
-    #     Target = <<0,0,0,6,80,76,84,69,255,0,0,0,0,255,108,161,253,142>>,
     target = <<0, 0, 0, 6, 80, 76, 84, 69, 255, 0, 0, 0, 0, 255, 108, 161, 253, 142>>
-    #     [?_assertEqual(Target, Result)].
     assert target == result
   end
 end
