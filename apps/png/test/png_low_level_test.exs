@@ -32,32 +32,21 @@ defmodule PNG.LowLevelTest do
     end
   end
 
-  @tag :skip
-  # 'IHDR_width_height'() ->
   test "IHDR with height" do
-    #     Result = png:chunk('IHDR', #png_config{size = {32, 16}}),
-    result = PNG.chunk("IHDR", PNG.config(size: {32, 16}))
-    #     Target = <<0,0,0,13,73,72,68,82,0,0,0,
-    #                32,0,0,0,16,8,0,0,0,0,82,107,34,133>>,
+    result = PNG.chunk("IHDR", %Config{size: {32, 16}})
+
     target =
       <<0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 32, 0, 0, 0, 16, 8, 0, 0, 0, 0, 82, 107, 34, 133>>
 
-    #     [?_assertEqual(Target, Result)].
     assert target == result
   end
 
-  @tag :skip
-  # 'IHDR_width_height_bit_depth'() ->
   test "IHDR width height bit depth" do
-    #     Result = png:chunk('IHDR', #png_config{size = {32, 16},
-    #                                        mode = ?PNG_GRAYSCALE_8}),
-    result = PNG.chunk("IHDR", PNG.config(size: {32, 26}, mode: PNG_GRAYSCALE_8))
-    #     Target = <<0,0,0,13,73,72,68,82,0,0,0,
-    #                32,0,0,0,16,8,0,0,0,0,82,107,34,133>>,
+    result = PNG.chunk("IHDR", %Config{size: {32, 16}, mode: const(:png_grayscale_8)})
+
     target =
       <<0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 32, 0, 0, 0, 16, 8, 0, 0, 0, 0, 82, 107, 34, 133>>
 
-    #     [?_assertEqual(Target, Result)].
     assert target == result
   end
 
