@@ -8,6 +8,8 @@ defmodule PNG.LowLevel do
           | {:data, iodata()}
           | {:compressed, iodata()}
 
+  @type color_tuple :: {integer(), integer(), integer()}
+
   @scanline_filter 0
 
   @doc """
@@ -19,7 +21,7 @@ defmodule PNG.LowLevel do
   end
 
   @doc """
-  blah blah blah
+  Low-level function to generate a chunk of the PNG content.
 
   This supports only basic compression, filter, and interlace methods.
   Only supports scanline filter 0 (i.e., none).
@@ -37,20 +39,11 @@ defmodule PNG.LowLevel do
           interlace_method: 0
         } = config
       ) do
-    color_byte_type =
-      case color_type do
-        :grayscale -> 0
-        :rgb -> 2
-        :indexed -> 3
-        :grayscale_alpha -> 4
-        :rgba -> 6
-      end
-
     data = <<
       width::32,
       height::32,
       bit_depth::8,
-      color_byte_type::8,
+      color_type_byte(color_type)::8,
       config.compression_method::8,
       config.filter_method::8,
       config.interlace_method::8
@@ -77,9 +70,7 @@ defmodule PNG.LowLevel do
   def chunk("PLTE", {:rgb, bit_depth, color_tuples}) do
     data =
       color_tuples
-      |> Enum.map(fn {r, g, b} ->
-        <<r::size(bit_depth), g::size(bit_depth), b::size(bit_depth)>>
-      end)
+      |> Enum.map(&color_tuple_to_binary(&1, bit_depth))
       |> :erlang.list_to_binary()
 
     chunk("PLTE", data)
@@ -101,5 +92,17 @@ defmodule PNG.LowLevel do
          :ok <- :zlib.close(z) do
       List.flatten(compressed)
     end
+  end
+
+  @spec color_type_byte(atom()) :: integer()
+  defp color_type_byte(:grayscale), do: 0
+  defp color_type_byte(:rgb), do: 2
+  defp color_type_byte(:indexed), do: 3
+  defp color_type_byte(:grayscale_alpha), do: 4
+  defp color_type_byte(:rgba), do: 6
+
+  @spec color_tuple_to_binary(color_tuple(), integer()) :: binary()
+  defp color_tuple_to_binary({r, g, b}, bit_depth) do
+    <<r::size(bit_depth), g::size(bit_depth), b::size(bit_depth)>>
   end
 end

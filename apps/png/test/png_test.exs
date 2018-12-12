@@ -22,7 +22,7 @@ defmodule PNGTest do
             [contents, bin]
         end
 
-      true = :ets.insert(e, {:contents, list_to_binary(new_contents)})
+      true = :ets.insert(e, {:contents, :erlang.list_to_binary(new_contents)})
       :ok
     end
 
@@ -47,9 +47,5 @@ defmodule PNGTest do
         68, 174, 66, 96, 130>>
 
     assert target == result
-  end
-
-  def list_to_binary(io_list) do
-    :erlang.list_to_binary(io_list)
   end
 end

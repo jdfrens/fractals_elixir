@@ -32,6 +32,11 @@ defmodule PNG.FileHelpers do
     {:ok, image_filename: image_filename, expected_filename: expected_filename}
   end
 
+  @doc """
+  Writes an image to a file during a test.
+
+  Primary purpose of the function is to flip the order of the arguments.
+  """
   def write_image(io_data, image_filename) do
     :ok = :file.write_file(image_filename, io_data)
   end
