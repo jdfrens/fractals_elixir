@@ -8,7 +8,7 @@ defmodule LowLevelIndexed8Test do
   import PNG.FileHelpers
   import PNG.LowLevelTestHelpers
 
-  alias PNG.Config
+  alias PNG.{Config, LowLevel}
 
   setup do
     setup_filenames("low_level_indexed_8.png")
@@ -25,11 +25,11 @@ defmodule LowLevelIndexed8Test do
     rows = make_rows(size, &pixel(thickness, &1, &2))
 
     [
-      PNG.header(),
-      PNG.chunk("IHDR", config),
-      PNG.chunk("PLTE", palette),
-      PNG.chunk("IDAT", {:rows, rows}),
-      PNG.chunk("IEND")
+      LowLevel.header(),
+      LowLevel.chunk("IHDR", config),
+      LowLevel.chunk("PLTE", palette),
+      LowLevel.chunk("IDAT", {:rows, rows}),
+      LowLevel.chunk("IEND")
     ]
     |> write_image(image_filename)
 
