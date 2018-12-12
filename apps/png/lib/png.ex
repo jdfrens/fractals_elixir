@@ -16,11 +16,11 @@ defmodule PNG do
 
   @spec create(map()) :: map()
 
-  # create(#{file := File} = Png) ->
-  #     Callback = fun(Data) ->
-  #                     file:write(File, Data) end,
-  #     Png2 = maps:remove(file, Png#{call => Callback}),
-  #     create(Png2);
+  def create(%{file: file} = png) do
+    callback = fn data -> :file.write(file, data) end
+    png = png |> Map.delete(:file) |> Map.put(:call, callback)
+    create(png)
+  end
 
   def create(%{size: {width, height} = size, mode: mode, call: callback} = png) do
     config = %Config{size: {width, height}, mode: mode}
@@ -70,7 +70,7 @@ defmodule PNG do
   @spec close(map) :: :ok
   def close(%{z: z, call: callback} = png) do
     compressed = :zlib.deflate(z, <<>>, :finish)
-    append(png, {:compressed, compressed})
+    append(png, {:compressed, List.flatten(compressed)})
     :ok = :zlib.deflateEnd(z)
     :ok = :zlib.close(z)
     :ok = callback.(chunk("IEND"))
@@ -166,7 +166,7 @@ defmodule PNG do
          compressed = :zlib.deflate(z, data, :finish),
          :ok <- :zlib.deflateEnd(z),
          :ok <- :zlib.close(z) do
-      compressed
+      List.flatten(compressed)
     end
   end
 end
