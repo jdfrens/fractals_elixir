@@ -1,5 +1,5 @@
 defmodule PNG.LowLevel do
-  alias PNG.Config
+  alias PNG.{Config, ZLib}
 
   @type chunk ::
           {:raw, iodata()}
@@ -58,7 +58,7 @@ defmodule PNG.LowLevel do
   end
 
   def chunk("IDAT", {:raw, data}) do
-    chunk("IDAT", {:compressed, compress(data)})
+    chunk("IDAT", {:compressed, ZLib.one_shot(data)})
   end
 
   def chunk("IDAT", {:compressed, compressed_data}) when is_list(compressed_data) do
@@ -81,17 +81,6 @@ defmodule PNG.LowLevel do
     type_data = <<type::binary, data::binary>>
     crc = :erlang.crc32(type_data)
     <<length::32, type_data::binary, crc::32>>
-  end
-
-  @spec compress(binary()) :: [binary()]
-  def compress(data) do
-    with z = :zlib.open(),
-         :ok <- :zlib.deflateInit(z),
-         compressed = :zlib.deflate(z, data, :finish),
-         :ok <- :zlib.deflateEnd(z),
-         :ok <- :zlib.close(z) do
-      List.flatten(compressed)
-    end
   end
 
   @spec color_type_byte(atom()) :: integer()

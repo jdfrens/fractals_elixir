@@ -3,7 +3,7 @@ defmodule PNG do
   Documentation for PNG.
   """
 
-  alias PNG.{Config, LowLevel}
+  alias PNG.{Config, LowLevel, ZLib}
 
   @spec create(map()) :: map()
   def create(%{file: file} = png) do
@@ -17,8 +17,7 @@ defmodule PNG do
     :ok = callback.(LowLevel.header())
     :ok = callback.(LowLevel.chunk("IHDR", config))
     :ok = append_palette(png)
-    z = :zlib.open()
-    :ok = :zlib.deflateInit(z)
+    z = ZLib.open()
     %{size: size, mode: mode, call: callback, z: z}
   end
 
@@ -42,7 +41,7 @@ defmodule PNG do
   end
 
   def append(%{z: z} = png, {:data, raw_data}) do
-    compressed = :zlib.deflate(z, raw_data)
+    compressed = ZLib.deflate(z, raw_data)
     append(png, {:compressed, compressed})
     png
   end
@@ -59,10 +58,9 @@ defmodule PNG do
 
   @spec close(map) :: :ok
   def close(%{z: z, call: callback} = png) do
-    compressed = :zlib.deflate(z, <<>>, :finish)
+    compressed = ZLib.deflate(z, <<>>, :finish)
     append(png, {:compressed, List.flatten(compressed)})
-    :ok = :zlib.deflateEnd(z)
-    :ok = :zlib.close(z)
+    :ok = ZLib.close(z)
     :ok = callback.(LowLevel.chunk("IEND"))
     :ok
   end
