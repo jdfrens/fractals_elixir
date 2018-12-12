@@ -3,8 +3,6 @@ defmodule PNG do
   Documentation for PNG.
   """
 
-  import PNG.Consts
-
   alias PNG.Config
 
   @type chunk ::
@@ -14,8 +12,9 @@ defmodule PNG do
           | {:data, iodata()}
           | {:compressed, iodata()}
 
-  @spec create(map()) :: map()
+  @scanline_filter 0
 
+  @spec create(map()) :: map()
   def create(%{file: file} = png) do
     callback = fn data -> :file.write(file, data) end
     png = png |> Map.delete(:file) |> Map.put(:call, callback)
@@ -127,7 +126,7 @@ defmodule PNG do
   end
 
   def chunk("IDAT", {:rows, rows}) do
-    raw = :erlang.list_to_binary(for row <- rows, do: [const(:scanline_filter), row])
+    raw = :erlang.list_to_binary(for row <- rows, do: [@scanline_filter, row])
     chunk("IDAT", {:raw, raw})
   end
 

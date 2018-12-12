@@ -1,8 +1,6 @@
 defmodule PNG.ConfigTest do
   use ExUnit.Case, async: true
 
-  import PNG.Consts
-
   describe "check/1" do
     test "default is invalid" do
       config = %PNG.Config{}
@@ -20,7 +18,7 @@ defmodule PNG.ConfigTest do
     end
 
     test "valid with different mode" do
-      config = %PNG.Config{size: {1, 1}, mode: const(:png_indexed_8)}
+      config = %PNG.Config{size: {1, 1}, mode: {:indexed, 8}}
       assert :ok = PNG.Config.check(config)
     end
   end

@@ -5,8 +5,6 @@ defmodule PNG.LowLevelTest do
 
   use ExUnit.Case, async: true
 
-  import PNG.Consts
-
   alias PNG.Config
 
   # -module(png_low_level_tests).
@@ -42,7 +40,7 @@ defmodule PNG.LowLevelTest do
   end
 
   test "IHDR width height bit depth" do
-    result = PNG.chunk("IHDR", %Config{size: {32, 16}, mode: const(:png_grayscale_8)})
+    result = PNG.chunk("IHDR", %Config{size: {32, 16}, mode: {:grayscale, 8}})
 
     target =
       <<0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 32, 0, 0, 0, 16, 8, 0, 0, 0, 0, 82, 107, 34, 133>>
@@ -51,7 +49,7 @@ defmodule PNG.LowLevelTest do
   end
 
   test "IHDR width height bit depth color type" do
-    result = PNG.chunk("IHDR", %Config{size: {32, 16}, mode: const(:png_rgb_8)})
+    result = PNG.chunk("IHDR", %Config{size: {32, 16}, mode: {:rgb, 8}})
 
     target =
       <<0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 32, 0, 0, 0, 16, 8, 2, 0, 0, 0, 248, 98, 234, 14>>

@@ -3,8 +3,6 @@ defmodule PNG.Config do
   Configuration for a PNG image.
   """
 
-  import PNG.Consts
-
   alias PNG.Config
 
   @type t :: %__MODULE__{
@@ -13,7 +11,7 @@ defmodule PNG.Config do
   @type error :: {:error, :invalid} | {:error, :unsupported}
 
   defstruct size: {0, 0},
-            mode: const(:png_grayscale_8),
+            mode: {:grayscale, 8},
             compression_method: 0,
             filter_method: 0,
             interlace_method: 0
