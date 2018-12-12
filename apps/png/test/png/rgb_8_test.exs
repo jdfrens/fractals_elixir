@@ -5,21 +5,19 @@ defmodule RGB8Test do
 
   use ExUnit.Case, async: true
 
-  @image_filename "test/images/rgb_8.png"
-  @expected_filename "test/expected_outputs/rgb_8.png"
+  import PNG.FileHelpers
 
   setup do
-    if File.exists?(@image_filename) do
-      File.rm(@image_filename)
-    else
-      :ok
-    end
+    setup_filenames("rgb_8.png")
   end
 
-  test "generate an 8-bit rgb image" do
+  test "generate an 8-bit rgb image", %{
+    image_filename: image_filename,
+    expected_filename: expected_filename
+  } do
     width = 100
     height = 100
-    {:ok, file} = :file.open(@image_filename, [:write])
+    {:ok, file} = :file.open(image_filename, [:write])
 
     png =
       PNG.create(%{
@@ -32,8 +30,8 @@ defmodule RGB8Test do
     :ok = PNG.close(png)
     :ok = :file.close(file)
 
-    {:ok, expected} = File.read(@expected_filename)
-    {:ok, actual} = File.read(@image_filename)
+    {:ok, expected} = File.read(expected_filename)
+    {:ok, actual} = File.read(image_filename)
     assert expected == actual
   end
 

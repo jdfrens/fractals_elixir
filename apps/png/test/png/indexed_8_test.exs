@@ -5,22 +5,20 @@ defmodule Indexed8Test do
 
   use ExUnit.Case, async: true
 
-  @image_filename "test/images/indexed_8.png"
-  @expected_filename "test/expected_outputs/indexed_8.png"
+  import PNG.FileHelpers
 
   setup do
-    if File.exists?(@image_filename) do
-      File.rm(@image_filename)
-    else
-      :ok
-    end
+    setup_filenames("indexed_8.png")
   end
 
-  test "generate an 8-bit indexed image" do
+  test "generate an 8-bit indexed image", %{
+    image_filename: image_filename,
+    expected_filename: expected_filename
+  } do
     width = 100
     height = 100
     palette = {:rgb, 8, [{255, 0, 0}, {0, 255, 0}, {0, 0, 255}]}
-    {:ok, file} = :file.open(@image_filename, [:write])
+    {:ok, file} = :file.open(image_filename, [:write])
 
     png =
       PNG.create(%{
@@ -34,8 +32,8 @@ defmodule Indexed8Test do
     :ok = PNG.close(png)
     :ok = :file.close(file)
 
-    {:ok, expected} = File.read(@expected_filename)
-    {:ok, actual} = File.read(@image_filename)
+    {:ok, expected} = File.read(expected_filename)
+    {:ok, actual} = File.read(image_filename)
     assert expected == actual
   end
 

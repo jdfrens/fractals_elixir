@@ -7,18 +7,16 @@ defmodule LowLevelRGB16Test do
 
   alias PNG.Config
 
-  @image_filename "test/images/low_level_rgb_16.png"
-  @expected_filename "test/expected_outputs/low_level_rgb_16.png"
+  import PNG.FileHelpers
 
   setup do
-    if File.exists?(@image_filename) do
-      File.rm(@image_filename)
-    else
-      :ok
-    end
+    setup_filenames("low_level_rgb_16.png")
   end
 
-  test "generate a 16-bit RGB image" do
+  test "generate a 16-bit RGB image", %{
+    image_filename: image_filename,
+    expected_filename: expected_filename
+  } do
     width = 100
     height = 100
     rows = make_rows(width, height)
@@ -32,10 +30,10 @@ defmodule LowLevelRGB16Test do
       PNG.chunk("IEND")
     ]
 
-    :ok = :file.write_file(@image_filename, iodata)
+    :ok = :file.write_file(image_filename, iodata)
 
-    {:ok, expected} = File.read(@expected_filename)
-    {:ok, actual} = File.read(@image_filename)
+    {:ok, expected} = File.read(expected_filename)
+    {:ok, actual} = File.read(image_filename)
     assert expected == actual
   end
 

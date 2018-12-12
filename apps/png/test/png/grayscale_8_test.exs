@@ -5,28 +5,26 @@ defmodule PNG.Grayscale8Test do
 
   use ExUnit.Case, async: true
 
-  @image_filename "test/images/grayscale_8.png"
-  @expected_filename "test/expected_outputs/grayscale_8.png"
+  import PNG.FileHelpers
 
   setup do
-    if File.exists?(@image_filename) do
-      File.rm(@image_filename)
-    else
-      :ok
-    end
+    setup_filenames("grayscale_8.png")
   end
 
-  test "write an 8-bit grayscale image" do
+  test "write an 8-bit grayscale image", %{
+    image_filename: image_filename,
+    expected_filename: expected_filename
+  } do
     width = 100
     height = 100
-    {:ok, file} = :file.open(@image_filename, [:write])
+    {:ok, file} = :file.open(image_filename, [:write])
     png = PNG.create(%{size: {width, height}, mode: {:grayscale, 8}, file: file})
     :ok = append_rows(png)
     :ok = PNG.close(png)
     :ok = :file.close(file)
 
-    {:ok, expected} = File.read(@expected_filename)
-    {:ok, actual} = File.read(@image_filename)
+    {:ok, expected} = File.read(expected_filename)
+    {:ok, actual} = File.read(image_filename)
     assert expected == actual
   end
 

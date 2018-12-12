@@ -5,20 +5,18 @@ defmodule LowLevelIndexed8Test do
 
   use ExUnit.Case, async: true
 
+  import PNG.FileHelpers
+
   alias PNG.Config
 
-  @image_filename "test/images/low_level_indexed_8.png"
-  @expected_filename "test/expected_outputs/low_level_indexed_8.png"
-
   setup do
-    if File.exists?(@image_filename) do
-      File.rm(@image_filename)
-    else
-      :ok
-    end
+    setup_filenames("low_level_indexed_8.png")
   end
 
-  test "generate an image" do
+  test "generate an 8-bit indexed image", %{
+    image_filename: image_filename,
+    expected_filename: expected_filename
+  } do
     width = 50
     height = 50
     pallette = {:rgb, 8, [{255, 0, 0}, {0, 255, 0}, {0, 0, 255}]}
@@ -34,10 +32,10 @@ defmodule LowLevelIndexed8Test do
       PNG.chunk("IEND")
     ]
 
-    :ok = :file.write_file(@image_filename, iodata)
+    :ok = :file.write_file(image_filename, iodata)
 
-    {:ok, expected} = File.read(@expected_filename)
-    {:ok, actual} = File.read(@image_filename)
+    {:ok, expected} = File.read(expected_filename)
+    {:ok, actual} = File.read(image_filename)
     assert expected == actual
   end
 
