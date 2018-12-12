@@ -32,6 +32,10 @@ defmodule PNG.FileHelpers do
     {:ok, image_filename: image_filename, expected_filename: expected_filename}
   end
 
+  def write_image(io_data, image_filename) do
+    :ok = :file.write_file(image_filename, io_data)
+  end
+
   defp delete_if_exists(filename) do
     if File.exists?(filename) do
       File.rm(filename)

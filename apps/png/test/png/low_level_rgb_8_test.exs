@@ -8,6 +8,7 @@ defmodule LogLevelRGB8Test do
   alias PNG.Config
 
   import PNG.FileHelpers
+  import PNG.LowLevelTestHelpers
 
   setup do
     setup_filenames("low_level_rgb_8.png")
@@ -17,39 +18,26 @@ defmodule LogLevelRGB8Test do
     image_filename: image_filename,
     expected_filename: expected_filename
   } do
-    width = 100
-    height = 100
-    png_config = %Config{size: {width, height}, mode: {:rgb, 8}}
+    size = {100, 100}
+    config = %Config{size: size, mode: {:rgb, 8}}
+    rows = make_rows(size, &pixel(size, &1, &2))
 
-    iodata = [
+    [
       PNG.header(),
-      PNG.chunk("IHDR", png_config),
-      PNG.chunk("IDAT", {:rows, make_rows(width, height)}),
+      PNG.chunk("IHDR", config),
+      PNG.chunk("IDAT", {:rows, rows}),
       PNG.chunk("IEND")
     ]
-
-    :ok = :file.write_file(image_filename, iodata)
+    |> write_image(image_filename)
 
     {:ok, expected} = File.read(expected_filename)
     {:ok, actual} = File.read(image_filename)
     assert expected == actual
   end
 
-  def make_rows(width, height) do
-    f = fn y ->
-      make_row(y, width, height)
-    end
-
-    :lists.map(f, :lists.seq(1, height))
-  end
-
-  def make_row(y, width, height) do
-    f = fn x ->
-      r = trunc(x / width * 255)
-      b = trunc(y / height * 255)
-      <<r, 128, b>>
-    end
-
-    :lists.map(f, :lists.seq(1, width))
+  def pixel({width, height}, x, y) do
+    r = trunc(x / width * 255)
+    b = trunc(y / height * 255)
+    <<r, 128, b>>
   end
 end
