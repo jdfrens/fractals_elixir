@@ -8,7 +8,7 @@ defmodule LowLevelRGBa8Test do
   alias PNG.{Config, LowLevel}
 
   import PNG.FileHelpers
-  import PNG.LowLevelTestHelpers
+  import PNG.ImageGenerationTestHelpers
 
   setup do
     setup_filenames("low_level_rgba_8.png")
@@ -20,7 +20,7 @@ defmodule LowLevelRGBa8Test do
   } do
     size = {50, 50}
     config = %Config{size: size, mode: {:rgba, 8}}
-    rows = make_rows(size, &pixel(size, &1, &2))
+    rows = make_image(size, &pixel(size, &1, &2))
 
     [
       LowLevel.header(),

@@ -6,6 +6,7 @@ defmodule RGB8Test do
   use ExUnit.Case, async: true
 
   import PNG.FileHelpers
+  import PNG.ImageGenerationTestHelpers
 
   setup do
     setup_filenames("rgb_8.png")
@@ -15,18 +16,12 @@ defmodule RGB8Test do
     image_filename: image_filename,
     expected_filename: expected_filename
   } do
-    width = 100
-    height = 100
+    size = {100, 100}
+    mode = {:rgb, 8}
     {:ok, file} = :file.open(image_filename, [:write])
+    png = PNG.create(%{size: size, mode: mode, file: file})
 
-    png =
-      PNG.create(%{
-        size: {width, height},
-        mode: {:rgb, 8},
-        file: file
-      })
-
-    :ok = append_rows(png)
+    :ok = append_image(png, &pixel/3)
     :ok = PNG.close(png)
     :ok = :file.close(file)
 
@@ -35,19 +30,9 @@ defmodule RGB8Test do
     assert expected == actual
   end
 
-  def append_rows(%{size: {_, height}} = png) do
-    f = fn y -> append_row(png, y) end
-    :lists.foreach(f, :lists.seq(1, height))
-  end
-
-  def append_row(%{size: {width, height}} = png, y) do
-    f = fn x ->
-      r = trunc(x / width * 255)
-      b = trunc(y / height * 255)
-      <<r, 128, b>>
-    end
-
-    row = :lists.map(f, :lists.seq(1, width))
-    PNG.append(png, {:row, row})
+  def pixel({width, height}, x, y) do
+    r = trunc(x / width * 255)
+    b = trunc(y / height * 255)
+    <<r, 128, b>>
   end
 end

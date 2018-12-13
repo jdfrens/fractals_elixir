@@ -8,7 +8,7 @@ defmodule LowLevelRGB16Test do
   alias PNG.{Config, LowLevel}
 
   import PNG.FileHelpers
-  import PNG.LowLevelTestHelpers
+  import PNG.ImageGenerationTestHelpers
 
   setup do
     setup_filenames("low_level_rgb_16.png")
@@ -20,7 +20,7 @@ defmodule LowLevelRGB16Test do
   } do
     size = {100, 100}
     config = %Config{size: size, mode: {:rgb, 16}}
-    rows = make_rows(size, &pixel(size, &1, &2))
+    rows = make_image(size, &pixel(size, &1, &2))
 
     [
       LowLevel.header(),

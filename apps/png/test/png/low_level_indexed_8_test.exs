@@ -6,7 +6,7 @@ defmodule LowLevelIndexed8Test do
   use ExUnit.Case, async: true
 
   import PNG.FileHelpers
-  import PNG.LowLevelTestHelpers
+  import PNG.ImageGenerationTestHelpers
 
   alias PNG.{Config, LowLevel}
 
@@ -22,7 +22,7 @@ defmodule LowLevelIndexed8Test do
     config = %Config{size: size, mode: {:indexed, 8}}
     palette = {:rgb, 8, [{255, 0, 0}, {0, 255, 0}, {0, 0, 255}]}
     thickness = div(width, 4)
-    rows = make_rows(size, &pixel(thickness, &1, &2))
+    rows = make_image(size, &pixel(thickness, &1, &2))
 
     [
       LowLevel.header(),

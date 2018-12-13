@@ -15,18 +15,11 @@ defmodule Indexed8Test do
     image_filename: image_filename,
     expected_filename: expected_filename
   } do
-    width = 100
-    height = 100
+    size = {100, 100}
+    mode = {:indexed, 8}
     palette = {:rgb, 8, [{255, 0, 0}, {0, 255, 0}, {0, 0, 255}]}
     {:ok, file} = :file.open(image_filename, [:write])
-
-    png =
-      PNG.create(%{
-        size: {width, height},
-        mode: {:indexed, 8},
-        palette: palette,
-        file: file
-      })
+    png = PNG.create(%{size: size, mode: mode, palette: palette, file: file})
 
     :ok = append_rows(png)
     :ok = PNG.close(png)
