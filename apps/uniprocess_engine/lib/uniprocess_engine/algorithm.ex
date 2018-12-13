@@ -6,7 +6,6 @@ defmodule UniprocessEngine.Algorithm do
   alias Fractals.{
     Colorizer,
     Grid,
-    ImageMagick,
     Job,
     Output.PPMFile,
     Reporters.Broadcaster
@@ -19,7 +18,6 @@ defmodule UniprocessEngine.Algorithm do
     |> fractal()
     |> colors()
     |> write()
-    |> convert()
     |> done()
 
     :ok
@@ -47,31 +45,9 @@ defmodule UniprocessEngine.Algorithm do
     {job, nil}
   end
 
-  @spec convert({Job.t(), nil}) :: {Job.t(), nil}
-  def convert({job, nil}) do
-    job.output.filename
-    |> Path.extname()
-    |> convert_to(job)
-
-    {job, nil}
-  end
-
   @spec done({Job.t(), nil}) :: {Job.t(), nil}
   def done({job, nil}) do
     Broadcaster.report(:done, job, from: self())
     {job, nil}
-  end
-
-  @spec convert_to(String.t(), Job.t()) :: Job.t()
-  defp convert_to(".png", job) do
-    root_filename =
-      job.output.filename
-      |> Path.rootname(".png")
-      |> Path.rootname(".ppm")
-
-    ppm_filename = root_filename <> ".ppm"
-    ImageMagick.convert(ppm_filename, job.output.filename)
-
-    job
   end
 end

@@ -32,7 +32,6 @@ defmodule Fractals.Mixfile do
       {:earmark, "~> 1.2", override: true},
       {:gen_stage, "~> 0.14"},
       {:inflex, "~> 1.10.0"},
-      {:mogrify, "~> 0.6.1"},
       {:uuid, "~> 1.1"},
       {:yaml_elixir, "~> 2.1.0"}
     ]

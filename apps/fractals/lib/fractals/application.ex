@@ -23,7 +23,6 @@ defmodule Fractals.Application do
       Fractals.Colorizer.Random,
       # image output
       {DynamicSupervisor, strategy: :one_for_one, name: Fractals.OutputWorkerSupervisor},
-      Fractals.ConversionWorker,
       {Registry, keys: :unique, name: Fractals.OutputWorkerRegistry},
       # reporters
       Fractals.Reporters.Supervisor,

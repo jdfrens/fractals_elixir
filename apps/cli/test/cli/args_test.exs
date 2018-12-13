@@ -83,7 +83,7 @@ defmodule CLI.ArgsTest do
 
   describe "parse_group_element/1" do
     test "parses output_file param" do
-      assert {:output_filename, "foo.png"} == Args.parse_group_element("output_filename:foo.png")
+      assert {:output_filename, "foo.ppm"} == Args.parse_group_element("output_filename:foo.ppm")
     end
 
     test "parses params_filename" do

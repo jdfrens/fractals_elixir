@@ -7,7 +7,7 @@ defmodule Fractals.OutputWorker do
 
   use GenServer
 
-  alias Fractals.{Chunk, ConversionWorker, Job}
+  alias Fractals.{Chunk, Job}
   alias Fractals.Output.{OutputState, PPMFile}
   alias Fractals.Reporters.Broadcaster
 
@@ -68,11 +68,11 @@ defmodule Fractals.OutputWorker do
     end
   end
 
-  # Closes the job (i.e., closes the file).  Triggers the conversion worker.
+  # Closes the job (i.e., closes the file).
   @spec default_next_stage(Job.t()) :: any()
   defp default_next_stage(job) do
     Job.close(job)
-    ConversionWorker.convert(job)
+    Broadcaster.report(:done, job, from: self())
   end
 
   # Server API

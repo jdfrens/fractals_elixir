@@ -32,7 +32,7 @@ defmodule Fractals.Reporters.Stdout do
     chunk_count = job.engine.chunk_count
 
     if Integer.mod(chunk_number, 20) == 0 or chunk_number == chunk_count do
-      puts(state, "writing #{chunk_number}/#{chunk_count} to #{job.output.ppm_filename}")
+      puts(state, "writing #{chunk_number}/#{chunk_count} to #{job.output.filename}")
     end
 
     {:noreply, state}

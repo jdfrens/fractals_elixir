@@ -6,14 +6,13 @@ defmodule Fractals.Output do
   @type t :: %__MODULE__{
           directory: String.t() | nil,
           filename: String.t() | nil,
-          ppm_filename: String.t() | nil,
           pid: pid() | nil
         }
 
-  defstruct directory: "images", filename: nil, ppm_filename: nil, pid: nil
+  defstruct directory: "images", filename: nil, pid: nil
 
-  # IDEA: this could be a param
-  @output_extension ".png"
+  @valid_extensions ~w(.ppm)
+  @default_output_extension ".ppm"
 
   def parse(params) do
     Enum.reduce(params, %__MODULE__{}, &parse_attribute/2)
@@ -23,12 +22,12 @@ defmodule Fractals.Output do
     %{output | attribute => parse_value(attribute, value)}
   end
 
-  defp parse_value(attribute, value) when attribute in [:directory, :filename, :ppm_filename] do
+  defp parse_value(attribute, value) when attribute in [:directory, :filename] do
     value
   end
 
   def compute(job) do
-    Enum.reduce([:filename, :ppm_filename, :pid], job.output, &compute_attribute(&1, &2, job))
+    Enum.reduce([:filename, :pid], job.output, &compute_attribute(&1, &2, job))
   end
 
   defp compute_attribute(attribute, output, job) do
@@ -36,36 +35,32 @@ defmodule Fractals.Output do
   end
 
   defp compute_value(:filename, output, job) do
-    if output.filename == nil do
-      case job.params_filenames do
-        [] ->
-          nil
+    cond do
+      output.filename == nil ->
+        compute_filename(output, job)
 
-        [filename | _] ->
-          output_basepath(filename, output) <> @output_extension
-      end
-    else
-      Path.join(output.directory, output.filename)
-    end
-  end
+      Path.extname(output.filename) in @valid_extensions ->
+        Path.join(output.directory, output.filename)
 
-  defp compute_value(:ppm_filename, output, _job) do
-    case output.filename do
-      nil ->
-        nil
-
-      filename ->
-        output_basepath(filename, output) <> ".ppm"
+      true ->
+        {:error, "invalid extension #{output.filename}"}
     end
   end
 
   defp compute_value(:pid, output, _job) do
-    case output.ppm_filename do
-      nil ->
+    with filename when is_binary(filename) <- output.filename,
+         {:ok, pid} <- File.open(output.filename, [:write]) do
+      pid
+    end
+  end
+
+  defp compute_filename(output, job) do
+    case job.params_filenames do
+      [] ->
         nil
 
-      filename ->
-        File.open!(filename, [:write])
+      [filename | _] ->
+        output_basepath(filename, output) <> @default_output_extension
     end
   end
 
@@ -76,9 +71,7 @@ defmodule Fractals.Output do
 
   @spec basename(String.t()) :: String.t()
   defp basename(filename) do
-    filename
-    |> Path.basename(".yml")
-    |> Path.basename(".png")
-    |> Path.basename(".ppm")
+    (~w(.yml) ++ @valid_extensions)
+    |> Enum.reduce(filename, fn ext, f -> Path.basename(f, ext) end)
   end
 end
