@@ -6,60 +6,69 @@ defmodule PNG do
   alias PNG.{Config, LowLevel, ZLib}
 
   @spec create(map()) :: map()
-  def create(%{file: file} = png) do
+  def create(%Config{file: file} = config) when is_pid(file) do
     callback = fn data -> :file.write(file, data) end
-    png = png |> Map.delete(:file) |> Map.put(:call, callback)
-    create(png)
+
+    config
+    |> Map.put(:file, nil)
+    |> Map.put(:callback, callback)
+    |> create()
   end
 
-  def create(%{size: {width, height} = size, mode: mode, call: callback} = png) do
-    config = %Config{size: {width, height}, mode: mode}
+  def create(%Config{} = config) do
+    config
+    |> append_header()
+    |> append_palette()
+    |> Map.put(:z, ZLib.open())
+  end
+
+  @spec append_header(Config.t()) :: Config.t()
+  def append_header(%Config{callback: callback} = config) do
     :ok = callback.(LowLevel.header())
     :ok = callback.(LowLevel.chunk("IHDR", config))
-    :ok = append_palette(png)
-    z = ZLib.open()
-    %{size: size, mode: mode, call: callback, z: z}
+    config
   end
 
-  def append_palette(%{call: callback, palette: palette}) do
-    chunk = LowLevel.chunk("PLTE", palette)
-    :ok = callback.(chunk)
+  @spec append_palette(Config.t()) :: Config.t()
+  def append_palette(%Config{palette: nil} = config) do
+    config
   end
 
-  def append_palette(%{}) do
-    :ok
+  def append_palette(%Config{callback: callback, palette: palette} = config) do
+    :ok = callback.(LowLevel.chunk("PLTE", palette))
+    config
   end
 
-  @spec append(map(), LowLevel.chunk()) :: map()
-  def append(png, {:row, row}) do
-    append(png, {:data, [0, row]})
+  @spec append(Config.t(), LowLevel.chunk()) :: Config.t()
+  def append(config, {:row, row}) do
+    append(config, {:data, [0, row]})
   end
 
-  def append(png, {:rows, rows}) do
+  def append(config, {:rows, rows}) do
     f = fn row -> [0, row] end
-    append(png, {:data, :lists.map(f, rows)})
+    append(config, {:data, :lists.map(f, rows)})
   end
 
-  def append(%{z: z} = png, {:data, raw_data}) do
+  def append(%Config{z: z} = config, {:data, raw_data}) do
     compressed = ZLib.deflate(z, raw_data)
-    append(png, {:compressed, compressed})
-    png
+    append(config, {:compressed, compressed})
+    config
   end
 
-  def append(png, {:compressed, []}) do
-    png
+  def append(config, {:compressed, []}) do
+    config
   end
 
-  def append(%{call: callback} = png, {:compressed, compressed}) do
+  def append(%Config{callback: callback} = config, {:compressed, compressed}) do
     chunks = LowLevel.chunk("IDAT", {:compressed, compressed})
     :ok = callback.(chunks)
-    png
+    config
   end
 
-  @spec close(map) :: :ok
-  def close(%{z: z, call: callback} = png) do
+  @spec close(PNG.Config.t()) :: :ok
+  def close(%Config{z: z, callback: callback} = config) do
     compressed = ZLib.deflate(z, <<>>, :finish)
-    append(png, {:compressed, List.flatten(compressed)})
+    append(config, {:compressed, List.flatten(compressed)})
     :ok = ZLib.close(z)
     :ok = callback.(LowLevel.chunk("IEND"))
     :ok

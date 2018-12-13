@@ -7,6 +7,8 @@ defmodule Indexed8Test do
 
   import PNG.FileHelpers
 
+  alias PNG.Config
+
   setup do
     setup_filenames("indexed_8.png")
   end
@@ -19,7 +21,7 @@ defmodule Indexed8Test do
     mode = {:indexed, 8}
     palette = {:rgb, 8, [{255, 0, 0}, {0, 255, 0}, {0, 0, 255}]}
     {:ok, file} = :file.open(image_filename, [:write])
-    png = PNG.create(%{size: size, mode: mode, palette: palette, file: file})
+    png = PNG.create(%Config{size: size, mode: mode, palette: palette, file: file})
 
     :ok = append_rows(png)
     :ok = PNG.close(png)

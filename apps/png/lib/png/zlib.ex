@@ -6,7 +6,7 @@ defmodule PNG.ZLib do
   """
 
   @type zstream :: :zlib.zstream()
-  @type data :: iolist()
+  @type data :: iodata()
   @type compressed :: iolist()
 
   @doc """

@@ -5,6 +5,8 @@ defmodule PNGTest do
 
   use ExUnit.Case, async: true
 
+  alias PNG.Config
+
   # NOTE: the `target` in this test is _not_ the same `Target` in the corresponding test in the original png library.
   # THE TEST IS BROKEN IN THE ORIGINAL png LIBRARY AND GIVES A FALSE POSITIVE.
   # I am asserting against the value that the original png library DOES compute (and so does my transliteration).
@@ -12,7 +14,7 @@ defmodule PNGTest do
   test "create/1 and append/2" do
     e = :ets.new(:state, [])
 
-    cb = fn bin ->
+    callback = fn bin ->
       new_contents =
         case :ets.lookup(e, :contents) do
           [] ->
@@ -27,10 +29,10 @@ defmodule PNGTest do
     end
 
     png =
-      PNG.create(%{
+      PNG.create(%Config{
         size: {4, 2},
         mode: {:indexed, 8},
-        call: cb,
+        callback: callback,
         palette: {:rgb, 8, [{255, 0, 0}, {0, 0, 255}]}
       })
 

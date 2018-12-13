@@ -1,4 +1,8 @@
 defmodule PNG.LowLevel do
+  @moduledoc """
+  Low-level functions to generate a PNG image by chunks.
+  """
+
   alias PNG.{Config, ZLib}
 
   @type chunk ::
@@ -7,6 +11,7 @@ defmodule PNG.LowLevel do
           | {:rows, iodata()}
           | {:data, iodata()}
           | {:compressed, iodata()}
+          | Config.palette()
 
   @type color_tuple :: {integer(), integer(), integer()}
 

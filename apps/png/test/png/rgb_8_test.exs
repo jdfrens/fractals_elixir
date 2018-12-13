@@ -8,6 +8,8 @@ defmodule RGB8Test do
   import PNG.FileHelpers
   import PNG.ImageGenerationTestHelpers
 
+  alias PNG.Config
+
   setup do
     setup_filenames("rgb_8.png")
   end
@@ -19,7 +21,7 @@ defmodule RGB8Test do
     size = {100, 100}
     mode = {:rgb, 8}
     {:ok, file} = :file.open(image_filename, [:write])
-    png = PNG.create(%{size: size, mode: mode, file: file})
+    png = PNG.create(%Config{size: size, mode: mode, file: file})
 
     :ok = append_image(png, &pixel/3)
     :ok = PNG.close(png)
