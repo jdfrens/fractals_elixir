@@ -1,4 +1,4 @@
-defmodule PPMSpec do
+defmodule PPMTest do
   use ExUnit.Case, async: true
 
   describe ".p3_header" do
