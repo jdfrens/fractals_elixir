@@ -5,7 +5,7 @@ defmodule Fractals.Job do
 
   import Complex, only: :macros
 
-  alias Fractals.{ColorRegistry, EngineRegistry, FractalRegistry}
+  alias Fractals.ParserRegistry
   alias Fractals.Engines.DoNothingEngine
   alias Fractals.{Color, Fractal, Image, Job, Output, Size}
 
@@ -113,29 +113,38 @@ defmodule Fractals.Job do
   defp parse_value(:color, value) do
     color_params = symbolize(value)
 
-    color_params
-    |> Map.get(:type)
-    |> String.downcase()
-    |> ColorRegistry.get()
+    type =
+      color_params
+      |> Map.get(:type)
+      |> String.downcase()
+
+    :color
+    |> ParserRegistry.get(type)
     |> apply(:parse, [color_params])
   end
 
   defp parse_value(:engine, value) do
     engine_params = symbolize(value)
 
-    engine_params
-    |> Map.get(:type)
-    |> EngineRegistry.get()
+    type =
+      engine_params
+      |> Map.get(:type)
+
+    :engine
+    |> ParserRegistry.get(type)
     |> apply(:parse_engine, [engine_params])
   end
 
   defp parse_value(:fractal, value) do
     fractal_params = symbolize(value)
 
-    fractal_params
-    |> Map.get(:type)
-    |> Inflex.underscore()
-    |> FractalRegistry.get()
+    type =
+      fractal_params
+      |> Map.get(:type)
+      |> Inflex.underscore()
+
+    :fractal
+    |> ParserRegistry.get(type)
     |> apply(:parse, [fractal_params])
   end
 

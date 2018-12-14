@@ -3,22 +3,19 @@ defmodule Fractals.Application do
 
   use Application
 
-  @escape_time_fractals %{
-    "burning_ship" => Fractals.EscapeTime.BurningShip,
-    "julia" => Fractals.EscapeTime.Julia,
-    "mandelbrot" => Fractals.EscapeTime.Mandelbrot
+  @initial_parsers %{
+    {:color, :_} => Fractals.Color,
+    {:fractal, "burning_ship"} => Fractals.EscapeTime.BurningShip,
+    {:fractal, "julia"} => Fractals.EscapeTime.Julia,
+    {:fractal, "mandelbrot"} => Fractals.EscapeTime.Mandelbrot,
+    {:fractal, "newton"} => Fractals.UnimplementedFractal,
+    {:fractal, "nova"} => Fractals.UnimplementedFractal
   }
-  @unimplemented_fractals %{
-    "newton" => Fractals.UnimplementedFractal,
-    "nova" => Fractals.UnimplementedFractal
-  }
-  @fractals Map.merge(@escape_time_fractals, @unimplemented_fractals)
 
   def start(_type, _args) do
     children = [
       # registries
-      Fractals.EngineRegistry,
-      {Fractals.FractalRegistry, @fractals},
+      {Fractals.ParserRegistry, @initial_parsers},
       # color
       Fractals.Colorizer.Random,
       # image output

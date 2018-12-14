@@ -3,11 +3,11 @@ defmodule StageEngine.Application do
 
   use Application
 
-  alias Fractals.EngineRegistry
+  alias Fractals.ParserRegistry
 
   def start(_type, _args) do
     Application.ensure_all_started(:fractals)
-    EngineRegistry.add("stage", StageEngine)
+    ParserRegistry.add(:engine, "stage", StageEngine)
 
     children = [
       StageEngine.GridWorker,
