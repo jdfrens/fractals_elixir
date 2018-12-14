@@ -11,6 +11,7 @@ defmodule CLI.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.7",
       escript: [main_module: CLI, name: "fractals"],
+      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]

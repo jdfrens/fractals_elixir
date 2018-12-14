@@ -30,7 +30,6 @@ defmodule Fractals.Mixfile do
       {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.2", only: [:dev, :test], runtime: false},
       {:earmark, "~> 1.2", override: true},
-      {:gen_stage, "~> 0.14"},
       {:inflex, "~> 1.10.0"},
       {:ppm, in_umbrella: true},
       {:uuid, "~> 1.1"},
