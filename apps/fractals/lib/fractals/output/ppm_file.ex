@@ -1,33 +1,24 @@
 defmodule Fractals.Output.PPMFile do
   @moduledoc """
-  Functions to write a fractal to a PPM file.
+  Functions to write a fractal to a PPM file.  Implements the `Fractals.Output.ImageFile` behaviour.
   """
 
-  @type pixel :: String.t()
-  @type pixels :: [pixel()]
+  @behaviour Fractals.Output.ImageFile
 
   alias Fractals.Job
 
-  @doc """
-  Writes all of the `pixels` to a new file.
-  """
-  @spec write_file(Job.t(), pixels()) :: :ok
+  @impl Fractals.Output.ImageFile
   def write_file(job, pixels) do
     start_file(job)
     write_pixels(job, pixels)
   end
 
-  @doc """
-  Writes the PPM header to a new file.
-  """
-  @spec start_file(Job.t()) :: :ok
+  @impl Fractals.Output.ImageFile
   def start_file(job) do
     lines_to_file(job, header(job))
   end
 
-  @doc """
-  Writes pixels to file that has been started with `start_file/1`.
-  """
+  @impl Fractals.Output.ImageFile
   def write_pixels(job, pixels) do
     lines_to_file(job, pixels)
   end
