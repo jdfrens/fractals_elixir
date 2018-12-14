@@ -6,7 +6,6 @@ defmodule Fractals.Job do
   import Complex, only: :macros
 
   alias Fractals.ParserRegistry
-  alias Fractals.Engines.DoNothingEngine
   alias Fractals.{Color, Fractal, Image, Job, Output, Size}
 
   @type fractal_id :: String.t()
@@ -36,7 +35,7 @@ defmodule Fractals.Job do
   def default do
     %Job{
       seed: 666,
-      engine: %DoNothingEngine{},
+      engine: %Fractals.Engines.DoNothingEngine{},
       fractal: %Fractal{
         type: :mandelbrot,
         module: Fractals.EscapeTime.Mandelbrot
@@ -148,12 +147,20 @@ defmodule Fractals.Job do
     |> apply(:parse, [fractal_params])
   end
 
-  defp parse_value(:image, value) do
-    Image.parse(symbolize(value))
+  defp parse_value(:output, value) do
+    output_params = symbolize(value)
+
+    type =
+      output_params
+      |> Map.get(:type)
+
+    :output
+    |> ParserRegistry.get(type)
+    |> apply(:parse, [output_params])
   end
 
-  defp parse_value(:output, value) do
-    Output.parse(symbolize(value))
+  defp parse_value(:image, value) do
+    Image.parse(symbolize(value))
   end
 
   defp parse_value(_attribute, value), do: value

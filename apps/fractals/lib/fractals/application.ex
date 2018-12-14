@@ -9,12 +9,13 @@ defmodule Fractals.Application do
     {:fractal, "julia"} => Fractals.EscapeTime.Julia,
     {:fractal, "mandelbrot"} => Fractals.EscapeTime.Mandelbrot,
     {:fractal, "newton"} => Fractals.UnimplementedFractal,
-    {:fractal, "nova"} => Fractals.UnimplementedFractal
+    {:fractal, "nova"} => Fractals.UnimplementedFractal,
+    {:output, :_} => Fractals.Output
   }
 
   def start(_type, _args) do
     children = [
-      # registries
+      # registry
       {Fractals.ParserRegistry, @initial_parsers},
       # color
       Fractals.Colorizer.Random,
