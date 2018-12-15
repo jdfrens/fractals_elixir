@@ -1,10 +1,10 @@
-defmodule CLI.IntegrationTest do
+defmodule Integration.CLITest do
   use ExUnit.Case
 
   # credo:disable-for-this-file Credo.Check.Design.AliasUsage
 
-  @mandelbrot_input_filename "test/inputs/integration_mandelbrot.yml"
-  @mandelbrot_output_filename "test/images/integration_mandelbrot.ppm"
+  @input_filename "test/inputs/mandelbrot.yml"
+  @output_filename "test/images/mandelbrot.ppm"
 
   @expected_output [
                      "P3",
@@ -20,8 +20,8 @@ defmodule CLI.IntegrationTest do
                    |> Enum.join("\n")
 
   setup do
-    if File.exists?(@mandelbrot_output_filename) do
-      File.rm!(@mandelbrot_output_filename)
+    if File.exists?(@output_filename) do
+      File.rm!(@output_filename)
     end
 
     :ok
@@ -32,9 +32,9 @@ defmodule CLI.IntegrationTest do
 
     job =
       Fractals.Job.process(
-        output: [directory: "test/images"],
+        output: [type: "ppm", directory: "test/images"],
         engine: [type: "stage"],
-        params_filename: @mandelbrot_input_filename
+        params_filename: @input_filename
       )
 
     ExUnit.CaptureIO.capture_io(fn ->
@@ -43,7 +43,7 @@ defmodule CLI.IntegrationTest do
       CLI.wait(nil)
     end)
 
-    output = File.read!(@mandelbrot_output_filename)
+    output = File.read!(@output_filename)
     assert output == @expected_output
   end
 end

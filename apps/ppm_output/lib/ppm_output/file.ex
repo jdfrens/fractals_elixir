@@ -1,4 +1,4 @@
-defmodule Fractals.Output.PPMFile do
+defmodule PPMOutput.File do
   @moduledoc """
   Functions to write a fractal to a PPM file.  Implements the `Fractals.Output.ImageFile` behaviour.
   """

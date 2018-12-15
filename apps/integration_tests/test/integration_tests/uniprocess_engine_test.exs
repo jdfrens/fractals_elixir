@@ -1,4 +1,6 @@
-defmodule UniprocessEngine.IntegrationTest do
+defmodule Integration.UniprocessEngineTest do
+  @moduledoc false
+
   use ExUnit.Case, async: true
 
   alias Fractals.Job
@@ -14,7 +16,12 @@ defmodule UniprocessEngine.IntegrationTest do
   test "small, red Mandelbrot" do
     job =
       Job.process(
-        output: [directory: "test/images"],
+        output: [
+          type: "ppm",
+          directory: "test/images",
+          filename: "uniprocess-output.ppm"
+        ],
+        engine: [type: "uniprocess"],
         params_filename: "test/inputs/small-red-mandelbrot.yml"
       )
 
@@ -22,9 +29,7 @@ defmodule UniprocessEngine.IntegrationTest do
 
     assert_same_images(
       "test/expected_outputs/small-red-mandelbrot.ppm",
-      "test/images/small-red-mandelbrot.ppm"
+      "test/images/uniprocess-output.ppm"
     )
-
-    assert File.exists?("test/images/small-red-mandelbrot.png")
   end
 end

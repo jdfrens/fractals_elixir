@@ -6,7 +6,7 @@ defmodule Fractals.Job do
   import Complex, only: :macros
 
   alias Fractals.ParserRegistry
-  alias Fractals.{Color, Fractal, Image, Job, Output, Size}
+  alias Fractals.{Color, Image, Job, Size}
 
   @type fractal_id :: String.t()
   @type t :: %__MODULE__{
@@ -15,9 +15,9 @@ defmodule Fractals.Job do
           image: Image.t() | nil,
           engine: map() | nil,
           fractal: Fractals.Fractal.t() | nil,
-          color: Color.t() | nil,
+          color: Fractals.Color.t() | nil,
           params_filenames: [String.t()] | nil,
-          output: Output.t() | nil
+          output: Fractals.Output.t() | nil
         }
 
   defstruct [
@@ -36,7 +36,7 @@ defmodule Fractals.Job do
     %Job{
       seed: 666,
       engine: %Fractals.Engines.DoNothingEngine{},
-      fractal: %Fractal{
+      fractal: %Fractals.Fractal{
         type: :mandelbrot,
         module: Fractals.EscapeTime.Mandelbrot
       },
@@ -51,9 +51,7 @@ defmodule Fractals.Job do
         max_intensity: 255
       },
       params_filenames: [],
-      output: %Output{
-        directory: "images"
-      }
+      output: %Fractals.Outputs.NoOutput{}
     }
   end
 
@@ -201,8 +199,8 @@ defmodule Fractals.Job do
     UUID.uuid1()
   end
 
-  defp compute_value(:output, job) do
-    Output.compute(job)
+  defp compute_value(:output, %Job{output: %{module: module}} = job) do
+    module.compute(job)
   end
 
   defp compute_value(:params_filenames, %Job{params_filenames: params_filenames}) do

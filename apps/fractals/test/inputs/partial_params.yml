@@ -3,5 +3,3 @@ fractal:
   c: 1.0+0.0i
 color:
   type: Blue
-output:
-  directory: "test/images"

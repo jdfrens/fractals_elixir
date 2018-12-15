@@ -1,30 +1,20 @@
 defmodule Fractals.Output do
   @moduledoc """
-  Represents  the output values for a job.
+  The functions needed to be a output.
   """
 
-  @type t :: %__MODULE__{
-          directory: String.t() | nil,
-          filename: String.t() | nil,
-          writer: module() | nil,
-          pid: pid() | nil
-        }
+  @type t :: map()
 
-  defstruct directory: "images", filename: nil, writer: Fractals.Output.PPMFile, pid: nil
+  alias Fractals.Job
+  alias Fractals.Output.ImageFile
 
-  @spec start_file(Fractals.Job.t()) :: Fractals.Job.t()
-  def start_file(job) do
-    apply(job.output.writer, :start_file, [job])
-    job
-  end
+  @callback start_file(job :: Job.t()) :: Job.t()
 
-  @spec write_pixels(Fractals.Job.t(), Fractals.Output.ImageFile.pixels()) :: Fractals.Job.t()
-  def write_pixels(job, data) do
-    apply(job.output.writer, :write_pixels, [job, data])
-    job
-  end
+  @callback write_pixels(job :: Job.t(), pixels :: ImageFile.pixels()) :: Job.t()
 
-  defdelegate parse(params), to: Fractals.Output.Parser
+  @doc "Parses params into a module that implements `Output`."
+  @callback parse(params :: map()) :: t()
 
-  defdelegate compute(job), to: Fractals.Output.Parser
+  @doc "Called after all values are parsed"
+  @callback compute(job :: Job.t()) :: t()
 end

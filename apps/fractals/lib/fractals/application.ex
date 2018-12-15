@@ -9,8 +9,7 @@ defmodule Fractals.Application do
     {:fractal, "julia"} => Fractals.EscapeTime.Julia,
     {:fractal, "mandelbrot"} => Fractals.EscapeTime.Mandelbrot,
     {:fractal, "newton"} => Fractals.UnimplementedFractal,
-    {:fractal, "nova"} => Fractals.UnimplementedFractal,
-    {:output, :_} => Fractals.Output
+    {:fractal, "nova"} => Fractals.UnimplementedFractal
   }
 
   def start(_type, _args) do

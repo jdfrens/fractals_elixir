@@ -34,10 +34,6 @@ defmodule Fractals.JobTest do
     test "parsing the lower-right corder", %{argv: argv} do
       assert Job.process(argv).image.lower_right == Complex.new(92.3, 120.3)
     end
-
-    test "parsed output_filename parameter", %{argv: argv} do
-      assert Job.process(argv).output.filename == "test/images/the-output.ppm"
-    end
   end
 
   describe ".process and relying on defaults" do
@@ -76,10 +72,6 @@ defmodule Fractals.JobTest do
 
     test "empty list of params filenames", %{argv: argv} do
       assert Job.process(argv).params_filenames == []
-    end
-
-    test "outputs to images directory", %{argv: argv} do
-      assert Job.process(argv).output.directory == "images"
     end
   end
 
@@ -134,10 +126,6 @@ defmodule Fractals.JobTest do
                  c: Complex.new(1.0)
                }
              }
-    end
-
-    test "uses first params filename to name output", %{argv: argv} do
-      assert Job.process(argv).output.filename == "test/images/simple.ppm"
     end
   end
 end

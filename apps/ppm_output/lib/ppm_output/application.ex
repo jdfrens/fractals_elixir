@@ -3,7 +3,12 @@ defmodule PPMOutput.Application do
 
   use Application
 
+  alias Fractals.ParserRegistry
+
   def start(_type, _args) do
+    Application.ensure_all_started(:fractals)
+    ParserRegistry.add(:output, "ppm", PPMOutput)
+
     children = []
 
     opts = [strategy: :one_for_one, name: PPMOutput.Supervisor]

@@ -7,6 +7,3 @@ image:
 color:
   type: Blue
 seed:       12345
-output:
-  directory: "test/images"
-  filename: "the-output.ppm"

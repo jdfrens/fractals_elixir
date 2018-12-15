@@ -1,4 +1,4 @@
-defmodule StageEngine.IntegrationTest do
+defmodule Integration.StageEngineTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
@@ -17,7 +17,11 @@ defmodule StageEngine.IntegrationTest do
   test "small, red Mandelbrot" do
     job =
       Job.process(
-        output: [directory: "test/images"],
+        output: [
+          type: "ppm",
+          directory: "test/images",
+          filename: "stage-engine-output.ppm"
+        ],
         engine: [type: "stage"],
         params_filename: "test/inputs/small-red-mandelbrot.yml"
       )
@@ -30,9 +34,7 @@ defmodule StageEngine.IntegrationTest do
 
     assert_same_images(
       "test/expected_outputs/small-red-mandelbrot.ppm",
-      "test/images/small-red-mandelbrot.ppm"
+      "test/images/stage-engine-output.ppm"
     )
-
-    assert File.exists?("test/images/small-red-mandelbrot.png")
   end
 end

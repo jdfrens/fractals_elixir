@@ -7,7 +7,6 @@ defmodule UniprocessEngine.Algorithm do
     Colorizer,
     Grid,
     Job,
-    Output.PPMFile,
     Reporters.Broadcaster
   }
 
@@ -40,7 +39,7 @@ defmodule UniprocessEngine.Algorithm do
 
   @spec write({Job.t(), [PPM.color()]}) :: {Job.t(), nil}
   def write({job, colors}) do
-    PPMFile.write_file(job, colors)
+    job.output.module.write_file(job, colors)
     Job.close(job)
     {job, nil}
   end

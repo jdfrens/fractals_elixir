@@ -7,7 +7,7 @@ defmodule Fractals.Output.WorkerCache do
   processed, and the search-process loop repeats.
   """
 
-  alias Fractals.{Chunk, Job, Output}
+  alias Fractals.{Chunk, Job}
   alias Fractals.Output.OutputState
   alias Fractals.Reporters.Broadcaster
 
@@ -55,6 +55,6 @@ defmodule Fractals.Output.WorkerCache do
   @spec write_chunk(non_neg_integer(), [String.t()], Job.t()) :: Job.t()
   defp write_chunk(chunk_number, data, job) do
     Broadcaster.report(:writing, job, chunk_number: chunk_number)
-    Output.write_pixels(job, data)
+    job.output.module.write_pixels(job, data)
   end
 end
