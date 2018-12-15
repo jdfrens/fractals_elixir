@@ -7,7 +7,8 @@ defmodule UniprocessEngine.Application do
 
   def start(_type, _args) do
     Application.ensure_all_started(:fractals)
-    ParserRegistry.add(:engine, "uniprocess", UniprocessEngine)
+
+    ParserRegistry.add(:engine, :uniprocess, UniprocessEngine)
 
     children = []
 

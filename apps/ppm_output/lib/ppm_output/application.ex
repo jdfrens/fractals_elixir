@@ -7,7 +7,8 @@ defmodule PPMOutput.Application do
 
   def start(_type, _args) do
     Application.ensure_all_started(:fractals)
-    ParserRegistry.add(:output, "ppm", PPMOutput)
+
+    ParserRegistry.add(:output, :ppm, PPMOutput.Parser)
 
     children = []
 

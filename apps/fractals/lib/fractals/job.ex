@@ -114,6 +114,7 @@ defmodule Fractals.Job do
       color_params
       |> Map.get(:type)
       |> String.downcase()
+      |> String.to_atom()
 
     :color
     |> ParserRegistry.get(type)
@@ -126,6 +127,7 @@ defmodule Fractals.Job do
     type =
       engine_params
       |> Map.get(:type)
+      |> String.to_atom()
 
     :engine
     |> ParserRegistry.get(type)
@@ -139,6 +141,7 @@ defmodule Fractals.Job do
       fractal_params
       |> Map.get(:type)
       |> Inflex.underscore()
+      |> String.to_atom()
 
     :fractal
     |> ParserRegistry.get(type)
@@ -151,6 +154,7 @@ defmodule Fractals.Job do
     type =
       output_params
       |> Map.get(:type)
+      |> String.to_atom()
 
     :output
     |> ParserRegistry.get(type)

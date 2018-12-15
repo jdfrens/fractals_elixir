@@ -7,7 +7,8 @@ defmodule StageEngine.Application do
 
   def start(_type, _args) do
     Application.ensure_all_started(:fractals)
-    ParserRegistry.add(:engine, "stage", StageEngine)
+
+    ParserRegistry.add(:engine, :stage, StageEngine)
 
     children = [
       StageEngine.GridWorker,
