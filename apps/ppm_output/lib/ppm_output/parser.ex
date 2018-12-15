@@ -3,15 +3,19 @@ defmodule PPMOutput.Parser do
   Parser for `%PPMOutput{}`.
   """
 
+  @behaviour Fractals.OutputParser
+
   @computed_fields [:filename, :pid]
 
   @valid_extensions ~w(.ppm)
-  @default_output_extension ".ppm"
+  @output_extension ".ppm"
 
+  @impl Fractals.OutputParser
   def parse(params) do
     Enum.reduce(params, %PPMOutput{}, &parse_attribute/2)
   end
 
+  @impl Fractals.OutputParser
   def compute(job) do
     Enum.reduce(@computed_fields, job.output, &compute_attribute(&1, &2, job))
   end
@@ -58,7 +62,7 @@ defmodule PPMOutput.Parser do
         nil
 
       [filename | _] ->
-        output_basepath(filename, output) <> @default_output_extension
+        output_basepath(filename, output) <> @output_extension
     end
   end
 

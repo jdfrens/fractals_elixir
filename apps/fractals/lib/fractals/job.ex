@@ -203,8 +203,10 @@ defmodule Fractals.Job do
     UUID.uuid1()
   end
 
-  defp compute_value(:output, %Job{output: %{module: module}} = job) do
-    module.compute(job)
+  defp compute_value(:output, %Job{output: %{type: type}} = job) do
+    :output
+    |> ParserRegistry.get(type)
+    |> apply(:compute, [job])
   end
 
   defp compute_value(:params_filenames, %Job{params_filenames: params_filenames}) do

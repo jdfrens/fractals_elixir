@@ -39,10 +39,4 @@ defmodule PPMOutput do
     apply(job.output.writer, :write_pixels, [job, data])
     job
   end
-
-  @impl Fractals.Output
-  defdelegate parse(params), to: PPMOutput.Parser
-
-  @impl Fractals.Output
-  defdelegate compute(job), to: PPMOutput.Parser
 end
