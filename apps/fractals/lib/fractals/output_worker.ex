@@ -84,7 +84,7 @@ defmodule Fractals.OutputWorker do
 
   @impl GenServer
   def handle_cast({:write, chunk}, {nil, next_stage}) do
-    chunk.job.output.module.start_file(chunk.job)
+    chunk.job.output.module.start(chunk.job)
 
     state =
       %OutputState{

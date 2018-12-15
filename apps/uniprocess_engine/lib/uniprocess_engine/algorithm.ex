@@ -39,7 +39,8 @@ defmodule UniprocessEngine.Algorithm do
 
   @spec write({Job.t(), [PPM.color()]}) :: {Job.t(), nil}
   def write({job, colors}) do
-    job.output.module.write_file(job, colors)
+    job.output.module.start(job)
+    job.output.module.write(job, colors)
     Job.close(job)
     {job, nil}
   end

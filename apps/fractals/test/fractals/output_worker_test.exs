@@ -26,8 +26,8 @@ defmodule Fractals.OutputWorkerTest do
 
     test "writing a chunk", %{subject: subject, output_pid: output_pid, job: job} do
       Fractals.OutputMock
-      |> expect(:start_file, fn ^job -> IO.write(output_pid, "START!") end)
-      |> expect(:write_pixels, fn ^job, ["a", "b", "c"] -> IO.write(output_pid, " chunk1") end)
+      |> expect(:start, fn ^job -> IO.write(output_pid, "START!") end)
+      |> expect(:write, fn ^job, ["a", "b", "c"] -> IO.write(output_pid, " chunk1") end)
 
       OutputWorker.write(subject, %Chunk{number: 1, data: ["a", "b", "c"], job: job})
 
@@ -41,10 +41,10 @@ defmodule Fractals.OutputWorkerTest do
 
     test "writes multiple chunks", %{subject: subject, output_pid: output_pid, job: job} do
       Fractals.OutputMock
-      |> expect(:start_file, fn ^job -> IO.write(output_pid, "START!") end)
-      |> expect(:write_pixels, fn ^job, ["a"] -> IO.write(output_pid, " chunk1") end)
-      |> expect(:write_pixels, fn ^job, ["m"] -> IO.write(output_pid, " chunk2") end)
-      |> expect(:write_pixels, fn ^job, ["x"] -> IO.write(output_pid, " chunk3") end)
+      |> expect(:start, fn ^job -> IO.write(output_pid, "START!") end)
+      |> expect(:write, fn ^job, ["a"] -> IO.write(output_pid, " chunk1") end)
+      |> expect(:write, fn ^job, ["m"] -> IO.write(output_pid, " chunk2") end)
+      |> expect(:write, fn ^job, ["x"] -> IO.write(output_pid, " chunk3") end)
 
       OutputWorker.write(subject, %Chunk{number: 1, data: ["a"], job: job})
       OutputWorker.write(subject, %Chunk{number: 2, data: ["m"], job: job})
@@ -60,10 +60,10 @@ defmodule Fractals.OutputWorkerTest do
       job: job
     } do
       Fractals.OutputMock
-      |> expect(:start_file, fn ^job -> IO.write(output_pid, "START!") end)
-      |> expect(:write_pixels, fn ^job, ["a"] -> IO.write(output_pid, " chunk1") end)
-      |> expect(:write_pixels, fn ^job, ["m"] -> IO.write(output_pid, " chunk2") end)
-      |> expect(:write_pixels, fn ^job, ["x"] -> IO.write(output_pid, " chunk3") end)
+      |> expect(:start, fn ^job -> IO.write(output_pid, "START!") end)
+      |> expect(:write, fn ^job, ["a"] -> IO.write(output_pid, " chunk1") end)
+      |> expect(:write, fn ^job, ["m"] -> IO.write(output_pid, " chunk2") end)
+      |> expect(:write, fn ^job, ["x"] -> IO.write(output_pid, " chunk3") end)
 
       OutputWorker.write(subject, %Chunk{number: 2, data: ["m"], job: job})
       OutputWorker.write(subject, %Chunk{number: 3, data: ["x"], job: job})

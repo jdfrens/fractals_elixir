@@ -7,10 +7,10 @@ defmodule Fractals.Outputs.NoOutput do
 
   defstruct type: :no_output, module: __MODULE__
 
-  def start_file(_job) do
+  def starte(_job) do
   end
 
-  def write_pixels(_job, _pixels) do
+  def write(_job, _pixels) do
   end
 
   def parse(_params) do

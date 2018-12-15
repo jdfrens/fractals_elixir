@@ -3,12 +3,19 @@ defmodule Fractals.Output do
   The functions needed to be a output.
   """
 
-  @type t :: map()
+  @type pixels :: [any()]
 
   alias Fractals.Job
-  alias Fractals.Output.ImageFile
 
-  @callback start_file(job :: Job.t()) :: Job.t()
+  @doc """
+  Starts the output for a fractal image.
 
-  @callback write_pixels(job :: Job.t(), pixels :: ImageFile.pixels()) :: Job.t()
+  This could be opening a file and writing a header; it might be opening a window or Phoenix channel.
+  """
+  @callback start(job :: Job.t()) :: Job.t()
+
+  @doc """
+  Writes pixels to the output.
+  """
+  @callback write(job :: Job.t(), pixels :: pixels()) :: Job.t()
 end

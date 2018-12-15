@@ -24,8 +24,8 @@ defmodule Fractals.Output.WorkerCache do
   end
 
   @spec update_cache(map, Chunk.t()) :: map
-  def update_cache(cache, %Chunk{number: number, data: data}) do
-    Map.put(cache, number, data)
+  def update_cache(cache, %Chunk{number: number, data: pixels}) do
+    Map.put(cache, number, pixels)
   end
 
   @spec output_cache(
@@ -43,8 +43,8 @@ defmodule Fractals.Output.WorkerCache do
         next_stage.(job)
         nil
 
-      data ->
-        write_chunk(next_number, data, job)
+      pixels ->
+        write_chunk(next_number, pixels, job)
 
         cache
         |> Map.delete(next_number)
@@ -53,8 +53,8 @@ defmodule Fractals.Output.WorkerCache do
   end
 
   @spec write_chunk(non_neg_integer(), [String.t()], Job.t()) :: Job.t()
-  defp write_chunk(chunk_number, data, job) do
+  defp write_chunk(chunk_number, pixels, job) do
     Broadcaster.report(:writing, job, chunk_number: chunk_number)
-    job.output.module.write_pixels(job, data)
+    job.output.module.write(job, pixels)
   end
 end
