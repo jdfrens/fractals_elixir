@@ -5,11 +5,11 @@ defmodule Fractals.Application do
 
   @initial_parsers %{
     {:color, :_} => Fractals.Color,
-    {:fractal, "burning_ship"} => Fractals.EscapeTime.BurningShip,
-    {:fractal, "julia"} => Fractals.EscapeTime.Julia,
-    {:fractal, "mandelbrot"} => Fractals.EscapeTime.Mandelbrot,
-    {:fractal, "newton"} => Fractals.UnimplementedFractal,
-    {:fractal, "nova"} => Fractals.UnimplementedFractal
+    {:fractal, "burning_ship"} => Fractals.EscapeTime.BurningShipParser,
+    {:fractal, "julia"} => Fractals.EscapeTime.JuliaParser,
+    {:fractal, "mandelbrot"} => Fractals.EscapeTime.MandelbrotParser,
+    {:fractal, "newton"} => Fractals.UnimplementedFractalParser,
+    {:fractal, "nova"} => Fractals.UnimplementedFractalParser
   }
 
   def start(_type, _args) do

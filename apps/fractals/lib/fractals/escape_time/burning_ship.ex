@@ -7,14 +7,6 @@ defmodule Fractals.EscapeTime.BurningShip do
 
   import Complex
 
-  @impl Fractals.Fractal
-  def parse(_params) do
-    %Fractals.Fractal{
-      type: :burning_ship,
-      module: __MODULE__
-    }
-  end
-
   @impl Fractals.EscapeTime
   def iterate(grid_point, _algorithm) do
     Stream.iterate(Complex.new(0.0), &iterator(&1, grid_point))
