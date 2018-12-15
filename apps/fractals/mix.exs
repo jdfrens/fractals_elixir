@@ -31,6 +31,7 @@ defmodule Fractals.Mixfile do
       {:dialyxir, "~> 1.0.0-rc.2", only: [:dev, :test], runtime: false},
       {:earmark, "~> 1.2", override: true},
       {:inflex, "~> 1.10.0"},
+      {:mox, "~> 0.4", only: :test},
       {:ppm, in_umbrella: true},
       {:uuid, "~> 1.1"},
       {:yaml_elixir, "~> 2.1.0"}
