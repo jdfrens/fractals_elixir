@@ -4,7 +4,6 @@ defmodule Fractals.Output do
   """
 
   @type t :: map()
-  # FIXME: I can do better than this
   @type pixels :: [any()]
 
   alias Fractals.Job
