@@ -3,27 +3,24 @@ defmodule Fractals.Application do
 
   use Application
 
-  @escape_time_fractals %{
-    "burning_ship" => Fractals.EscapeTime.BurningShip,
-    "julia" => Fractals.EscapeTime.Julia,
-    "mandelbrot" => Fractals.EscapeTime.Mandelbrot
+  @initial_parsers %{
+    {:color, :_} => Fractals.Color,
+    {:fractal, :burning_ship} => Fractals.EscapeTime.BurningShipParser,
+    {:fractal, :julia} => Fractals.EscapeTime.JuliaParser,
+    {:fractal, :mandelbrot} => Fractals.EscapeTime.MandelbrotParser,
+    {:fractal, :newton} => Fractals.UnimplementedFractalParser,
+    {:fractal, :nova} => Fractals.UnimplementedFractalParser,
+    {:output, :no_output} => Fractals.Outputs.NoOutput
   }
-  @unimplemented_fractals %{
-    "newton" => Fractals.UnimplementedFractal,
-    "nova" => Fractals.UnimplementedFractal
-  }
-  @fractals Map.merge(@escape_time_fractals, @unimplemented_fractals)
 
   def start(_type, _args) do
     children = [
-      # registries
-      Fractals.EngineRegistry,
-      {Fractals.FractalRegistry, @fractals},
+      # registry
+      {Fractals.ParserRegistry, @initial_parsers},
       # color
       Fractals.Colorizer.Random,
       # image output
       {DynamicSupervisor, strategy: :one_for_one, name: Fractals.OutputWorkerSupervisor},
-      Fractals.ConversionWorker,
       {Registry, keys: :unique, name: Fractals.OutputWorkerRegistry},
       # reporters
       Fractals.Reporters.Supervisor,

@@ -7,10 +7,10 @@ defmodule Fractals.Engines.DoNothingEngine do
 
   @type t :: %__MODULE__{
           type: :do_nothing,
-          module: Fractals.Engines.DoNothingEngine
+          module: __MODULE__
         }
 
-  defstruct type: :do_nothing, module: Fractals.Engines.DoNothingEngine
+  defstruct type: :do_nothing, module: __MODULE__
 
   @impl Fractals.Engine
   def parse_engine(_params) do

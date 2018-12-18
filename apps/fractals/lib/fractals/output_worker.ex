@@ -7,8 +7,8 @@ defmodule Fractals.OutputWorker do
 
   use GenServer
 
-  alias Fractals.{Chunk, ConversionWorker, Job}
-  alias Fractals.Output.{OutputState, PPMFile}
+  alias Fractals.{Chunk, Job}
+  alias Fractals.Output.{OutputState, WorkerCache}
   alias Fractals.Reporters.Broadcaster
 
   @type via_tuple :: {:via, Registry, {Fractals.OutputWorkerRegistry, Job.fractal_id()}}
@@ -68,11 +68,11 @@ defmodule Fractals.OutputWorker do
     end
   end
 
-  # Closes the job (i.e., closes the file).  Triggers the conversion worker.
+  # Closes the job (i.e., closes the file).
   @spec default_next_stage(Job.t()) :: any()
   defp default_next_stage(job) do
     Job.close(job)
-    ConversionWorker.convert(job)
+    Broadcaster.report(:done, job, from: self())
   end
 
   # Server API
@@ -84,62 +84,21 @@ defmodule Fractals.OutputWorker do
 
   @impl GenServer
   def handle_cast({:write, chunk}, {nil, next_stage}) do
-    PPMFile.start_file(chunk.job)
+    chunk.job.output.module.start(chunk.job)
 
     state =
-      %OutputState{next_number: 1, cache: build_initial_cache(chunk.job.engine.chunk_count)}
-      |> process(chunk, next_stage)
+      %OutputState{
+        next_number: 1,
+        cache: WorkerCache.build_initial_cache(chunk.job.engine.chunk_count)
+      }
+      |> WorkerCache.process(chunk, next_stage)
 
     {:noreply, {state, next_stage}}
   end
 
   @impl GenServer
   def handle_cast({:write, chunk}, {state, next_stage}) do
-    state = process(state, chunk, next_stage)
+    state = WorkerCache.process(state, chunk, next_stage)
     {:noreply, {state, next_stage}}
-  end
-
-  # helpers
-
-  @spec process(OutputState.t(), Chunk.t(), (Job.t() -> any)) :: OutputState.t() | nil
-  defp process(%OutputState{next_number: next_number, cache: cache}, chunk, next_stage) do
-    cache
-    |> update_cache(chunk)
-    |> output_cache(next_number, chunk.job, next_stage)
-  end
-
-  @spec update_cache(map, Chunk.t()) :: map
-  defp update_cache(cache, %Chunk{number: number, data: data}) do
-    Map.put(cache, number, data)
-  end
-
-  @spec output_cache(map, non_neg_integer, Job.t(), (Job.t() -> any)) :: OutputState.t() | nil
-  defp output_cache(cache, next_number, job, next_stage) do
-    case Map.get(cache, next_number) do
-      nil ->
-        %OutputState{next_number: next_number, cache: cache}
-
-      :done ->
-        next_stage.(job)
-        nil
-
-      data ->
-        write_chunk(next_number, data, job)
-
-        cache
-        |> Map.delete(next_number)
-        |> output_cache(next_number + 1, job, next_stage)
-    end
-  end
-
-  @spec build_initial_cache(integer()) :: map
-  defp build_initial_cache(chunk_count) do
-    %{(chunk_count + 1) => :done}
-  end
-
-  @spec write_chunk(non_neg_integer, [String.t()], Job.t()) :: :ok
-  defp write_chunk(chunk_number, data, job) do
-    Broadcaster.report(:writing, job, chunk_number: chunk_number)
-    PPMFile.write_pixels(job, data)
   end
 end

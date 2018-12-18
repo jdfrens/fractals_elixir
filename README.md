@@ -47,8 +47,6 @@ You may want compile the executable with `MIX_ENV=prod`.
 
 ## Generating Fractals
 
-If you generate [PPM file](https://en.wikipedia.org/wiki/Netpbm_format#PPM_example) files, you're all done.  If you want PNG files, you need to install [ImageMagick](http://www.imagemagick.org/).  The Elixir program will automatically call the `convert` program to convert from PPM to PNG.
-
 ```
 $ fractals ../yaml/burningship-line-blue.yml
 # bunch of output, then:

@@ -1,6 +1,6 @@
 defmodule Fractals.Fractal do
   @moduledoc """
-  Struct for representing an algorithm.
+  Struct for representing an algorithm along with a basic behaviour for generating the fractal.
   """
 
   @type t :: %__MODULE__{
@@ -18,8 +18,6 @@ defmodule Fractals.Fractal do
             max_iterations: 256,
             cutoff_squared: 4.0,
             algorithm_params: %{}
-
-  @callback parse(keyword | map) :: t()
 
   @callback generate([Complex.complex()], t()) :: complex_grid()
 end

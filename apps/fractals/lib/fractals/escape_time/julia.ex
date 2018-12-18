@@ -7,15 +7,6 @@ defmodule Fractals.EscapeTime.Julia do
 
   use Fractals.EscapeTime
 
-  @impl Fractals.Fractal
-  def parse(params) do
-    %Fractals.Fractal{
-      type: :julia,
-      module: __MODULE__,
-      algorithm_params: %{c: Complex.parse(params[:c])}
-    }
-  end
-
   @impl Fractals.EscapeTime
   def iterate(grid_point, fractal) do
     Stream.iterate(grid_point, &iterator(&1, fractal.algorithm_params.c))

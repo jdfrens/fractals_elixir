@@ -8,7 +8,9 @@ defmodule Fractals.EscapeTimeTest do
 
     use Fractals.EscapeTime
 
-    @impl Fractals.Fractal
+    @behaviour Fractals.FractalParser
+
+    @impl Fractals.FractalParser
     def parse(_params) do
       %Fractals.Fractal{}
     end
@@ -24,7 +26,9 @@ defmodule Fractals.EscapeTimeTest do
 
     use Fractals.EscapeTime
 
-    @impl Fractals.Fractal
+    @behaviour Fractals.FractalParser
+
+    @impl Fractals.FractalParser
     def parse(_params) do
       %Fractals.Fractal{}
     end

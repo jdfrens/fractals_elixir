@@ -9,14 +9,6 @@ defmodule Fractals.EscapeTime.Mandelbrot do
 
   @zero Complex.new(0.0, 0.0)
 
-  @impl Fractals.Fractal
-  def parse(_params) do
-    %Fractals.Fractal{
-      type: :mandelbrot,
-      module: __MODULE__
-    }
-  end
-
   @impl Fractals.EscapeTime
   def iterate(grid_point, _algorithm) do
     Stream.iterate(@zero, &iterator(&1, grid_point))

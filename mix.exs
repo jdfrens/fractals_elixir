@@ -6,7 +6,10 @@ defmodule Fractals.MixProject do
       apps_path: "apps",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      dialyzer: [ignore_warnings: ".dialyzer-ignore-warnings"]
+      dialyzer: [
+        plt_add_apps: [:ex_unit],
+        ignore_warnings: ".dialyzer-ignore-warnings"
+      ]
     ]
   end
 

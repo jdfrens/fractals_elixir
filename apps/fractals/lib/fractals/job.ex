@@ -5,9 +5,8 @@ defmodule Fractals.Job do
 
   import Complex, only: :macros
 
-  alias Fractals.{ColorRegistry, EngineRegistry, FractalRegistry}
-  alias Fractals.Engines.DoNothingEngine
-  alias Fractals.{Color, Fractal, Image, Job, Output, Size}
+  alias Fractals.ParserRegistry
+  alias Fractals.{Color, Image, Job, Size}
 
   @type fractal_id :: String.t()
   @type t :: %__MODULE__{
@@ -16,9 +15,9 @@ defmodule Fractals.Job do
           image: Image.t() | nil,
           engine: map() | nil,
           fractal: Fractals.Fractal.t() | nil,
-          color: Color.t() | nil,
+          color: Fractals.Color.t() | nil,
           params_filenames: [String.t()] | nil,
-          output: Output.t() | nil
+          output: Fractals.Output.t() | nil
         }
 
   defstruct [
@@ -36,8 +35,8 @@ defmodule Fractals.Job do
   def default do
     %Job{
       seed: 666,
-      engine: %DoNothingEngine{},
-      fractal: %Fractal{
+      engine: %Fractals.Engines.DoNothingEngine{},
+      fractal: %Fractals.Fractal{
         type: :mandelbrot,
         module: Fractals.EscapeTime.Mandelbrot
       },
@@ -52,9 +51,7 @@ defmodule Fractals.Job do
         max_intensity: 255
       },
       params_filenames: [],
-      output: %Output{
-        directory: "images"
-      }
+      output: %Fractals.Outputs.NoOutput{}
     }
   end
 
@@ -113,38 +110,59 @@ defmodule Fractals.Job do
   defp parse_value(:color, value) do
     color_params = symbolize(value)
 
-    color_params
-    |> Map.get(:type)
-    |> String.downcase()
-    |> ColorRegistry.get()
+    type =
+      color_params
+      |> Map.get(:type)
+      |> String.downcase()
+      |> String.to_atom()
+
+    :color
+    |> ParserRegistry.get(type)
     |> apply(:parse, [color_params])
   end
 
   defp parse_value(:engine, value) do
     engine_params = symbolize(value)
 
-    engine_params
-    |> Map.get(:type)
-    |> EngineRegistry.get()
+    type =
+      engine_params
+      |> Map.get(:type)
+      |> String.to_atom()
+
+    :engine
+    |> ParserRegistry.get(type)
     |> apply(:parse_engine, [engine_params])
   end
 
   defp parse_value(:fractal, value) do
     fractal_params = symbolize(value)
 
-    fractal_params
-    |> Map.get(:type)
-    |> Inflex.underscore()
-    |> FractalRegistry.get()
+    type =
+      fractal_params
+      |> Map.get(:type)
+      |> Inflex.underscore()
+      |> String.to_atom()
+
+    :fractal
+    |> ParserRegistry.get(type)
     |> apply(:parse, [fractal_params])
+  end
+
+  defp parse_value(:output, value) do
+    output_params = symbolize(value)
+
+    type =
+      output_params
+      |> Map.get(:type)
+      |> String.to_atom()
+
+    :output
+    |> ParserRegistry.get(type)
+    |> apply(:parse, [output_params])
   end
 
   defp parse_value(:image, value) do
     Image.parse(symbolize(value))
-  end
-
-  defp parse_value(:output, value) do
-    Output.parse(symbolize(value))
   end
 
   defp parse_value(_attribute, value), do: value
@@ -185,8 +203,10 @@ defmodule Fractals.Job do
     UUID.uuid1()
   end
 
-  defp compute_value(:output, job) do
-    Output.compute(job)
+  defp compute_value(:output, %Job{output: %{type: type}} = job) do
+    :output
+    |> ParserRegistry.get(type)
+    |> apply(:compute, [job])
   end
 
   defp compute_value(:params_filenames, %Job{params_filenames: params_filenames}) do
