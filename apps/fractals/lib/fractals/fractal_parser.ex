@@ -6,5 +6,5 @@ defmodule Fractals.FractalParser do
   @doc """
   Parses the params as a `Fractals.Fractal`.
   """
-  @callback parse(params :: keyword | map) :: Fractals.t()
+  @callback parse(params :: keyword | map) :: Fractals.Fractal.t()
 end

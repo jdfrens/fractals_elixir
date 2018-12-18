@@ -3,6 +3,8 @@ defmodule Fractals.Output do
   The functions needed to be a output.
   """
 
+  @type t :: map()
+  # FIXME: I can do better than this
   @type pixels :: [any()]
 
   alias Fractals.Job

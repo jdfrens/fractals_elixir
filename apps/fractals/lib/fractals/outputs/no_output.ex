@@ -4,20 +4,19 @@ defmodule Fractals.Outputs.NoOutput do
   """
 
   @behaviour Fractals.Output
+  @behaviour Fractals.OutputParser
 
   defstruct type: :no_output, module: __MODULE__
 
-  def starte(_job) do
-  end
+  @impl Fractals.Output
+  def start(job), do: job
 
-  def write(_job, _pixels) do
-  end
+  @impl Fractals.Output
+  def write(job, _pixels), do: job
 
-  def parse(_params) do
-    %__MODULE__{}
-  end
+  @impl Fractals.OutputParser
+  def parse(_params), do: %__MODULE__{}
 
-  def compute(_job) do
-    %__MODULE__{}
-  end
+  @impl Fractals.OutputParser
+  def compute(_job), do: %__MODULE__{}
 end

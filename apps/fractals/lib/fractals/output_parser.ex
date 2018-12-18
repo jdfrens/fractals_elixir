@@ -11,5 +11,5 @@ defmodule Fractals.OutputParser do
   @doc """
   Called after all values are parsed.
   """
-  @callback compute(job :: Job.t()) :: Fractals.Output.t()
+  @callback compute(job :: Fractals.Job.t()) :: Fractals.Output.t()
 end

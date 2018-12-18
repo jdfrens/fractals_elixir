@@ -20,6 +20,8 @@ defmodule Fractals.ParserRegistry do
 
   use Agent
 
+  @type key_type :: atom()
+
   @name Fractals.ParserRegistry
 
   @doc """
@@ -33,12 +35,12 @@ defmodule Fractals.ParserRegistry do
     )
   end
 
-  @spec add(atom(), String.t(), module()) :: :ok
+  @spec add(key_type(), atom(), module()) :: :ok
   def add(type, identifier, parser) do
     Agent.update(@name, &Map.put(&1, {type, identifier}, parser))
   end
 
-  @spec get(atom(), String.t()) :: module()
+  @spec get(key_type(), atom()) :: module()
   def get(type, identifier) do
     Agent.get(@name, fn map ->
       Map.get_lazy(map, {type, identifier}, fn ->
