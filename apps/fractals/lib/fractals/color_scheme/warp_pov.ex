@@ -11,56 +11,79 @@ defmodule Fractals.ColorScheme.WarpPov do
 
   import Fractals.EscapeTime.Helpers
 
-  alias Fractals.Fractal
-  alias Fractals.Job
+  alias Fractals.{Color, Fractal, Job}
 
-  @spec red(non_neg_integer, Job.t()) :: String.t()
+  @doc """
+  Generates a red color scaled by the number of iterations it took to escape.
+  """
+  @spec red(non_neg_integer(), Job.t()) :: Color.t()
   def red(iterations, job) do
     permute_red(intensities(iterations, job))
   end
 
-  @spec green(non_neg_integer, Job.t()) :: String.t()
+  @doc """
+  Generates a green color scaled by the number of iterations it took to escape.
+  """
+  @spec green(non_neg_integer(), Job.t()) :: Color.t()
   def green(iterations, job) do
     permute_green(intensities(iterations, job))
   end
 
-  @spec blue(non_neg_integer, Job.t()) :: String.t()
+  @doc """
+  Generates a blue color scaled by the number of iterations it took to escape.
+  """
+  @spec blue(non_neg_integer(), Job.t()) :: Color.t()
   def blue(iterations, job) do
     permute_blue(intensities(iterations, job))
   end
 
-  @spec permute_red({non_neg_integer, non_neg_integer}) :: String.t()
+  @doc """
+  Permutes primary-and-secondary intensities from `intensities/2` for a red color.
+  """
+  @spec permute_red({float(), float()}) :: Color.t()
   def permute_red({primary, secondary}) do
-    PPM.ppm(primary, secondary, secondary)
+    Color.rgb(primary, secondary, secondary)
   end
 
-  @spec permute_green({non_neg_integer, non_neg_integer}) :: String.t()
+  @doc """
+  Permutes primary-and-secondary intensities from `intensities/2` for a green color.
+  """
+  @spec permute_green({float(), float()}) :: Color.t()
   def permute_green({primary, secondary}) do
-    PPM.ppm(secondary, primary, secondary)
+    Color.rgb(secondary, primary, secondary)
   end
 
-  @spec permute_blue({non_neg_integer, non_neg_integer}) :: String.t()
+  @doc """
+  Permutes primary-and-secondary intensities from `intensities/2` for a blue color.
+  """
+  @spec permute_blue({float(), float()}) :: Color.t()
   def permute_blue({primary, secondary}) do
-    PPM.ppm(secondary, secondary, primary)
+    Color.rgb(secondary, secondary, primary)
   end
 
-  @spec intensities(non_neg_integer, Job.t()) :: {non_neg_integer, non_neg_integer}
+  @doc """
+  Computes primary and secondary intensities scaled by the number of iterations to escape.
+  """
+  @spec intensities(non_neg_integer(), Job.t()) :: {float(), float()}
   def intensities(iterations, %Job{fractal: %Fractal{max_iterations: max_iterations}})
       when inside?(iterations, max_iterations),
-      do: {0, 0}
+      do: {0.0, 0.0}
 
   def intensities(iterations, job) do
     half_iterations = job.fractal.max_iterations / 2 - 1
 
     if iterations <= half_iterations do
-      {scale(max(1, iterations), job), 0}
+      {scale(max(1, iterations), job), 0.0}
     else
-      {job.image.max_intensity, scale(iterations - half_iterations, job)}
+      {1.0, scale(iterations - half_iterations, job)}
     end
   end
 
-  @spec scale(float, Job) :: non_neg_integer
+  @doc """
+  Scales an intensity.
+  """
+  @spec scale(float(), Job.t()) :: float()
   def scale(i, job) do
-    round(2.0 * (i - 1) / job.fractal.max_iterations * job.image.max_intensity)
+    2.0 * (i - 1) / job.fractal.max_iterations
   end
 end

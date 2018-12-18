@@ -4,7 +4,7 @@ defmodule Fractals.Output do
   """
 
   @type t :: map()
-  @type pixels :: [any()]
+  @type pixels :: [Fractals.Color.t()]
 
   alias Fractals.Job
 

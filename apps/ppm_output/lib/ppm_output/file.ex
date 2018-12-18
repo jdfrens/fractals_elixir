@@ -14,7 +14,7 @@ defmodule PPMOutput.File do
   end
 
   @doc """
-  Writes a list of pixels to the file.
+  Writes a list of lines to the file.  The line can be a header, a pixel, a bunch of pixels, comments, or any string.
   """
   @spec lines_to_file(Job.t(), [String.t()]) :: :ok
   def lines_to_file(job, lines) do

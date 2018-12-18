@@ -4,7 +4,9 @@ defmodule UniprocessEngine.Algorithm do
   """
 
   alias Fractals.{
+    Color,
     ColorScheme,
+    Fractal,
     Grid,
     Job,
     Reporters.Broadcaster
@@ -27,17 +29,17 @@ defmodule UniprocessEngine.Algorithm do
     {job, Grid.grid(job)}
   end
 
-  @spec fractal({Job.t(), Grid.t()}) :: {Job.t(), Fractals.Fractal.complex_grid()}
+  @spec fractal({Job.t(), Grid.t()}) :: {Job.t(), Fractal.complex_grid()}
   def fractal({job, grid}) do
     {job, job.fractal.module.generate(grid, job.fractal)}
   end
 
-  @spec colors({Job.t(), Fractals.Fractal.complex_grid()}) :: {Job.t(), [PPM.color()]}
+  @spec colors({Job.t(), Fractal.complex_grid()}) :: {Job.t(), [Color.t()]}
   def colors({job, pixels}) do
     {job, Enum.map(pixels, &ColorScheme.color_point(&1, job))}
   end
 
-  @spec write({Job.t(), [PPM.color()]}) :: {Job.t(), nil}
+  @spec write({Job.t(), [Color.t()]}) :: {Job.t(), nil}
   def write({job, colors}) do
     job.output.module.start(job)
     job.output.module.write(job, colors)

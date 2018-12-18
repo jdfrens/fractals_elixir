@@ -13,7 +13,7 @@ defmodule Fractals.ColorScheme do
 
   alias Fractals.ColorScheme.{BlackAndWhiteAndGray, Random, WarpPov}
 
-  @spec color_point({Complex.complex(), non_neg_integer}, Fractals.Job.t()) :: PPM.color()
+  @spec color_point({Complex.complex(), non_neg_integer}, Fractals.Job.t()) :: Fractals.Color.t()
   def color_point({_, iterations}, job) do
     case job.color.type do
       :black_on_white -> BlackAndWhiteAndGray.black_on_white(iterations, job)

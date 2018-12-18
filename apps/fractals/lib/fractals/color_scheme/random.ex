@@ -8,7 +8,7 @@ defmodule Fractals.ColorScheme.Random do
 
   import Fractals.EscapeTime.Helpers
 
-  alias Fractals.Job
+  alias Fractals.{Color, Job}
 
   ## Client
 
@@ -16,7 +16,7 @@ defmodule Fractals.ColorScheme.Random do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  @spec at(pid | atom, integer, Job.t()) :: PPM.color()
+  @spec at(pid() | atom(), integer(), Job.t()) :: Color.t()
   def at(pid, iterations, job) do
     GenServer.call(pid, {:at, iterations, job})
   end
@@ -30,7 +30,8 @@ defmodule Fractals.ColorScheme.Random do
 
   @impl GenServer
   def handle_call({:at, iterations, job}, _, colors) do
-    color = colors |> pick_color(iterations, job) |> PPM.ppm()
+    color = colors |> pick_color(iterations, job)
+
     {:reply, color, colors}
   end
 
@@ -38,24 +39,22 @@ defmodule Fractals.ColorScheme.Random do
 
   @max_colors 2048
 
-  @spec pick_color([[float]], integer, Job.t()) :: [integer]
+  @spec pick_color([Color.rgb()], integer(), Job.t()) :: [Color.rgb()]
   def pick_color(colors, iterations, job) do
     if inside?(iterations, job.fractal.max_iterations) do
-      [0, 0, 0]
+      Color.rgb(:black)
     else
-      colors
-      |> Enum.at(iterations)
-      |> Enum.map(&round(&1 * job.image.max_intensity))
+      Enum.at(colors, iterations)
     end
   end
 
-  @spec make_colors :: [[float]]
+  @spec make_colors :: [Color.rgb()]
   defp make_colors do
     Stream.repeatedly(&random_color/0) |> Enum.take(@max_colors)
   end
 
-  @spec random_color :: [float]
+  @spec random_color :: Color.rgb()
   defp random_color do
-    [:rand.uniform(), :rand.uniform(), :rand.uniform()]
+    Color.rgb(:rand.uniform(), :rand.uniform(), :rand.uniform())
   end
 end

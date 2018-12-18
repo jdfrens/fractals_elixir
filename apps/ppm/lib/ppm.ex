@@ -6,13 +6,15 @@ defmodule PPM do
   cf. https://en.wikipedia.org/wiki/Netpbm_format
   """
 
-  @type color :: String.t()
+  alias Fractals.Color
+
+  @type t :: String.t()
 
   @format "~3B ~3B ~3B "
 
-  @spec black :: color()
+  @spec black :: t()
   def black, do: ppm(0, 0, 0)
-  @spec white :: color()
+  @spec white :: t()
   def white, do: ppm(255, 255, 255)
 
   @spec p3_header(pos_integer, pos_integer) :: [String.t()]
@@ -25,11 +27,16 @@ defmodule PPM do
     ]
   end
 
-  @spec ppm(non_neg_integer, non_neg_integer, non_neg_integer) :: color()
-  def ppm(red, green, blue), do: ppm([red, green, blue])
+  @spec ppm(Color.rgb_int()) :: t()
+  def ppm({:rgb_int, red, green, blue, _max}) do
+    ppm([red, green, blue])
+  end
 
-  @spec ppm(list(non_neg_integer)) :: color()
-  def ppm(rgb) do
+  @spec ppm(list(non_neg_integer())) :: t()
+  def ppm(rgb) when is_list(rgb) do
     :erlang.iolist_to_binary(:io_lib.format(@format, rgb))
   end
+
+  @spec ppm(non_neg_integer(), non_neg_integer(), non_neg_integer()) :: t()
+  def ppm(red, green, blue), do: ppm([red, green, blue])
 end
