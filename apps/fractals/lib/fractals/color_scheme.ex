@@ -1,7 +1,15 @@
 defmodule Fractals.ColorScheme do
   @moduledoc """
-  This finds the right color scheme as specified in the job.
+  Representation of the coloring scheme for a fractal image.
   """
+
+  @type t :: %__MODULE__{
+          type: atom() | nil,
+          module: module(),
+          max_intensity: integer() | nil
+        }
+
+  defstruct type: nil, module: Fractals.Colorizer, max_intensity: 255
 
   alias Fractals.ColorScheme.{BlackAndWhiteAndGray, Random, WarpPov}
 

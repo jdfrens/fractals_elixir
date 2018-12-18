@@ -6,7 +6,7 @@ defmodule Fractals.Job do
   import Complex, only: :macros
 
   alias Fractals.ParserRegistry
-  alias Fractals.{Color, Image, Job, Size}
+  alias Fractals.{ColorScheme, Image, Job, Size}
 
   @type fractal_id :: String.t()
   @type t :: %__MODULE__{
@@ -15,7 +15,7 @@ defmodule Fractals.Job do
           image: Image.t() | nil,
           engine: map() | nil,
           fractal: Fractals.Fractal.t() | nil,
-          color: Fractals.Color.t() | nil,
+          color: Fractals.ColorScheme.t() | nil,
           params_filenames: [String.t()] | nil,
           output: Fractals.Output.t() | nil
         }
@@ -46,7 +46,7 @@ defmodule Fractals.Job do
         size: %Size{width: 512, height: 384},
         upper_left: Complex.new(5.0, 6.0)
       },
-      color: %Color{
+      color: %ColorScheme{
         type: :black_on_white,
         max_intensity: 255
       },

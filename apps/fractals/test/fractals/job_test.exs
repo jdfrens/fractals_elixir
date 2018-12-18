@@ -1,7 +1,9 @@
 defmodule Fractals.JobTest do
+  @moduledoc false
+
   use ExUnit.Case, async: true
 
-  alias Fractals.{Color, Fractal, Job, Size}
+  alias Fractals.{ColorScheme, Fractal, Job, Size}
 
   describe ".process a full set of params" do
     setup do
@@ -20,7 +22,7 @@ defmodule Fractals.JobTest do
     end
 
     test "parsing the color scheme", %{argv: argv} do
-      assert Job.process(argv).color == %Color{type: :blue}
+      assert Job.process(argv).color == %ColorScheme{type: :blue}
     end
 
     test "parsing the random seed", %{argv: argv} do
@@ -53,9 +55,7 @@ defmodule Fractals.JobTest do
     end
 
     test "defaults the color scheme", %{argv: argv} do
-      assert Job.process(argv).color == %Color{
-               type: :black_on_white
-             }
+      assert Job.process(argv).color == %ColorScheme{type: :black_on_white}
     end
 
     test "defaults the random seed", %{argv: argv} do
@@ -93,7 +93,7 @@ defmodule Fractals.JobTest do
     end
 
     test "recognizes a value from the file", %{argv: argv} do
-      assert Job.process(argv).color == %Color{type: :blue}
+      assert Job.process(argv).color == %ColorScheme{type: :blue}
     end
 
     test "recognizes a value overridden by a flag", %{argv: argv} do
