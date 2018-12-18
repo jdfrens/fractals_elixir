@@ -1,4 +1,4 @@
-defmodule Fractals.Colorizer.WarpPov do
+defmodule Fractals.ColorScheme.WarpPov do
   @moduledoc """
   Provides color functions for each of the primary colors (red, green,
   and blue) which uses the brighted hue at the edge of a fractal, quickly

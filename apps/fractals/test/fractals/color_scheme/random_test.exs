@@ -1,7 +1,7 @@
-defmodule Fractals.Colorizer.RandomTest do
+defmodule Fractals.ColorScheme.RandomTest do
   use ExUnit.Case
 
-  alias Fractals.Colorizer.Random
+  alias Fractals.ColorScheme.Random
   alias Fractals.{Image, Job}
 
   setup do

@@ -13,7 +13,7 @@ defmodule StageEngine.Application do
     children = [
       StageEngine.GridWorker,
       StageEngine.EscapeTimeWorker,
-      StageEngine.ColorizerWorker,
+      StageEngine.ColorSchemeWorker,
       StageEngine.OutputManager
     ]
 

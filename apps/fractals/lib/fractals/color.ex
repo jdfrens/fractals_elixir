@@ -9,7 +9,7 @@ defmodule Fractals.Color do
           max_intensity: integer() | nil
         }
 
-  defstruct type: nil, module: Fractals.Colorizer, max_intensity: 255
+  defstruct type: nil, module: Fractals.ColorScheme, max_intensity: 255
 
   alias Fractals.Color
 

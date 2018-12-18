@@ -1,11 +1,11 @@
-defmodule StageEngine.ColorizerWorker do
+defmodule StageEngine.ColorSchemeWorker do
   @moduledoc """
   Worker to compute colors on a chunk of pixels
   """
 
   use GenStage
 
-  alias Fractals.{Colorizer, Job}
+  alias Fractals.{ColorScheme, Job}
 
   # Client
 
@@ -33,6 +33,6 @@ defmodule StageEngine.ColorizerWorker do
 
   @spec colorize({atom, {non_neg_integer, list}}, Job.t()) :: list(String.t())
   def colorize(data, job) do
-    Enum.map(data, &Colorizer.color_point(&1, job))
+    Enum.map(data, &ColorScheme.color_point(&1, job))
   end
 end

@@ -1,9 +1,9 @@
-defmodule Fractals.Colorizer do
+defmodule Fractals.ColorScheme do
   @moduledoc """
-  This finds the right colorizer as specified in the job.
+  This finds the right color scheme as specified in the job.
   """
 
-  alias Fractals.Colorizer.{BlackAndWhiteAndGray, Random, WarpPov}
+  alias Fractals.ColorScheme.{BlackAndWhiteAndGray, Random, WarpPov}
 
   @spec color_point({Complex.complex(), non_neg_integer}, Fractals.Job.t()) :: PPM.color()
   def color_point({_, iterations}, job) do

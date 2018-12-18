@@ -1,7 +1,7 @@
-defmodule Fractals.Colorizer.WarpPovTest do
+defmodule Fractals.ColorScheme.WarpPovTest do
   use ExUnit.Case, async: true
 
-  alias Fractals.Colorizer.WarpPov
+  alias Fractals.ColorScheme.WarpPov
   alias Fractals.Job
 
   setup do

@@ -1,4 +1,4 @@
-defmodule Fractals.Colorizer.BlackAndWhiteAndGray do
+defmodule Fractals.ColorScheme.BlackAndWhiteAndGray do
   @moduledoc """
   Colorizers for black-on-white, white-on-black, and grayscale.
   """

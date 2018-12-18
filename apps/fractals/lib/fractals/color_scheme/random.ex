@@ -1,4 +1,4 @@
-defmodule Fractals.Colorizer.Random do
+defmodule Fractals.ColorScheme.Random do
   @moduledoc """
   GenServer that generates and maintains an array of colors.  The same list of colors is used for all fractals until
   this process is killed and a new list is generated.

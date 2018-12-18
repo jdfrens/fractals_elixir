@@ -18,7 +18,7 @@ defmodule Fractals.Application do
       # registry
       {Fractals.ParserRegistry, @initial_parsers},
       # color
-      Fractals.Colorizer.Random,
+      Fractals.ColorScheme.Random,
       # image output
       {DynamicSupervisor, strategy: :one_for_one, name: Fractals.OutputWorkerSupervisor},
       {Registry, keys: :unique, name: Fractals.OutputWorkerRegistry},
