@@ -13,6 +13,7 @@ defmodule Fractals.Color do
 
   alias Fractals.Color
 
+  @spec parse(map()) :: map()
   def parse(params) do
     Enum.reduce(params, %Color{}, &parse_attribute/2)
   end
