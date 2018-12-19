@@ -28,7 +28,7 @@ defmodule PPMOutput.Parser do
     :ppm
   end
 
-  defp parse_value(attribute, value) when attribute in [:directory, :filename] do
+  defp parse_value(attribute, value) when attribute in [:directory, :filename, :max_intensity] do
     value
   end
 

@@ -5,17 +5,16 @@ defmodule Fractals.ColorScheme do
 
   @type t :: %__MODULE__{
           type: atom() | nil,
-          module: module(),
-          max_intensity: integer() | nil
+          module: module()
         }
 
-  defstruct type: nil, module: Fractals.Colorizer, max_intensity: 255
+  defstruct type: nil, module: Fractals.Colorizer
 
   alias Fractals.ColorScheme.{BlackAndWhiteAndGray, Random, WarpPov}
 
   @spec color_point({Complex.complex(), non_neg_integer}, Fractals.Job.t()) :: Fractals.Color.t()
   def color_point({_, iterations}, job) do
-    case job.color.type do
+    case job.color_scheme.type do
       :black_on_white -> BlackAndWhiteAndGray.black_on_white(iterations, job)
       :white_on_black -> BlackAndWhiteAndGray.white_on_black(iterations, job)
       :gray -> BlackAndWhiteAndGray.gray(iterations, job)

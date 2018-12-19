@@ -4,7 +4,7 @@ defmodule Fractals.Application do
   use Application
 
   @initial_parsers %{
-    {:color, :_} => Fractals.ColorScheme.Parser,
+    {:color_scheme, :_} => Fractals.ColorScheme.Parser,
     {:fractal, :burning_ship} => Fractals.EscapeTime.BurningShipParser,
     {:fractal, :julia} => Fractals.EscapeTime.JuliaParser,
     {:fractal, :mandelbrot} => Fractals.EscapeTime.MandelbrotParser,

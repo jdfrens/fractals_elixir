@@ -1,5 +1,5 @@
 fractal:
   type: julia
   c: 1.0+0.0i
-color:
+color_scheme:
   type: Blue

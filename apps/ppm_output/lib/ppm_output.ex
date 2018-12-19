@@ -13,6 +13,7 @@ defmodule PPMOutput do
           module: __MODULE__,
           directory: String.t() | nil,
           filename: String.t() | nil,
+          max_intensity: non_neg_integer() | nil,
           pid: pid() | nil
         }
 
@@ -20,6 +21,7 @@ defmodule PPMOutput do
             module: __MODULE__,
             directory: "images",
             filename: nil,
+            max_intensity: 255,
             pid: nil
 
   @impl Fractals.Output
@@ -30,7 +32,7 @@ defmodule PPMOutput do
 
   @impl Fractals.Output
   def write(job, pixels) do
-    max_intensity = job.color.max_intensity
+    max_intensity = job.output.max_intensity
     ppm_lines = Enum.map(pixels, &rgb_to_ppm(&1, max_intensity))
     PPMFile.lines_to_file(job, ppm_lines)
     job
