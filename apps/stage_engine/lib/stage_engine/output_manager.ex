@@ -18,7 +18,7 @@ defmodule StageEngine.OutputManager do
 
   @impl GenStage
   def init(:ok) do
-    {:consumer, :ok, subscribe_to: [{StageEngine.ColorizerWorker, max_demand: 10}]}
+    {:consumer, :ok, subscribe_to: [{StageEngine.ColorSchemeWorker, max_demand: 10}]}
   end
 
   @impl GenStage

@@ -3,6 +3,7 @@ defmodule PPMOutput do
   Represents  the output values for a job.
   """
 
+  alias Fractals.Color
   alias PPMOutput.File, as: PPMFile
 
   @behaviour Fractals.Output
@@ -12,6 +13,7 @@ defmodule PPMOutput do
           module: __MODULE__,
           directory: String.t() | nil,
           filename: String.t() | nil,
+          max_intensity: non_neg_integer() | nil,
           pid: pid() | nil
         }
 
@@ -19,6 +21,7 @@ defmodule PPMOutput do
             module: __MODULE__,
             directory: "images",
             filename: nil,
+            max_intensity: 255,
             pid: nil
 
   @impl Fractals.Output
@@ -29,7 +32,16 @@ defmodule PPMOutput do
 
   @impl Fractals.Output
   def write(job, pixels) do
-    PPMFile.lines_to_file(job, pixels)
+    max_intensity = job.output.max_intensity
+    ppm_lines = Enum.map(pixels, &rgb_to_ppm(&1, max_intensity))
+    PPMFile.lines_to_file(job, ppm_lines)
     job
+  end
+
+  @spec rgb_to_ppm(Color.rgb(), non_neg_integer()) :: PPM.t()
+  defp rgb_to_ppm(rgb, max_intensity) do
+    rgb
+    |> Color.rgb_int(max_intensity)
+    |> PPM.ppm()
   end
 end

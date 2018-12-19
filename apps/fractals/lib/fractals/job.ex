@@ -6,7 +6,7 @@ defmodule Fractals.Job do
   import Complex, only: :macros
 
   alias Fractals.ParserRegistry
-  alias Fractals.{Color, Image, Job, Size}
+  alias Fractals.{ColorScheme, Image, Job, Size}
 
   @type fractal_id :: String.t()
   @type t :: %__MODULE__{
@@ -15,7 +15,7 @@ defmodule Fractals.Job do
           image: Image.t() | nil,
           engine: map() | nil,
           fractal: Fractals.Fractal.t() | nil,
-          color: Fractals.Color.t() | nil,
+          color_scheme: Fractals.ColorScheme.t() | nil,
           params_filenames: [String.t()] | nil,
           output: Fractals.Output.t() | nil
         }
@@ -26,7 +26,7 @@ defmodule Fractals.Job do
     :engine,
     :fractal,
     :image,
-    :color,
+    :color_scheme,
     :output,
     :params_filenames
   ]
@@ -42,13 +42,11 @@ defmodule Fractals.Job do
       },
       image: %Image{
         lower_right: Complex.new(6.0, 5.0),
-        max_intensity: 255,
         size: %Size{width: 512, height: 384},
         upper_left: Complex.new(5.0, 6.0)
       },
-      color: %Color{
-        type: :black_on_white,
-        max_intensity: 255
+      color_scheme: %ColorScheme{
+        type: :black_on_white
       },
       params_filenames: [],
       output: %Fractals.Outputs.NoOutput{}
@@ -107,7 +105,7 @@ defmodule Fractals.Job do
   end
 
   @spec parse_value(atom, String.t()) :: %{type: atom(), module: module()}
-  defp parse_value(:color, value) do
+  defp parse_value(:color_scheme, value) do
     color_params = symbolize(value)
 
     type =
@@ -116,7 +114,7 @@ defmodule Fractals.Job do
       |> String.downcase()
       |> String.to_atom()
 
-    :color
+    :color_scheme
     |> ParserRegistry.get(type)
     |> apply(:parse, [color_params])
   end

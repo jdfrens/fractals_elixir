@@ -4,7 +4,7 @@ defmodule Fractals.Application do
   use Application
 
   @initial_parsers %{
-    {:color, :_} => Fractals.Color,
+    {:color_scheme, :_} => Fractals.ColorScheme.Parser,
     {:fractal, :burning_ship} => Fractals.EscapeTime.BurningShipParser,
     {:fractal, :julia} => Fractals.EscapeTime.JuliaParser,
     {:fractal, :mandelbrot} => Fractals.EscapeTime.MandelbrotParser,
@@ -18,7 +18,7 @@ defmodule Fractals.Application do
       # registry
       {Fractals.ParserRegistry, @initial_parsers},
       # color
-      Fractals.Colorizer.Random,
+      Fractals.ColorScheme.Random,
       # image output
       {DynamicSupervisor, strategy: :one_for_one, name: Fractals.OutputWorkerSupervisor},
       {Registry, keys: :unique, name: Fractals.OutputWorkerRegistry},

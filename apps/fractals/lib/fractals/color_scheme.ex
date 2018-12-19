@@ -1,13 +1,20 @@
-defmodule Fractals.Colorizer do
+defmodule Fractals.ColorScheme do
   @moduledoc """
-  This finds the right colorizer as specified in the job.
+  Representation of the coloring scheme for a fractal image.
   """
 
-  alias Fractals.Colorizer.{BlackAndWhiteAndGray, Random, WarpPov}
+  @type t :: %__MODULE__{
+          type: atom() | nil,
+          module: module()
+        }
 
-  @spec color_point({Complex.complex(), non_neg_integer}, Fractals.Job.t()) :: PPM.color()
+  defstruct type: nil, module: Fractals.Colorizer
+
+  alias Fractals.ColorScheme.{BlackAndWhiteAndGray, Random, WarpPov}
+
+  @spec color_point({Complex.complex(), non_neg_integer}, Fractals.Job.t()) :: Fractals.Color.t()
   def color_point({_, iterations}, job) do
-    case job.color.type do
+    case job.color_scheme.type do
       :black_on_white -> BlackAndWhiteAndGray.black_on_white(iterations, job)
       :white_on_black -> BlackAndWhiteAndGray.white_on_black(iterations, job)
       :gray -> BlackAndWhiteAndGray.gray(iterations, job)

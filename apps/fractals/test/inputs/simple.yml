@@ -2,6 +2,6 @@ fractal:
   type: mandelbrot
 image:
   size: 720x480
-color:
+color_scheme:
   type: Blue
 seed: 12345
