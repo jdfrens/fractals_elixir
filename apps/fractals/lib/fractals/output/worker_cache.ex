@@ -7,7 +7,7 @@ defmodule Fractals.Output.WorkerCache do
   processed, and the search-process loop repeats.
   """
 
-  alias Fractals.{Chunk, Job}
+  alias Fractals.{Chunk, Color}
   alias Fractals.Output.OutputState
   alias Fractals.Reporters.Broadcaster
 
@@ -26,7 +26,7 @@ defmodule Fractals.Output.WorkerCache do
   def next_chunk(state, chunk) do
     state
     |> update_cache(chunk)
-    |> output_cache(chunk.job)
+    |> output_cache()
   end
 
   @spec update_cache(OutputState.t(), Chunk.t()) :: OutputState.t()
@@ -34,30 +34,31 @@ defmodule Fractals.Output.WorkerCache do
     %{state | cache: Map.put(state.cache, number, pixels)}
   end
 
-  @spec output_cache(OutputState.t(), Job.t()) :: OutputState.t() | nil
-  defp output_cache(state, job) do
+  @spec output_cache(OutputState.t()) :: OutputState.t() | nil
+  defp output_cache(state) do
     case Map.get(state.cache, state.next_number) do
-      nil ->
-        state
-
-      :done ->
-        job.output.module.stop(state)
-        state.next_stage.(job)
-        nil
-
-      pixels ->
-        write_chunk(state, pixels, job)
-
-        state
-        |> Map.update!(:cache, &Map.delete(&1, :next_number))
-        |> Map.update!(:next_number, &(&1 + 1))
-        |> output_cache(job)
+      nil -> state
+      :done -> done(state)
+      pixels -> write(state, pixels)
     end
   end
 
-  @spec write_chunk(OutputState.t(), [String.t()], Job.t()) :: Job.t()
-  defp write_chunk(state, pixels, job) do
-    Broadcaster.report(:writing, job, chunk_number: state.next_number)
-    job.output.module.write(job, state, pixels)
+  @spec done(OutputState.t()) :: nil
+  defp done(state) do
+    state.output_module.stop(state)
+    Broadcaster.report(:done, state.job, from: self())
+
+    nil
+  end
+
+  @spec write(OutputState.t(), [Color.t()]) :: OutputState.t()
+  defp write(state, pixels) do
+    state.output_module.write(state.job, state, pixels)
+    Broadcaster.report(:writing, state.job, chunk_number: state.next_number)
+
+    state
+    |> Map.update!(:cache, &Map.delete(&1, :next_number))
+    |> Map.update!(:next_number, &(&1 + 1))
+    |> output_cache()
   end
 end

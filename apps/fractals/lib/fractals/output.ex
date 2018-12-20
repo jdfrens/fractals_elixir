@@ -18,7 +18,7 @@ defmodule Fractals.Output do
 
   This could be opening a file and writing a header; it might be opening a window or Phoenix channel.
   """
-  @callback start(job :: Job.t()) :: pid()
+  @callback start(job :: Job.t()) :: pid() | nil
 
   @doc """
   Writes pixels to the output.
