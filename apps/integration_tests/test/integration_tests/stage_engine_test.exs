@@ -30,7 +30,7 @@ defmodule Integration.StageEngineTest do
 
     StageEngine.generate(job)
 
-    assert_receive {:filenames_empty, _reason}, 20_000
+    assert_receive {:jobs_countdown_done, _reason}, 20_000
 
     assert_same_images(
       "test/expected_outputs/small-red-mandelbrot.ppm",
