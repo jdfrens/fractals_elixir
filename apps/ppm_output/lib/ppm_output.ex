@@ -49,6 +49,11 @@ defmodule PPMOutput do
     job
   end
 
+  @impl Fractals.Output
+  def stop(output_state) do
+    File.close(output_state.pid)
+  end
+
   @spec rgb_to_ppm(Color.rgb(), non_neg_integer()) :: PPM.t()
   defp rgb_to_ppm(rgb, max_intensity) do
     rgb

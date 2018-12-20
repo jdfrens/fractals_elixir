@@ -17,6 +17,9 @@ defmodule Fractals.Outputs.NoOutput do
   @impl Fractals.Output
   def write(job, _output_state, _pixels), do: job
 
+  @impl Fractals.Output
+  def stop(_output_state), do: nil
+
   @impl Fractals.OutputParser
   def parse(_params), do: %__MODULE__{}
 

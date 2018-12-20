@@ -70,7 +70,6 @@ defmodule Fractals.OutputWorker do
   # Closes the job (i.e., closes the file).
   @spec default_next_stage(Job.t()) :: any()
   defp default_next_stage(job) do
-    Job.close(job)
     Broadcaster.report(:done, job, from: self())
   end
 

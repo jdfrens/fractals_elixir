@@ -24,4 +24,11 @@ defmodule Fractals.Output do
   Writes pixels to the output.
   """
   @callback write(job :: Job.t(), output_state :: map(), pixels :: pixels()) :: Job.t()
+
+  @doc """
+  Closes up the input.
+
+  This might include closing an output stream or finalizing a window (but _not_ closing it).
+  """
+  @callback stop(output_state :: map()) :: any()
 end

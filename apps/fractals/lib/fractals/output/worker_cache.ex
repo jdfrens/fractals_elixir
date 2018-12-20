@@ -41,6 +41,7 @@ defmodule Fractals.Output.WorkerCache do
         state
 
       :done ->
+        job.output.module.stop(state)
         state.next_stage.(job)
         nil
 

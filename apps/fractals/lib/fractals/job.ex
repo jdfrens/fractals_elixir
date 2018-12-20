@@ -77,12 +77,6 @@ defmodule Fractals.Job do
     |> Enum.reduce(base_job, &parse_attribute/2)
   end
 
-  @spec close(Job.t()) :: Job.t()
-  def close(job) do
-    :ok = File.close(job.output.pid)
-    job
-  end
-
   # *******
   # Parsing
   # *******
