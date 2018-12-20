@@ -40,10 +40,8 @@ defmodule UniprocessEngine.Algorithm do
   end
 
   @spec write({Job.t(), [Color.t()]}) :: {Job.t(), nil}
-  def write({job, colors}) do
-    job.output.module.start(job)
-    job.output.module.write(job, colors)
-    Job.close(job)
+  def write({job, pixels}) do
+    job.output.module.write_everything(job, pixels)
     {job, nil}
   end
 

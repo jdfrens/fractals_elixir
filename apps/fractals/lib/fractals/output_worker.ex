@@ -55,11 +55,10 @@ defmodule Fractals.OutputWorker do
   defp maybe_new(options) do
     name = Keyword.get(options, :name)
     next_stage = Keyword.get(options, :next_stage, &default_next_stage/1)
+    supervisor = Fractals.OutputWorkerSupervisor
+    child_spec = {__MODULE__, {next_stage, name}}
 
-    case DynamicSupervisor.start_child(
-           Fractals.OutputWorkerSupervisor,
-           {__MODULE__, {next_stage, name}}
-         ) do
+    case DynamicSupervisor.start_child(supervisor, child_spec) do
       {:error, {:already_started, pid}} ->
         {:ok, pid}
 
@@ -79,26 +78,29 @@ defmodule Fractals.OutputWorker do
 
   @impl GenServer
   def init(next_stage) do
-    {:ok, {nil, next_stage}}
+    {:ok, %OutputState{next_stage: next_stage}}
   end
 
   @impl GenServer
-  def handle_cast({:write, chunk}, {nil, next_stage}) do
-    chunk.job.output.module.start(chunk.job)
+  def handle_cast({:write, chunk}, %OutputState{pid: nil} = state) do
+    output_module = chunk.job.output.module
 
-    state =
-      %OutputState{
+    updated_state =
+      state
+      |> Map.merge(%{
         next_number: 1,
-        cache: WorkerCache.build_initial_cache(chunk.job.engine.chunk_count)
-      }
-      |> WorkerCache.process(chunk, next_stage)
+        pid: output_module.start(chunk.job),
+        cache: WorkerCache.new(chunk.job.engine.chunk_count)
+      })
+      |> WorkerCache.next_chunk(chunk)
 
-    {:noreply, {state, next_stage}}
+    {:noreply, updated_state}
   end
 
   @impl GenServer
-  def handle_cast({:write, chunk}, {state, next_stage}) do
-    state = WorkerCache.process(state, chunk, next_stage)
-    {:noreply, {state, next_stage}}
+  def handle_cast({:write, chunk}, state) do
+    updated_state = WorkerCache.next_chunk(state, chunk)
+
+    {:noreply, updated_state}
   end
 end

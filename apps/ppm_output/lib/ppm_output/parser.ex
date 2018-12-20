@@ -5,7 +5,7 @@ defmodule PPMOutput.Parser do
 
   @behaviour Fractals.OutputParser
 
-  @computed_fields [:filename, :pid]
+  @computed_fields [:filename]
 
   @valid_extensions ~w(.ppm)
   @output_extension ".ppm"
@@ -46,13 +46,6 @@ defmodule PPMOutput.Parser do
 
       true ->
         {:error, "invalid extension #{output.filename}"}
-    end
-  end
-
-  defp compute_value(:pid, output, _job) do
-    with filename when is_binary(filename) <- output.filename,
-         {:ok, pid} <- File.open(output.filename, [:write]) do
-      pid
     end
   end
 

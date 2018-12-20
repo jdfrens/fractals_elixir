@@ -3,7 +3,7 @@ defmodule PPMOutput do
   Represents  the output values for a job.
   """
 
-  alias Fractals.Color
+  alias Fractals.{Color, Job}
   alias PPMOutput.File, as: PPMFile
 
   @behaviour Fractals.Output
@@ -13,28 +13,39 @@ defmodule PPMOutput do
           module: __MODULE__,
           directory: String.t() | nil,
           filename: String.t() | nil,
-          max_intensity: non_neg_integer() | nil,
-          pid: pid() | nil
+          max_intensity: non_neg_integer() | nil
         }
 
   defstruct type: :ppm,
             module: __MODULE__,
             directory: "images",
             filename: nil,
-            max_intensity: 255,
-            pid: nil
+            max_intensity: 255
 
   @impl Fractals.Output
-  def start(job) do
-    PPMFile.lines_to_file(job, PPMFile.header(job))
+  def write_everything(job, pixels) do
+    pid = start(job)
+    max_intensity = job.output.max_intensity
+    ppm_lines = Enum.map(pixels, &rgb_to_ppm(&1, max_intensity))
+    PPMFile.lines_to_file(pid, ppm_lines)
     job
   end
 
   @impl Fractals.Output
-  def write(job, pixels) do
+  def start(job) do
+    with %Job{output: output} <- job,
+         filename when is_binary(filename) <- output.filename,
+         {:ok, pid} <- File.open(filename, [:write]) do
+      PPMFile.lines_to_file(pid, PPMFile.header(job))
+      pid
+    end
+  end
+
+  @impl Fractals.Output
+  def write(job, output_state, pixels) do
     max_intensity = job.output.max_intensity
     ppm_lines = Enum.map(pixels, &rgb_to_ppm(&1, max_intensity))
-    PPMFile.lines_to_file(job, ppm_lines)
+    PPMFile.lines_to_file(output_state.pid, ppm_lines)
     job
   end
 

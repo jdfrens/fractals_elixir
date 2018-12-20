@@ -16,9 +16,9 @@ defmodule PPMOutput.File do
   @doc """
   Writes a list of lines to the file.  The line can be a header, a pixel, a bunch of pixels, comments, or any string.
   """
-  @spec lines_to_file(Job.t(), [String.t()]) :: :ok
-  def lines_to_file(job, lines) do
-    IO.write(job.output.pid, add_newlines(lines))
+  @spec lines_to_file(pid, [String.t()]) :: :ok
+  def lines_to_file(pid, lines) when is_pid(pid) do
+    IO.write(pid, add_newlines(lines))
   end
 
   @spec add_newlines([String.t()]) :: iodata()
