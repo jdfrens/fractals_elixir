@@ -43,7 +43,7 @@ defmodule CLI do
   @spec wait(Args.t()) :: :ok
   def wait(_args) do
     receive do
-      {:filenames_empty, _reason} ->
+      {:jobs_countdown_done, _reason} ->
         IO.puts("ALL DONE!")
         IO.puts("Have a nice day.")
     end

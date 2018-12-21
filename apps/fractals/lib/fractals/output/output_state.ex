@@ -4,9 +4,12 @@ defmodule Fractals.Output.OutputState do
   """
 
   @type t :: %__MODULE__{
-          next_number: non_neg_integer,
-          cache: map
+          job: Fractals.Job.t(),
+          output_module: module(),
+          next_number: non_neg_integer(),
+          pid: pid(),
+          cache: map()
         }
 
-  defstruct next_number: 0, cache: %{}
+  defstruct job: nil, output_module: nil, next_number: 1, pid: nil, cache: %{}
 end

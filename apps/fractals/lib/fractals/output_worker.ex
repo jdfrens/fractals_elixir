@@ -9,7 +9,6 @@ defmodule Fractals.OutputWorker do
 
   alias Fractals.{Chunk, Job}
   alias Fractals.Output.{OutputState, WorkerCache}
-  alias Fractals.Reporters.Broadcaster
 
   @type via_tuple :: {:via, Registry, {Fractals.OutputWorkerRegistry, Job.fractal_id()}}
 
@@ -40,9 +39,9 @@ defmodule Fractals.OutputWorker do
   Don't use this.  It should be used as part of a `DynamicSupervisor` which is handled by `write/1`.  This function is
   useful for testing.
   """
-  @spec start_link({(Job.t() -> any), atom}) :: GenServer.on_start()
-  def start_link({next_stage, name}) do
-    GenServer.start_link(__MODULE__, next_stage, name: name)
+  @spec start_link(atom) :: GenServer.on_start()
+  def start_link(name) do
+    GenServer.start_link(__MODULE__, :ok, name: name)
   end
 
   @spec via_tuple(Job.fractal_id()) :: via_tuple()
@@ -54,12 +53,10 @@ defmodule Fractals.OutputWorker do
   @spec maybe_new(keyword) :: Supervisor.on_start_child()
   defp maybe_new(options) do
     name = Keyword.get(options, :name)
-    next_stage = Keyword.get(options, :next_stage, &default_next_stage/1)
+    supervisor = Fractals.OutputWorkerSupervisor
+    child_spec = {__MODULE__, name}
 
-    case DynamicSupervisor.start_child(
-           Fractals.OutputWorkerSupervisor,
-           {__MODULE__, {next_stage, name}}
-         ) do
+    case DynamicSupervisor.start_child(supervisor, child_spec) do
       {:error, {:already_started, pid}} ->
         {:ok, pid}
 
@@ -68,37 +65,35 @@ defmodule Fractals.OutputWorker do
     end
   end
 
-  # Closes the job (i.e., closes the file).
-  @spec default_next_stage(Job.t()) :: any()
-  defp default_next_stage(job) do
-    Job.close(job)
-    Broadcaster.report(:done, job, from: self())
-  end
-
   # Server API
 
   @impl GenServer
-  def init(next_stage) do
-    {:ok, {nil, next_stage}}
+  def init(_) do
+    {:ok, nil}
   end
 
   @impl GenServer
-  def handle_cast({:write, chunk}, {nil, next_stage}) do
-    chunk.job.output.module.start(chunk.job)
+  def handle_cast({:write, chunk}, nil) do
+    output_module = chunk.job.output.module
+    chunk_count = chunk.job.engine.chunk_count
 
-    state =
-      %OutputState{
-        next_number: 1,
-        cache: WorkerCache.build_initial_cache(chunk.job.engine.chunk_count)
-      }
-      |> WorkerCache.process(chunk, next_stage)
+    initial_state = %OutputState{
+      job: chunk.job,
+      output_module: output_module,
+      next_number: 1,
+      pid: output_module.start(chunk.job),
+      cache: WorkerCache.new(chunk_count)
+    }
 
-    {:noreply, {state, next_stage}}
+    updated_state = WorkerCache.next_chunk(initial_state, chunk)
+
+    {:noreply, updated_state}
   end
 
   @impl GenServer
-  def handle_cast({:write, chunk}, {state, next_stage}) do
-    state = WorkerCache.process(state, chunk, next_stage)
-    {:noreply, {state, next_stage}}
+  def handle_cast({:write, chunk}, state) do
+    updated_state = WorkerCache.next_chunk(state, chunk)
+
+    {:noreply, updated_state}
   end
 end

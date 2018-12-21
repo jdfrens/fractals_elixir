@@ -7,54 +7,58 @@ defmodule Fractals.Output.WorkerCache do
   processed, and the search-process loop repeats.
   """
 
-  alias Fractals.{Chunk, Job}
+  alias Fractals.{Chunk, Color}
   alias Fractals.Output.OutputState
   alias Fractals.Reporters.Broadcaster
 
-  @spec build_initial_cache(integer()) :: map
-  def build_initial_cache(chunk_count) do
+  @doc """
+  Creates a new cache of chunks of image waiting for output.
+  """
+  @spec new(integer()) :: map
+  def new(chunk_count) do
     %{(chunk_count + 1) => :done}
   end
 
-  @spec process(OutputState.t(), Chunk.t(), (Job.t() -> any)) :: OutputState.t() | nil
-  def process(%OutputState{next_number: next_number, cache: cache}, chunk, next_stage) do
-    cache
+  @doc """
+  Adds another chunk to the cache.  The cache is flushed as much as it can be after the new chunk is added.
+  """
+  @spec next_chunk(OutputState.t(), Chunk.t()) :: OutputState.t() | nil
+  def next_chunk(state, chunk) do
+    state
     |> update_cache(chunk)
-    |> output_cache(next_number, chunk.job, next_stage)
+    |> output_cache()
   end
 
-  @spec update_cache(map, Chunk.t()) :: map
-  def update_cache(cache, %Chunk{number: number, data: pixels}) do
-    Map.put(cache, number, pixels)
+  @spec update_cache(OutputState.t(), Chunk.t()) :: OutputState.t()
+  defp update_cache(state, %Chunk{number: number, data: pixels}) do
+    %{state | cache: Map.put(state.cache, number, pixels)}
   end
 
-  @spec output_cache(
-          map,
-          non_neg_integer,
-          Job.t(),
-          (Job.t() -> any)
-        ) :: OutputState.t() | nil
-  def output_cache(cache, next_number, job, next_stage) do
-    case Map.get(cache, next_number) do
-      nil ->
-        %OutputState{next_number: next_number, cache: cache}
-
-      :done ->
-        next_stage.(job)
-        nil
-
-      pixels ->
-        write_chunk(next_number, pixels, job)
-
-        cache
-        |> Map.delete(next_number)
-        |> output_cache(next_number + 1, job, next_stage)
+  @spec output_cache(OutputState.t()) :: OutputState.t() | nil
+  defp output_cache(state) do
+    case Map.get(state.cache, state.next_number) do
+      nil -> state
+      :done -> done(state)
+      pixels -> write(state, pixels)
     end
   end
 
-  @spec write_chunk(non_neg_integer(), [String.t()], Job.t()) :: Job.t()
-  defp write_chunk(chunk_number, pixels, job) do
-    Broadcaster.report(:writing, job, chunk_number: chunk_number)
-    job.output.module.write(job, pixels)
+  @spec done(OutputState.t()) :: nil
+  defp done(state) do
+    state.output_module.stop(state)
+    Broadcaster.report(:done, state.job, from: self())
+
+    nil
+  end
+
+  @spec write(OutputState.t(), [Color.t()]) :: OutputState.t()
+  defp write(state, pixels) do
+    state.output_module.write(state.job, state, pixels)
+    Broadcaster.report(:writing, state.job, chunk_number: state.next_number)
+
+    state
+    |> Map.update!(:cache, &Map.delete(&1, :next_number))
+    |> Map.update!(:next_number, &(&1 + 1))
+    |> output_cache()
   end
 end

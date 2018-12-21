@@ -49,7 +49,7 @@ defmodule Fractals.Reporters.Countdown do
 
   @impl GenServer
   def terminate(reason, %{for: pid}) do
-    send(pid, {:filenames_empty, reason})
+    send(pid, {:jobs_countdown_done, reason})
   end
 
   @spec fractal_done(state(), Job.t()) :: state()
