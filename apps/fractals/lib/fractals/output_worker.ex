@@ -77,17 +77,18 @@ defmodule Fractals.OutputWorker do
     output_module = chunk.job.output.module
     chunk_count = chunk.job.engine.chunk_count
 
-    initial_state = %OutputState{
-      job: chunk.job,
-      output_module: output_module,
-      next_number: 1,
-      pid: output_module.start(chunk.job),
-      cache: WorkerCache.new(chunk_count)
-    }
+    state =
+      %OutputState{
+        job: chunk.job,
+        output_module: output_module,
+        next_number: 1,
+        pid: output_module.open(chunk.job),
+        cache: WorkerCache.new(chunk_count)
+      }
+      |> output_module.start()
+      |> WorkerCache.next_chunk(chunk)
 
-    updated_state = WorkerCache.next_chunk(initial_state, chunk)
-
-    {:noreply, updated_state}
+    {:noreply, state}
   end
 
   @impl GenServer

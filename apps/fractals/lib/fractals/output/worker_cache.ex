@@ -46,6 +46,7 @@ defmodule Fractals.Output.WorkerCache do
   @spec done(OutputState.t()) :: nil
   defp done(state) do
     state.output_module.stop(state)
+    state.output_module.close(state)
     Broadcaster.report(:done, state.job, from: self())
 
     nil
@@ -53,7 +54,7 @@ defmodule Fractals.Output.WorkerCache do
 
   @spec write(OutputState.t(), [Color.t()]) :: OutputState.t()
   defp write(state, pixels) do
-    state.output_module.write(state.job, state, pixels)
+    state.output_module.write(state, pixels)
     Broadcaster.report(:writing, state.job, chunk_number: state.next_number)
 
     state
