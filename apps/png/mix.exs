@@ -13,7 +13,8 @@ defmodule PNG.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -27,9 +28,6 @@ defmodule PNG.MixProject do
   def elixirc_paths(_), do: ["lib"]
 
   defp deps do
-    [
-      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.2", only: [:dev, :test], runtime: false}
-    ]
+    []
   end
 end

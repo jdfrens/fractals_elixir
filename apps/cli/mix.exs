@@ -13,7 +13,8 @@ defmodule CLI.MixProject do
       escript: [main_module: CLI, name: "fractals"],
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -25,8 +26,6 @@ defmodule CLI.MixProject do
 
   defp deps do
     [
-      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.2", only: [:dev, :test], runtime: false},
       {:fractals, in_umbrella: true},
       {:ppm_output, in_umbrella: true},
       {:stage_engine, in_umbrella: true},
