@@ -27,9 +27,6 @@ defmodule PNG.MixProject do
   def elixirc_paths(_), do: ["lib"]
 
   defp deps do
-    [
-      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.2", only: [:dev, :test], runtime: false}
-    ]
+    []
   end
 end

@@ -25,8 +25,6 @@ defmodule UniprocessEngine.MixProject do
 
   defp deps do
     [
-      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.2", only: [:dev, :test], runtime: false},
       {:fractals, in_umbrella: true}
     ]
   end
