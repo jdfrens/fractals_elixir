@@ -1,6 +1,6 @@
 defmodule PPMOutput do
   @moduledoc """
-  Represents  the output values for a job.
+  Represents PPM output.
   """
 
   use Fractals.Output
