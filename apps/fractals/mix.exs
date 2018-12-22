@@ -10,6 +10,7 @@ defmodule Fractals.Mixfile do
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
       elixir: "~> 1.7",
+      elixirc_paths: elixirc_paths(Mix.env()),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -25,6 +26,9 @@ defmodule Fractals.Mixfile do
     ]
   end
 
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_env), do: ["lib"]
+
   defp deps do
     [
       {:complex, github: "jdfrens/elixir-complex", ref: "51e2804"},
@@ -32,6 +36,7 @@ defmodule Fractals.Mixfile do
       {:inflex, "~> 1.10.0"},
       {:mox, "~> 0.4", only: :test},
       {:ppm, in_umbrella: true},
+      {:stream_data, "~> 0.1", only: :test},
       {:uuid, "~> 1.1"},
       {:yaml_elixir, "~> 2.1.0"}
     ]

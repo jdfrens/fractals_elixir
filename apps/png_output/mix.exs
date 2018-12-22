@@ -1,9 +1,9 @@
-defmodule IntegrationTests.MixProject do
+defmodule PNGOutput.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :integration_tests,
+      app: :png_output,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -16,19 +16,19 @@ defmodule IntegrationTests.MixProject do
     ]
   end
 
+  # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {PNGOutput.Application, []}
     ]
   end
 
+  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:cli, in_umbrella: true},
       {:fractals, in_umbrella: true},
-      {:ppm_output, in_umbrella: true},
-      {:stage_engine, in_umbrella: true},
-      {:uniprocess_engine, in_umbrella: true}
+      {:png, in_umbrella: true}
     ]
   end
 end

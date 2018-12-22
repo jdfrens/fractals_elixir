@@ -7,6 +7,7 @@ defmodule Fractals.Output do
   @type pixels :: [Fractals.Color.t()]
 
   alias Fractals.Job
+  alias Fractals.Output.OutputState
 
   defmacro __using__(_opts) do
     quote do
