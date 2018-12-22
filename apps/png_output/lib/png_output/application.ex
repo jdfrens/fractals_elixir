@@ -3,7 +3,13 @@ defmodule PNGOutput.Application do
 
   use Application
 
+  alias Fractals.ParserRegistry
+
   def start(_type, _args) do
+    Application.ensure_all_started(:fractals)
+
+    ParserRegistry.add(:output, :png, PNGOutput.Parser)
+
     children = []
 
     opts = [strategy: :one_for_one, name: PNGOutput.Supervisor]
