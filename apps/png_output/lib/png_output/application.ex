@@ -10,7 +10,9 @@ defmodule PNGOutput.Application do
 
     ParserRegistry.add(:output, :png, PNGOutput.Parser)
 
-    children = []
+    children = [
+      {DynamicSupervisor, strategy: :one_for_one, name: PNGOutput.BufferedOutputSupervisor}
+    ]
 
     opts = [strategy: :one_for_one, name: PNGOutput.Supervisor]
     Supervisor.start_link(children, opts)

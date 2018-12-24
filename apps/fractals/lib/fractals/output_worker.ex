@@ -75,12 +75,14 @@ defmodule Fractals.OutputWorker do
   @impl GenServer
   def handle_cast({:write, chunk}, nil) do
     output_module = chunk.job.output.module
+    max_intensity = chunk.job.output.max_intensity
     chunk_count = chunk.job.engine.chunk_count
 
     state =
       %OutputState{
         job: chunk.job,
         output_module: output_module,
+        max_intensity: max_intensity,
         next_number: 1,
         pid: output_module.open(chunk.job),
         cache: WorkerCache.new(chunk_count)

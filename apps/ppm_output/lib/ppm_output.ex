@@ -38,8 +38,7 @@ defmodule PPMOutput do
 
   @impl Fractals.Output
   def write(state, pixels) do
-    max_intensity = state.job.output.max_intensity
-    ppm_lines = Enum.map(pixels, &rgb_to_ppm(&1, max_intensity))
+    ppm_lines = Enum.map(pixels, &rgb_to_ppm(&1, state.max_intensity))
     PPMFile.lines_to_file(state.pid, ppm_lines)
     state
   end

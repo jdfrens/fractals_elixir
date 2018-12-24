@@ -24,7 +24,7 @@ defmodule Fractals.OutputWorkerTest do
   describe "write/2" do
     setup %{output_pid: output_pid} do
       job = %Job{
-        output: %{pid: output_pid, module: Fractals.OutputMock},
+        output: %{pid: output_pid, module: Fractals.OutputMock, max_intensity: 255},
         image: %Image{size: %Size{width: 3, height: 1}},
         engine: %{chunk_count: 3}
       }
