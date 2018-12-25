@@ -3,15 +3,13 @@ defmodule PNG.LowLevel do
   Low-level functions to generate a PNG image by chunks.
   """
 
-  alias PNG.{Config, ZLib}
+  alias PNG.ZLib
 
   @type chunk ::
           {:raw, iodata()}
-          | {:row, iodata()}
           | {:rows, iodata()}
-          | {:data, iodata()}
           | {:compressed, iodata()}
-          | Config.palette()
+          | PNG.palette()
 
   @type color_tuple :: {integer(), integer(), integer()}
 
@@ -31,27 +29,27 @@ defmodule PNG.LowLevel do
   This supports only basic compression, filter, and interlace methods.
   Only supports scanline filter 0 (i.e., none).
   """
-  @spec chunk(String.t(), Config.t() | chunk() | binary()) :: binary()
+  @spec chunk(String.t(), PNG.t() | chunk() | binary()) :: binary()
   def chunk(type, data \\ <<>>)
 
   def chunk(
         "IHDR",
-        %Config{
+        %PNG{
           size: {width, height},
           mode: {color_type, bit_depth},
           compression_method: 0,
           filter_method: 0,
           interlace_method: 0
-        } = config
+        } = png
       ) do
     data = <<
       width::32,
       height::32,
       bit_depth::8,
       color_type_byte(color_type)::8,
-      config.compression_method::8,
-      config.filter_method::8,
-      config.interlace_method::8
+      png.compression_method::8,
+      png.filter_method::8,
+      png.interlace_method::8
     >>
 
     chunk(<<"IHDR">>, data)
@@ -67,7 +65,7 @@ defmodule PNG.LowLevel do
   end
 
   def chunk("IDAT", {:compressed, compressed_data}) when is_list(compressed_data) do
-    Enum.map(compressed_data, fn part ->
+    Enum.map(List.flatten(compressed_data), fn part ->
       chunk(<<"IDAT">>, part)
     end)
   end

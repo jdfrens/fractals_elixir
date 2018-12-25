@@ -7,8 +7,6 @@ defmodule Indexed8Test do
 
   import PNG.FileHelpers
 
-  alias PNG.Config
-
   setup do
     setup_filenames("indexed_8.png")
   end
@@ -21,9 +19,14 @@ defmodule Indexed8Test do
     mode = {:indexed, 8}
     palette = {:rgb, 8, [{255, 0, 0}, {0, 255, 0}, {0, 0, 255}]}
     {:ok, file} = :file.open(image_filename, [:write])
-    png = PNG.create(%Config{size: size, mode: mode, palette: palette, file: file})
 
-    :ok = append_rows(png)
+    png =
+      %PNG{size: size, mode: mode, palette: palette, file: file}
+      |> PNG.open()
+      |> PNG.write_header()
+      |> PNG.write_palette()
+
+    :ok = write_rows(png)
     :ok = PNG.close(png)
     :ok = :file.close(file)
 
@@ -32,15 +35,15 @@ defmodule Indexed8Test do
     assert expected == actual
   end
 
-  def append_rows(png) do
-    append_row(png, 0)
+  def write_rows(png) do
+    write_row(png, 0)
   end
 
-  def append_row(%{size: {_, height}}, height) do
+  def write_row(%{size: {_, height}}, height) do
     :ok
   end
 
-  def append_row(%{size: {width, _}} = png, y) do
+  def write_row(%{size: {width, _}} = png, y) do
     thickness = div(width, 4)
 
     f = fn
@@ -50,7 +53,7 @@ defmodule Indexed8Test do
     end
 
     row = :lists.map(f, :lists.seq(1, width))
-    PNG.append(png, {:row, row})
-    append_row(png, y + 1)
+    PNG.write(png, {:row, row})
+    write_row(png, y + 1)
   end
 end

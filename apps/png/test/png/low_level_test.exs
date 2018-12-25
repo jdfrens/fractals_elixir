@@ -5,7 +5,7 @@ defmodule PNG.LowLevelTest do
 
   use ExUnit.Case, async: true
 
-  alias PNG.{Config, LowLevel}
+  alias PNG.LowLevel
 
   describe "header/0" do
     test "returns static content" do
@@ -17,7 +17,7 @@ defmodule PNG.LowLevelTest do
 
   describe "chunk/2" do
     test "IHDR with height" do
-      result = LowLevel.chunk("IHDR", %Config{size: {32, 16}})
+      result = LowLevel.chunk("IHDR", %PNG{size: {32, 16}})
 
       target =
         <<0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 32, 0, 0, 0, 16, 8, 0, 0, 0, 0, 82, 107, 34, 133>>
@@ -26,7 +26,7 @@ defmodule PNG.LowLevelTest do
     end
 
     test "IHDR width height bit depth" do
-      result = LowLevel.chunk("IHDR", %Config{size: {32, 16}, mode: {:grayscale, 8}})
+      result = LowLevel.chunk("IHDR", %PNG{size: {32, 16}, mode: {:grayscale, 8}})
 
       target =
         <<0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 32, 0, 0, 0, 16, 8, 0, 0, 0, 0, 82, 107, 34, 133>>
@@ -35,7 +35,7 @@ defmodule PNG.LowLevelTest do
     end
 
     test "IHDR width height bit depth color type" do
-      result = LowLevel.chunk("IHDR", %Config{size: {32, 16}, mode: {:rgb, 8}})
+      result = LowLevel.chunk("IHDR", %PNG{size: {32, 16}, mode: {:rgb, 8}})
 
       target =
         <<0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 32, 0, 0, 0, 16, 8, 2, 0, 0, 0, 248, 98, 234, 14>>

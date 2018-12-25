@@ -8,8 +8,6 @@ defmodule PNG.Grayscale8Test do
   import PNG.FileHelpers
   import PNG.ImageGenerationTestHelpers
 
-  alias PNG.Config
-
   setup do
     setup_filenames("grayscale_8.png")
   end
@@ -21,9 +19,14 @@ defmodule PNG.Grayscale8Test do
     size = {100, 100}
     mode = {:grayscale, 8}
     {:ok, file} = :file.open(image_filename, [:write])
-    png = PNG.create(%Config{size: size, mode: mode, file: file})
 
-    :ok = append_image(png, &pixel/3)
+    png =
+      %PNG{size: size, mode: mode, file: file}
+      |> PNG.open()
+      |> PNG.write_header()
+      |> PNG.write_palette()
+
+    :ok = write_image(png, &pixel/3)
 
     :ok = PNG.close(png)
     :ok = :file.close(file)

@@ -5,7 +5,7 @@ defmodule LowLevelRGBa8Test do
 
   use ExUnit.Case, async: true
 
-  alias PNG.{Config, LowLevel}
+  alias PNG.LowLevel
 
   import PNG.FileHelpers
   import PNG.ImageGenerationTestHelpers
@@ -19,16 +19,16 @@ defmodule LowLevelRGBa8Test do
     expected_filename: expected_filename
   } do
     size = {50, 50}
-    config = %Config{size: size, mode: {:rgba, 8}}
+    png = %PNG{size: size, mode: {:rgba, 8}}
     rows = make_image(size, &pixel(size, &1, &2))
 
     [
       LowLevel.header(),
-      LowLevel.chunk("IHDR", config),
+      LowLevel.chunk("IHDR", png),
       LowLevel.chunk("IDAT", {:rows, rows}),
       LowLevel.chunk("IEND")
     ]
-    |> write_image(image_filename)
+    |> write_image_file(image_filename)
 
     {:ok, expected} = File.read(expected_filename)
     {:ok, actual} = File.read(image_filename)
