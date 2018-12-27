@@ -13,8 +13,12 @@ defmodule PNGOutput.BufferedOutput do
   """
   use GenServer
 
+  defmodule State do
+    @moduledoc false
+    defstruct png: nil, buffer: []
+  end
+
   alias Fractals.{Job, Size}
-  alias PNG.{Config, LowLevel}
 
   @mode {:rgb, 8}
 
@@ -28,34 +32,35 @@ defmodule PNGOutput.BufferedOutput do
 
   @impl GenServer
   def init(%Job{} = job) do
+    {:ok, %State{buffer: []}, {:continue, job}}
+  end
+
+  @impl GenServer
+  def handle_continue(job, state) do
     with {:ok, output_pid} <- open_file(job),
-         buffer = [] do
-      {:ok, %{output_pid: output_pid, buffer: buffer}}
+         %PNG{} = png <- job |> build_config(output_pid) |> PNG.open() do
+      {:noreply, %{state | png: png}}
     end
   end
 
   @impl GenServer
-  def handle_call({:start, output_state}, _from, %{output_pid: output_pid} = state) do
-    %Size{width: width, height: height} = output_state.job.image.size
-    config = %Config{size: {width, height}, mode: @mode}
+  def handle_call({:start}, _from, %State{png: png} = state) do
+    png
+    |> PNG.write_header()
+    |> PNG.write_palette()
 
-    io_data = [
-      LowLevel.header(),
-      LowLevel.chunk("IHDR", config)
-    ]
-
-    :ok = :file.write(output_pid, io_data)
-
-    {:reply, output_state, state}
+    {:reply, :ok, state}
   end
 
   @impl GenServer
   def handle_call(
-        {:write, output_state, pixels},
+        {:write, pixels},
         _from,
-        %{output_pid: output_pid, buffer: buffer} = state
+        %State{png: png, buffer: buffer} = state
       ) do
-    width = output_state.job.image.size.width
+    %PNG{size: {width, _}} = png
+
+    true = Enum.all?(pixels, &is_binary/1)
 
     {rows, leftover} =
       (buffer ++ pixels)
@@ -68,26 +73,22 @@ defmodule PNGOutput.BufferedOutput do
         [new_buffer] -> new_buffer
       end
 
-    io_data = LowLevel.chunk("IDAT", {:rows, rows})
-    :ok = :file.write(output_pid, io_data)
+    Enum.each(rows, &PNG.write(png, {:row, &1}))
 
-    {:reply, output_state, %{state | buffer: new_buffer}}
+    {:reply, :ok, %{state | buffer: new_buffer}}
   end
 
   @impl GenServer
-  def handle_call({:stop, output_state}, _from, %{output_pid: output_pid} = state) do
-    :ok =
-      output_pid
-      |> :file.write(LowLevel.chunk("IEND"))
-
-    {:reply, output_state, state}
+  def handle_call({:stop}, _from, state) do
+    {:reply, :ok, state}
   end
 
   @impl GenServer
-  def handle_call({:close, output_state}, _from, %{output_pid: output_pid, buffer: []} = state) do
-    :ok = :file.close(output_pid)
+  def handle_call({:close}, _from, %State{png: png, buffer: []} = state) do
+    :ok = PNG.close(png)
+    :ok = :file.close(png.file)
 
-    {:reply, output_state, state}
+    {:reply, :ok, state}
   end
 
   @spec open_file(Job.t()) :: {:ok, pid()}
@@ -96,5 +97,11 @@ defmodule PNGOutput.BufferedOutput do
          filename when is_binary(filename) <- output.filename do
       File.open(filename, [:write])
     end
+  end
+
+  @spec build_config(Job.t(), pid()) :: PNG.t()
+  defp build_config(job, output_file_pid) do
+    %Size{width: width, height: height} = job.image.size
+    %PNG{size: {width, height}, mode: @mode, file: output_file_pid}
   end
 end

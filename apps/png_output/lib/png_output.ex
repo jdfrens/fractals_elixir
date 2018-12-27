@@ -35,26 +35,26 @@ defmodule PNGOutput do
 
   @impl Fractals.Output
   def start(state) do
-    GenServer.call(state.pid, {:start, state})
+    GenServer.call(state.pid, {:start})
     state
   end
 
   @impl Fractals.Output
   def write(state, pixels) do
     converted_pixels = Enum.map(pixels, &rgb_to_ints(&1, state.max_intensity))
-    GenServer.call(state.pid, {:write, state, converted_pixels})
+    GenServer.call(state.pid, {:write, converted_pixels})
     state
   end
 
   @impl Fractals.Output
   def stop(state) do
-    GenServer.call(state.pid, {:stop, state})
+    GenServer.call(state.pid, {:stop})
     state
   end
 
   @impl Fractals.Output
   def close(state) do
-    GenServer.call(state.pid, {:close, state})
+    GenServer.call(state.pid, {:close})
     DynamicSupervisor.terminate_child(@buffered_supervisor, state.pid)
     state
   end

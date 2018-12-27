@@ -28,6 +28,7 @@ defmodule CLI.MixProject do
     [
       {:fractals, in_umbrella: true},
       {:ppm_output, in_umbrella: true},
+      {:png_output, in_umbrella: true},
       {:stage_engine, in_umbrella: true},
       {:uniprocess_engine, in_umbrella: true}
     ]
