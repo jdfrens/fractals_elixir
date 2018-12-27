@@ -1,6 +1,8 @@
 defmodule PNGOutput do
   @moduledoc """
-  Represents PNG output.
+  Generate PNG output.
+
+  Since PNG output must by done row by row, this module defers most of the work to `PNGOutput.BufferedOutput`.
   """
 
   use Fractals.Output

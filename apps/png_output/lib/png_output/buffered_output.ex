@@ -53,14 +53,8 @@ defmodule PNGOutput.BufferedOutput do
   end
 
   @impl GenServer
-  def handle_call(
-        {:write, pixels},
-        _from,
-        %State{png: png, buffer: buffer} = state
-      ) do
+  def handle_call({:write, pixels}, _from, %State{png: png, buffer: buffer} = state) do
     %PNG{size: {width, _}} = png
-
-    true = Enum.all?(pixels, &is_binary/1)
 
     {rows, leftover} =
       (buffer ++ pixels)
