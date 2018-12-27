@@ -13,7 +13,7 @@ defmodule Integration.UniprocessEngineTest do
            "#{inspect(file1)} and #{inspect(file2)} do not match"
   end
 
-  test "small, red Mandelbrot" do
+  test "small, red Mandelbrot PPM" do
     job =
       Job.process(
         output: [
@@ -30,6 +30,26 @@ defmodule Integration.UniprocessEngineTest do
     assert_same_images(
       "test/expected_outputs/small-red-mandelbrot.ppm",
       "test/images/uniprocess-output.ppm"
+    )
+  end
+
+  test "small, red Mandelbrot PNG" do
+    job =
+      Job.process(
+        output: [
+          type: "png",
+          directory: "test/images",
+          filename: "uniprocess-output.png"
+        ],
+        engine: [type: "uniprocess"],
+        params_filename: "test/inputs/small-red-mandelbrot.yml"
+      )
+
+    UniprocessEngine.generate(job)
+
+    assert_same_images(
+      "test/expected_outputs/small-red-mandelbrot.png",
+      "test/images/uniprocess-output.png"
     )
   end
 end
