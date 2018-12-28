@@ -3,74 +3,109 @@ defmodule PNG do
   Documentation for PNG.
   """
 
-  alias PNG.{Config, LowLevel, ZLib}
+  alias PNG.{LowLevel, ZLib}
 
-  @spec create(map()) :: map()
-  def create(%Config{file: file} = config) when is_pid(file) do
-    callback = fn data -> :file.write(file, data) end
+  @type size :: {pos_integer(), pos_integer()}
+  @type mode :: {atom(), pos_integer()}
+  @type bit_depth :: 8 | 16
+  @type rgb_tuple :: {
+          red :: pos_integer(),
+          green :: pos_integer(),
+          blue :: pos_integer()
+        }
+  @type rgba_tuple :: {
+          red :: pos_integer(),
+          green :: pos_integer(),
+          blue :: pos_integer(),
+          alpha :: pos_integer()
+        }
+  @type color_tuples :: list(rgb_tuple) | list(rgba_tuple)
+  @type palette :: {:rgb, bit_depth, color_tuples}
+  @type t :: %__MODULE__{
+          size: size(),
+          mode: mode(),
+          palette: palette() | nil,
+          compression_method: 0,
+          filter_method: 0,
+          interlace_method: 0,
+          file: pid(),
+          z: PNG.ZLib.zstream() | nil
+        }
 
-    config
-    |> Map.put(:file, nil)
-    |> Map.put(:callback, callback)
-    |> create()
+  defstruct size: {0, 0},
+            mode: {:grayscale, 8},
+            palette: nil,
+            compression_method: 0,
+            filter_method: 0,
+            interlace_method: 0,
+            file: nil,
+            z: nil
+
+  @type chunk ::
+          {:row, iodata()}
+          | {:rows, iodata()}
+          | {:data, iodata()}
+          | {:compressed, iodata()}
+
+  @doc """
+  Open resources for writing a PNG image.
+
+  `png.file` must already be opened.  This opens a `ZLib` process for deflating the rows.
+  """
+  @spec open(PNG.t()) :: PNG.t()
+  def open(%PNG{} = png) do
+    Map.put(png, :z, ZLib.open())
   end
 
-  def create(%Config{} = config) do
-    config
-    |> append_header()
-    |> append_palette()
-    |> Map.put(:z, ZLib.open())
+  @spec write_header(PNG.t()) :: PNG.t()
+  def write_header(%PNG{file: file} = png) do
+    :ok = :file.write(file, LowLevel.header())
+    :ok = :file.write(file, LowLevel.chunk("IHDR", png))
+    png
   end
 
-  @spec append_header(Config.t()) :: Config.t()
-  def append_header(%Config{callback: callback} = config) do
-    :ok = callback.(LowLevel.header())
-    :ok = callback.(LowLevel.chunk("IHDR", config))
-    config
+  @spec write_palette(PNG.t()) :: PNG.t()
+  def write_palette(%PNG{palette: nil} = png) do
+    png
   end
 
-  @spec append_palette(Config.t()) :: Config.t()
-  def append_palette(%Config{palette: nil} = config) do
-    config
+  def write_palette(%PNG{file: file, palette: palette} = png) do
+    :ok = :file.write(file, LowLevel.chunk("PLTE", palette))
+    png
   end
 
-  def append_palette(%Config{callback: callback, palette: palette} = config) do
-    :ok = callback.(LowLevel.chunk("PLTE", palette))
-    config
+  @spec write(PNG.t(), chunk()) :: PNG.t()
+  def write(png, {:row, row}) do
+    write(png, {:data, [0, row]})
   end
 
-  @spec append(Config.t(), LowLevel.chunk()) :: Config.t()
-  def append(config, {:row, row}) do
-    append(config, {:data, [0, row]})
-  end
-
-  def append(config, {:rows, rows}) do
+  def write(png, {:rows, rows}) do
     f = fn row -> [0, row] end
-    append(config, {:data, :lists.map(f, rows)})
+    write(png, {:data, :lists.map(f, rows)})
   end
 
-  def append(%Config{z: z} = config, {:data, raw_data}) do
+  def write(%PNG{z: z} = png, {:data, raw_data}) do
     compressed = ZLib.deflate(z, raw_data)
-    append(config, {:compressed, compressed})
-    config
+    write(png, {:compressed, compressed})
+    png
   end
 
-  def append(config, {:compressed, []}) do
-    config
+  def write(png, {:compressed, []}) do
+    png
   end
 
-  def append(%Config{callback: callback} = config, {:compressed, compressed}) do
+  def write(%PNG{file: file} = png, {:compressed, compressed}) do
     chunks = LowLevel.chunk("IDAT", {:compressed, compressed})
-    :ok = callback.(chunks)
-    config
+    :ok = :file.write(file, chunks)
+    png
   end
 
-  @spec close(PNG.Config.t()) :: :ok
-  def close(%Config{z: z, callback: callback} = config) do
+  @spec close(PNG.t()) :: :ok
+  def close(%PNG{z: z, file: file} = png) do
     compressed = ZLib.deflate(z, <<>>, :finish)
-    append(config, {:compressed, List.flatten(compressed)})
+    write(png, {:compressed, List.flatten(compressed)})
     :ok = ZLib.close(z)
-    :ok = callback.(LowLevel.chunk("IEND"))
+    :ok = :file.write(file, LowLevel.chunk("IEND"))
     :ok
   end
 end

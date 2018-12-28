@@ -12,13 +12,19 @@ defmodule Fractals.Outputs.NoOutput do
   def write_everything(job, _pixels), do: job
 
   @impl Fractals.Output
-  def start(_job), do: nil
+  def open(_job), do: nil
 
   @impl Fractals.Output
-  def write(job, _output_state, _pixels), do: job
+  def start(state), do: state
 
   @impl Fractals.Output
-  def stop(_output_state), do: nil
+  def write(state, _pixels), do: state
+
+  @impl Fractals.Output
+  def stop(state), do: state
+
+  @impl Fractals.Output
+  def close(state), do: state
 
   @impl Fractals.OutputParser
   def parse(_params), do: %__MODULE__{}

@@ -8,7 +8,7 @@ defmodule LowLevelIndexed8Test do
   import PNG.FileHelpers
   import PNG.ImageGenerationTestHelpers
 
-  alias PNG.{Config, LowLevel}
+  alias PNG.LowLevel
 
   setup do
     setup_filenames("low_level_indexed_8.png")
@@ -19,19 +19,19 @@ defmodule LowLevelIndexed8Test do
     expected_filename: expected_filename
   } do
     {width, _} = size = {50, 50}
-    config = %Config{size: size, mode: {:indexed, 8}}
+    png = %PNG{size: size, mode: {:indexed, 8}}
     palette = {:rgb, 8, [{255, 0, 0}, {0, 255, 0}, {0, 0, 255}]}
     thickness = div(width, 4)
     rows = make_image(size, &pixel(thickness, &1, &2))
 
     [
       LowLevel.header(),
-      LowLevel.chunk("IHDR", config),
+      LowLevel.chunk("IHDR", png),
       LowLevel.chunk("PLTE", palette),
       LowLevel.chunk("IDAT", {:rows, rows}),
       LowLevel.chunk("IEND")
     ]
-    |> write_image(image_filename)
+    |> write_image_file(image_filename)
 
     {:ok, expected} = File.read(expected_filename)
     {:ok, actual} = File.read(image_filename)

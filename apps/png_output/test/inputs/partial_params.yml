@@ -1,0 +1,5 @@
+fractal:
+  type: julia
+  c: 1.0+0.0i
+color_scheme:
+  type: Blue

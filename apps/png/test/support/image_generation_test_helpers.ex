@@ -17,16 +17,20 @@ defmodule PNG.ImageGenerationTestHelpers do
   end
 
   @doc """
-  Generates and appends data for the image.
+  Writes data for the image as specified by `f`.
   """
-  def append_image(%{size: {width, height} = size} = png, f) do
+  @spec write_image(
+          map(),
+          ({non_neg_integer(), non_neg_integer()}, non_neg_integer, non_neg_integer -> binary())
+        ) :: any()
+  def write_image(%{size: {width, height} = size} = png, f) do
     Enum.each(1..height, fn y ->
       row =
         Enum.map(1..width, fn x ->
           f.(size, x, y)
         end)
 
-      PNG.append(png, {:row, row})
+      PNG.write(png, {:row, row})
     end)
   end
 end

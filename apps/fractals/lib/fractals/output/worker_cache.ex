@@ -11,10 +11,12 @@ defmodule Fractals.Output.WorkerCache do
   alias Fractals.Output.OutputState
   alias Fractals.Reporters.Broadcaster
 
+  @type t :: map()
+
   @doc """
   Creates a new cache of chunks of image waiting for output.
   """
-  @spec new(integer()) :: map
+  @spec new(integer()) :: t()
   def new(chunk_count) do
     %{(chunk_count + 1) => :done}
   end
@@ -34,7 +36,7 @@ defmodule Fractals.Output.WorkerCache do
     %{state | cache: Map.put(state.cache, number, pixels)}
   end
 
-  @spec output_cache(OutputState.t()) :: OutputState.t() | nil
+  @spec output_cache(OutputState.t()) :: OutputState.t()
   defp output_cache(state) do
     case Map.get(state.cache, state.next_number) do
       nil -> state
@@ -43,17 +45,18 @@ defmodule Fractals.Output.WorkerCache do
     end
   end
 
-  @spec done(OutputState.t()) :: nil
+  @spec done(OutputState.t()) :: OutputState.t()
   defp done(state) do
     state.output_module.stop(state)
+    state.output_module.close(state)
     Broadcaster.report(:done, state.job, from: self())
 
-    nil
+    state
   end
 
   @spec write(OutputState.t(), [Color.t()]) :: OutputState.t()
   defp write(state, pixels) do
-    state.output_module.write(state.job, state, pixels)
+    state.output_module.write(state, pixels)
     Broadcaster.report(:writing, state.job, chunk_number: state.next_number)
 
     state

@@ -6,10 +6,16 @@ defmodule Fractals.Output.OutputState do
   @type t :: %__MODULE__{
           job: Fractals.Job.t(),
           output_module: module(),
+          max_intensity: non_neg_integer(),
           next_number: non_neg_integer(),
           pid: pid(),
           cache: map()
         }
 
-  defstruct job: nil, output_module: nil, next_number: 1, pid: nil, cache: %{}
+  defstruct job: nil,
+            output_module: nil,
+            max_intensity: 255,
+            next_number: 1,
+            pid: nil,
+            cache: %{}
 end

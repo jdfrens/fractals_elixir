@@ -11,7 +11,8 @@ defmodule IntegrationTests.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -25,6 +26,7 @@ defmodule IntegrationTests.MixProject do
     [
       {:cli, in_umbrella: true},
       {:fractals, in_umbrella: true},
+      {:png_output, in_umbrella: true},
       {:ppm_output, in_umbrella: true},
       {:stage_engine, in_umbrella: true},
       {:uniprocess_engine, in_umbrella: true}

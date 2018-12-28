@@ -3,56 +3,17 @@ defmodule PNG.Config do
   Configuration for a PNG image.
   """
 
-  alias PNG.Config
-
-  @type size :: {pos_integer(), pos_integer()}
-  @type mode :: {atom(), pos_integer()}
-  @type bit_depth :: 8 | 16
-  @type rgb_tuple :: {
-          red :: pos_integer(),
-          green :: pos_integer(),
-          blue :: pos_integer()
-        }
-  @type rgba_tuple :: {
-          red :: pos_integer(),
-          green :: pos_integer(),
-          blue :: pos_integer(),
-          alpha :: pos_integer()
-        }
-  @type color_tuples :: list(rgb_tuple) | list(rgba_tuple)
-  @type palette :: {:rgb, bit_depth, color_tuples}
-  @type t :: %__MODULE__{
-          size: size(),
-          mode: mode(),
-          palette: palette() | nil,
-          compression_method: 0,
-          filter_method: 0,
-          interlace_method: 0,
-          file: String.t() | nil,
-          callback: (iodata() -> any()) | nil,
-          z: PNG.ZLib.zstream() | nil
-        }
   @type error :: {:error, :invalid} | {:error, :unsupported}
-
-  defstruct size: {0, 0},
-            mode: {:grayscale, 8},
-            palette: nil,
-            compression_method: 0,
-            filter_method: 0,
-            interlace_method: 0,
-            file: nil,
-            callback: nil,
-            z: nil
 
   @doc """
   Basic check for a config.
   """
-  @spec check(t()) :: :ok | error()
-  def check(%Config{size: {width, height}}) when width < 1 or height < 1 do
+  @spec check(PNG.t()) :: :ok | error()
+  def check(%PNG{size: {width, height}}) when width < 1 or height < 1 do
     {:error, :invalid}
   end
 
-  def check(%Config{
+  def check(%PNG{
         mode: mode,
         compression_method: 0,
         filter_method: 0,

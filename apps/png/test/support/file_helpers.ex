@@ -37,7 +37,7 @@ defmodule PNG.FileHelpers do
 
   Primary purpose of the function is to flip the order of the arguments.
   """
-  def write_image(io_data, image_filename) do
+  def write_image_file(io_data, image_filename) do
     :ok = :file.write_file(image_filename, io_data)
   end
 
