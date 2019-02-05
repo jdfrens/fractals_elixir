@@ -10,6 +10,7 @@ defmodule Fractals.MixProject do
         plt_add_apps: [:ex_unit],
         ignore_warnings: ".dialyzer-ignore-warnings"
       ],
+      elixir: "~> 1.8",
       test_coverage: [tool: ExCoveralls],
       aliases: aliases(),
       preferred_cli_env: [
