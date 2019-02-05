@@ -10,8 +10,11 @@ defmodule Fractals.MixProject do
         plt_add_apps: [:ex_unit],
         ignore_warnings: ".dialyzer-ignore-warnings"
       ],
+      elixir: "~> 1.8",
       test_coverage: [tool: ExCoveralls],
+      aliases: aliases(),
       preferred_cli_env: [
+        all_tests: :test,
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
@@ -25,6 +28,17 @@ defmodule Fractals.MixProject do
       {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
       {:dialyxir, "~> 1.0.0-rc.2", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp aliases do
+    [
+      all_tests: [
+        "test",
+        "format --check-formatted",
+        "credo --strict",
+        "dialyzer"
+      ]
     ]
   end
 end
