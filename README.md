@@ -21,9 +21,16 @@ I'm blogging about this project at [Programming During Recess](http://www.progra
 
 ## Installation
 
+Clone, get deps, compile CLI, run QA tests, look at the pretty pictures.
+
 ```
-$ git clone https://github.com/jdfrens/mandelbrot.git
-$ cd mandlebrot/elixir
+$ git clone --recurse-submodules https://github.com/jdfrens/fractals_elixir.git
+$ cd fractals_elixir
+$ mix deps.get
+$ cd apps/cli
+$ MIX_ENV=prod mix escript.build
+$ ./scripts/qa.sh
+$ open images/*.ppm images/*.png
 ```
 
 Checkout a tag to along with my blog post for that week:
@@ -32,23 +39,34 @@ Checkout a tag to along with my blog post for that week:
 $ git checkout tags/blog_2016_06_12 -b whatever_you_want
 ```
 
-You can run the tests and compile the executable:
+You can run the tests:
 
 ```elixir
+# from the root of the project
 $ mix deps.get
 $ mix test
 $ mix credo --strict
-$ mix escript.build
+$ mix dialyzer
 ```
 
-Some earlier branches might have a `spec` task instead of `test`.  `credo --strict` may fail on older branches.
-
-You may want compile the executable with `MIX_ENV=prod`.
+Older branches might have a `spec` task instead of `test`; they may also fail on the `credo` or `dialyzer` tasks,
 
 ## Generating Fractals
 
+The `fractals` executable takes a list of fractal jobs separated by a space.  Each fractal job is a YAML file or a list
+of YAML files separated by commas.  Within a job, each YAML file overrides the previous one; overriding only happens at
+the top level (if two files override the `:output` setting, the second one wins).
+
+See the example YAML files in `inputs`.
+
+* `inputs/data` handles the fractal itself and how to color it.  (This is a submodule, pulling in https://github.com/jdfrens/fractals_data.)
+* `inputs/engine` sets up the engine that will generate the fractal (e.g., a single-process pipeline, a `GenStage`
+  pipeline, etc,).
+* `inputs/output` provides the image (e.g., size) and output (e.g., PPM or PNG) settings.
+
 ```
-$ fractals ../yaml/burningship-line-blue.yml
+$ cd apps/cli
+$ ./fractals ../../inputs/data/burningship/burningship-line-blue.yml,../../inputs/engines/stage_100.yml,../../inputs/outputs/ppm.yml
 # bunch of output, then:
 finished images/burningship-line-blue.png
 ALL DONE!
