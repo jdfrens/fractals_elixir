@@ -14,20 +14,19 @@ defmodule PNG.ZLib do
   """
   @spec one_shot(data()) :: compressed()
   def one_shot(data) do
-    with z = open(),
-         compressed = deflate(z, data, :finish),
-         :ok <- close(z) do
-      List.flatten(compressed)
-    end
+    z = open()
+    compressed = deflate(z, data, :finish)
+    :ok = close(z)
+    List.flatten(compressed)
   end
 
   @doc """
   Opens a zlib stream for deflating binaries.
   """
   def open do
-    with z = :zlib.open(),
-         :ok <- :zlib.deflateInit(z),
-         do: z
+    z = :zlib.open()
+    :ok = :zlib.deflateInit(z)
+    z
   end
 
   @doc """
