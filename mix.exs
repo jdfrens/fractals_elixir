@@ -28,8 +28,12 @@ defmodule Fractals.MixProject do
     ]
   end
 
+  # NOTE: skipping :no_*, :underspecs, :overspecs, :specdiffs
   @dialyzer_warn_opts ~w(
       error_handling
+      race_conditions
+      unknown
+      unmatched_returns
       )a
   defp dialyzer do
     [
