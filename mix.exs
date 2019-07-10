@@ -28,9 +28,14 @@ defmodule Fractals.MixProject do
     ]
   end
 
+  @dialyzer_warn_opts ~w(
+      )a
   defp dialyzer do
     [
       plt_add_apps: [:ex_unit],
+      flags: [
+        "-Wunmatched_returns" | @dialyzer_warn_opts
+      ],
       ignore_warnings: ".dialyzer_ignore.exs"
     ]
   end
