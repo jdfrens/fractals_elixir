@@ -6,10 +6,7 @@ defmodule Fractals.MixProject do
       apps_path: "apps",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      dialyzer: [
-        plt_add_apps: [:ex_unit],
-        ignore_warnings: ".dialyzer-ignore-warnings"
-      ],
+      dialyzer: dialyzer(),
       elixir: "~> 1.8",
       test_coverage: [tool: ExCoveralls],
       aliases: aliases(),
@@ -28,6 +25,13 @@ defmodule Fractals.MixProject do
       {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
       {:dialyxir, "~> 1.0.0-rc.2", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp dialyzer do
+    [
+      plt_add_apps: [:ex_unit],
+      ignore_warnings: ".dialyzer_ignore.exs"
     ]
   end
 
