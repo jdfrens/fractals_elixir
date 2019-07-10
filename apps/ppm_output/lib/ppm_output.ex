@@ -48,7 +48,7 @@ defmodule PPMOutput do
 
   @impl Fractals.Output
   def close(state) do
-    File.close(state.pid)
+    :ok = File.close(state.pid)
     state
   end
 

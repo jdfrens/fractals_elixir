@@ -14,12 +14,13 @@ defmodule UniprocessEngine.Algorithm do
 
   @spec generate(Job.t()) :: :ok
   def generate(job) do
-    {job, nil}
-    |> grid()
-    |> fractal()
-    |> colors()
-    |> write()
-    |> done()
+    {%Job{}, nil} =
+      {job, nil}
+      |> grid()
+      |> fractal()
+      |> colors()
+      |> write()
+      |> done()
 
     :ok
   end

@@ -29,6 +29,7 @@ defmodule Fractals.MixProject do
   end
 
   @dialyzer_warn_opts ~w(
+      error_handling
       )a
   defp dialyzer do
     [

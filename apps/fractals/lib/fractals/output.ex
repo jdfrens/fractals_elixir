@@ -17,11 +17,12 @@ defmodule Fractals.Output do
 
       @impl Fractals.Output
       def write_everything(job, pixels) do
-        %OutputState{pid: open(job), job: job}
-        |> start()
-        |> write(pixels)
-        |> stop()
-        |> close()
+        %{} =
+          %OutputState{pid: open(job), job: job}
+          |> start()
+          |> write(pixels)
+          |> stop()
+          |> close()
 
         job
       end
