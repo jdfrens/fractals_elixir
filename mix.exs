@@ -37,7 +37,8 @@ defmodule Fractals.MixProject do
       flags: [
         "-Wunmatched_returns" | @dialyzer_warn_opts
       ],
-      ignore_warnings: ".dialyzer_ignore.exs"
+      ignore_warnings: ".dialyzer_ignore.exs",
+      list_unused_filters: true
     ]
   end
 
@@ -47,7 +48,7 @@ defmodule Fractals.MixProject do
         "test",
         "format --check-formatted",
         "credo --strict",
-        "dialyzer"
+        "dialyzer --list-unused-filters --halt-exit-status"
       ]
     ]
   end
