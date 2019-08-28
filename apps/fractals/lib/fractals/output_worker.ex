@@ -28,9 +28,13 @@ defmodule Fractals.OutputWorker do
     write(via_tuple(chunk.job.id), chunk)
   end
 
-  def write(pid, chunk) do
-    maybe_new(name: pid)
+  def write(pid, chunk) when is_pid(pid) do
     GenServer.cast(pid, {:write, chunk})
+  end
+
+  def write(name, chunk) do
+    {:ok, pid} = maybe_new(name: name)
+    write(pid, chunk)
   end
 
   @doc """

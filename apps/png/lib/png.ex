@@ -86,7 +86,7 @@ defmodule PNG do
 
   def write(%PNG{z: z} = png, {:data, raw_data}) do
     compressed = ZLib.deflate(z, raw_data)
-    write(png, {:compressed, compressed})
+    %PNG{} = write(png, {:compressed, compressed})
     png
   end
 
@@ -103,7 +103,7 @@ defmodule PNG do
   @spec close(PNG.t()) :: :ok
   def close(%PNG{z: z, file: file} = png) do
     compressed = ZLib.deflate(z, <<>>, :finish)
-    write(png, {:compressed, List.flatten(compressed)})
+    %PNG{} = write(png, {:compressed, List.flatten(compressed)})
     :ok = ZLib.close(z)
     :ok = :file.write(file, LowLevel.chunk("IEND"))
     :ok

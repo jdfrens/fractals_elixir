@@ -6,10 +6,7 @@ defmodule Fractals.MixProject do
       apps_path: "apps",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      dialyzer: [
-        plt_add_apps: [:ex_unit],
-        ignore_warnings: ".dialyzer-ignore-warnings"
-      ],
+      dialyzer: dialyzer(),
       elixir: "~> 1.8",
       test_coverage: [tool: ExCoveralls],
       aliases: aliases(),
@@ -31,13 +28,31 @@ defmodule Fractals.MixProject do
     ]
   end
 
+  # NOTE: skipping :no_*, :underspecs, :overspecs, :specdiffs
+  @dialyzer_warn_opts ~w(
+      error_handling
+      race_conditions
+      unknown
+      unmatched_returns
+      )a
+  defp dialyzer do
+    [
+      plt_add_apps: [:ex_unit],
+      flags: [
+        "-Wunmatched_returns" | @dialyzer_warn_opts
+      ],
+      ignore_warnings: ".dialyzer_ignore.exs",
+      list_unused_filters: true
+    ]
+  end
+
   defp aliases do
     [
       all_tests: [
         "test",
         "format --check-formatted",
         "credo --strict",
-        "dialyzer"
+        "dialyzer --list-unused-filters --halt-exit-status"
       ]
     ]
   end

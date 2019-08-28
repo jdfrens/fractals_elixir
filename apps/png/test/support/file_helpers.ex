@@ -22,7 +22,7 @@ defmodule PNG.FileHelpers do
     expected_filename = "test/expected_outputs/" <> filename
 
     unless @keep_files do
-      delete_if_exists(image_filename)
+      :ok = delete_if_exists(image_filename)
 
       ExUnit.Callbacks.on_exit(fn ->
         delete_if_exists(image_filename)

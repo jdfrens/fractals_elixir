@@ -6,7 +6,7 @@ defmodule StageEngine.Application do
   alias Fractals.ParserRegistry
 
   def start(_type, _args) do
-    Application.ensure_all_started(:fractals)
+    {:ok, _} = Application.ensure_all_started(:fractals)
 
     ParserRegistry.add(:engine, :stage, StageEngine)
 

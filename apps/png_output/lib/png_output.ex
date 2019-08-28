@@ -57,7 +57,7 @@ defmodule PNGOutput do
   @impl Fractals.Output
   def close(state) do
     GenServer.call(state.pid, {:close})
-    DynamicSupervisor.terminate_child(@buffered_supervisor, state.pid)
+    :ok = DynamicSupervisor.terminate_child(@buffered_supervisor, state.pid)
     state
   end
 

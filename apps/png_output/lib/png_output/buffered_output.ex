@@ -45,9 +45,10 @@ defmodule PNGOutput.BufferedOutput do
 
   @impl GenServer
   def handle_call({:start}, _from, %State{png: png} = state) do
-    png
-    |> PNG.write_header()
-    |> PNG.write_palette()
+    %PNG{} =
+      png
+      |> PNG.write_header()
+      |> PNG.write_palette()
 
     {:reply, :ok, state}
   end
