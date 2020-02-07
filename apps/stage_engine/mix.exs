@@ -27,7 +27,7 @@ defmodule StageEngine.MixProject do
   defp deps do
     [
       {:fractals, in_umbrella: true},
-      {:gen_stage, "~> 0.14"}
+      {:gen_stage, "~> 1.0"}
     ]
   end
 end
