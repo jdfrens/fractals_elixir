@@ -52,7 +52,7 @@ defmodule Fractals.MixProject do
         "test",
         "format --check-formatted",
         "credo --strict",
-        "dialyzer --list-unused-filters --halt-exit-status"
+        "dialyzer --list-unused-filters"
       ]
     ]
   end
