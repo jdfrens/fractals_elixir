@@ -21,7 +21,4 @@ jobs:
         mix deps.get
     - name: Run Tests
       run: |
-        mix test
-        mix format --check-formatted
-        mix credo --strict
-        mix dialyzer --list-unused-filters
+        mix all_tests
