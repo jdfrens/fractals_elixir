@@ -7,7 +7,7 @@ defmodule Fractals.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       dialyzer: dialyzer(),
-      elixir: "~> 1.8",
+      elixir: "~> 1.10",
       test_coverage: [tool: ExCoveralls],
       aliases: aliases(),
       preferred_cli_env: [

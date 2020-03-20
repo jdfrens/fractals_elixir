@@ -8,10 +8,12 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: elixir:1.8.1
+      image: hexpm/elixir:1.10.2-erlang-22.3-alpine-3.11.3
 
     steps:
     - uses: actions/checkout@v1
+    - name: Install git
+      run: apt-get install -y git man
     - name: Install Dependencies
       run: |
         mix local.rebar --force
