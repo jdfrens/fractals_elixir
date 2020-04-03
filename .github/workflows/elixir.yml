@@ -12,8 +12,6 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v1
-    - name: Install git
-      run: apk add --no-cache git
     - name: Get and Compile Dependencies
       run: |
         mix local.rebar --force
