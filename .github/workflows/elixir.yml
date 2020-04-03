@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install git
-      run: apt-get install -y git man
+      run: apk add --no-cache git
     - name: Install Dependencies
       run: |
         mix local.rebar --force
