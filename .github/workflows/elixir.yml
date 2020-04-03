@@ -23,7 +23,7 @@ jobs:
     - name: Run Tests
       run: |
         mix compile --force --warnings-as-errors
-        mix coveralls.github
+        mix coveralls.github --umbrella
         mix format --check-formatted
         mix credo --strict
         mix dialyzer --list-unused-filters
