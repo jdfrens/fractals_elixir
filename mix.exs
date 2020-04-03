@@ -49,7 +49,8 @@ defmodule Fractals.MixProject do
   defp aliases do
     [
       all_tests: [
-        "test",
+        "compile --force --warnings-as-errors",
+        "coveralls",
         "format --check-formatted",
         "credo --strict",
         "dialyzer --list-unused-filters"
