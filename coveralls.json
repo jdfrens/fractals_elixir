@@ -1,10 +1,16 @@
 {
-  "skip_files": [],
+  "skip_files": [
+    "apps/fractals/lib/fractals/application.ex",
+    "apps/png_output/lib/png_output/application.ex",
+    "apps/ppm_output/lib/ppm_output/application.ex",
+    "apps/stage_engine/lib/stage_engine/application.ex",
+    "apps/uniprocess_engine/lib/uniprocess_engine/application.ex"
+  ],
   "terminal_options": {
     "file_column_width": 80
   },
   "coverage_options": {
     "treat_no_relevant_lines_as_covered": true,
-    "minimum_coverage": 73.1
+    "minimum_coverage": 77.0
   }
 }

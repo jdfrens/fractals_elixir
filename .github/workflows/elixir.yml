@@ -4,21 +4,26 @@ on: push
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     container:
       image: hexpm/elixir:1.10.2-erlang-22.3-alpine-3.11.3
-
+    env:
+      MIX_ENV: test
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v1
     - name: Install git
       run: apk add --no-cache git
-    - name: Install Dependencies
+    - name: Get and Compile Dependencies
       run: |
         mix local.rebar --force
         mix local.hex --force
         mix deps.get
+        mix deps.compile
     - name: Run Tests
       run: |
-        mix all_tests
+        mix compile --force --warnings-as-errors
+        mix coveralls.github --umbrella
+        mix format --check-formatted
+        mix credo --strict
+        mix dialyzer --list-unused-filters
