@@ -1,0 +1,5 @@
+{
+  "skip_files": [
+    "lib/ppm_output/application.ex"
+  ]
+}
