@@ -7,8 +7,8 @@ defmodule Fractals.Image do
   alias Fractals.Size
 
   @type t :: %__MODULE__{
-          lower_right: Complex.complex() | nil,
-          upper_left: Complex.complex() | nil,
+          lower_right: Complex.t() | nil,
+          upper_left: Complex.t() | nil,
           size: Size.t() | nil
         }
 

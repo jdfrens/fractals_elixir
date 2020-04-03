@@ -11,11 +11,11 @@ defmodule Fractals.EscapeTime.Helpers do
 
   defmacro outside?(z, cutoff_squared) do
     quote do
-      Complex.abs_squared(unquote(z)) >= unquote(cutoff_squared)
+      Complex.magnitude_squared(unquote(z)) >= unquote(cutoff_squared)
     end
   end
 
-  @spec done?({Complex.complex(), non_neg_integer}, Fractals.Fractal.t()) :: boolean
+  @spec done?({Complex.t(), non_neg_integer}, Fractals.Fractal.t()) :: boolean
   def done?({z, iterations}, algorithm) do
     outside?(z, algorithm.cutoff_squared) || inside?(iterations, algorithm.max_iterations)
   end

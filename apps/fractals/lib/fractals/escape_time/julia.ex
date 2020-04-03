@@ -13,6 +13,6 @@ defmodule Fractals.EscapeTime.Julia do
   end
 
   def iterator(z, c) do
-    z |> square |> add(c)
+    z |> square() |> add(c)
   end
 end

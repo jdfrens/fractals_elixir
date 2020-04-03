@@ -21,7 +21,7 @@ defmodule Fractals.Mixfile do
 
   def application do
     [
-      extra_applications: [:logger, :yaml_elixir],
+      extra_applications: [:complex_num, :logger, :yaml_elixir],
       mod: {Fractals.Application, []}
     ]
   end
@@ -31,12 +31,12 @@ defmodule Fractals.Mixfile do
 
   defp deps do
     [
-      {:complex, github: "jdfrens/elixir-complex", ref: "51e2804"},
+      {:complex, in_umbrella: true},
       {:earmark, "~> 1.2", override: true},
       {:inflex, "~> 2.0.0"},
       {:mox, "~> 0.4", only: :test},
       {:ppm, in_umbrella: true},
-      {:stream_data, "~> 0.1", only: :test},
+      {:stream_data, "~> 0.1", only: [:dev, :test]},
       {:uuid, "~> 1.1"},
       {:yaml_elixir, "~> 2.4.0"}
     ]

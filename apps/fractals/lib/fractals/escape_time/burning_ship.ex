@@ -13,11 +13,11 @@ defmodule Fractals.EscapeTime.BurningShip do
   end
 
   def iterator(z, c) do
-    z |> burn |> square |> add(c)
+    z |> burn |> square() |> add(c)
   end
 
-  @spec burn(Complex.complex()) :: Complex.complex()
-  def burn(%Complex{re: real, im: imag}) do
-    Complex.new(Kernel.abs(real), -1 * Kernel.abs(imag))
+  @spec burn(Complex.t()) :: Complex.t()
+  def burn(z) do
+    new(Kernel.abs(real(z)), -1 * Kernel.abs(imag(z)))
   end
 end

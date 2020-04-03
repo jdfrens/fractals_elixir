@@ -23,7 +23,7 @@ defmodule Fractals.EscapeTime do
     end
   end
 
-  @spec escape_time(Enumerable.t(), Fractals.Fractal.t()) :: Complex.complex()
+  @spec escape_time(Enumerable.t(), Fractals.Fractal.t()) :: Complex.t()
   def escape_time(stream, fractal) do
     stream
     |> Stream.with_index()
@@ -33,5 +33,5 @@ defmodule Fractals.EscapeTime do
     |> List.first()
   end
 
-  @callback iterate(Complex.complex(), Fractals.Job.t()) :: Enumerable.t()
+  @callback iterate(Complex.t(), Fractals.Job.t()) :: Enumerable.t()
 end

@@ -11,7 +11,7 @@ defmodule Fractals.Fractal do
           algorithm_params: map()
         }
 
-  @type complex_grid :: [Complex.complex()]
+  @type complex_grid :: [Complex.t()]
 
   defstruct type: nil,
             module: nil,
@@ -19,5 +19,5 @@ defmodule Fractals.Fractal do
             cutoff_squared: 4.0,
             algorithm_params: %{}
 
-  @callback generate([Complex.complex()], t()) :: complex_grid()
+  @callback generate([Complex.t()], t()) :: complex_grid()
 end

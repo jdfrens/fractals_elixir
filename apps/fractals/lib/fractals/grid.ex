@@ -4,7 +4,7 @@ defmodule Fractals.Grid do
   complex numbers.
   """
 
-  @type t :: [Complex.complex()]
+  @type t :: [Complex.t()]
 
   alias Fractals.{Chunk, Grid, Image, Job}
 
@@ -35,22 +35,22 @@ defmodule Fractals.Grid do
   def xs(image) do
     %Image{
       size: %Fractals.Size{width: width},
-      upper_left: %Complex{re: x0},
-      lower_right: %Complex{re: x1}
+      upper_left: upper_left,
+      lower_right: lower_right
     } = image
 
-    float_sequence(width, x0, x1)
+    float_sequence(width, Complex.real(upper_left), Complex.real(lower_right))
   end
 
   @spec ys(Image.t()) :: Enumerable.t()
   def ys(image) do
     %Image{
       size: %Fractals.Size{height: height},
-      upper_left: %Complex{im: y1},
-      lower_right: %Complex{im: y0}
+      upper_left: upper_left,
+      lower_right: lower_right,
     } = image
 
-    float_sequence(height, y1, y0)
+    float_sequence(height, Complex.imag(upper_left), Complex.imag(lower_right))
   end
 
   @spec float_sequence(non_neg_integer, float, float) :: Enumerable.t()
