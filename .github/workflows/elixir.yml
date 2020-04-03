@@ -8,10 +8,12 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: elixir:1.8.1
+      image: hexpm/elixir:1.10.2-erlang-22.3-alpine-3.11.3
 
     steps:
     - uses: actions/checkout@v1
+    - name: Install git
+      run: apk add --no-cache git
     - name: Install Dependencies
       run: |
         mix local.rebar --force
@@ -19,7 +21,4 @@ jobs:
         mix deps.get
     - name: Run Tests
       run: |
-        mix test
-        mix format --check-formatted
-        mix credo --strict
-        mix dialyzer --list-unused-filters
+        mix all_tests
