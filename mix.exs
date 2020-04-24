@@ -22,7 +22,7 @@ defmodule Fractals.MixProject do
 
   defp deps do
     [
-      {:credo, "~> 1.3.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
       {:dialyxir, "~> 1.0.0-rc.2", only: [:dev, :test], runtime: false}
     ]
