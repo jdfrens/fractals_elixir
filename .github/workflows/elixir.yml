@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: hexpm/elixir:1.10.2-erlang-22.3-alpine-3.11.3
+      image: hexpm/elixir:1.10.2-erlang-22.3.2-alpine-3.11.3
     env:
       MIX_ENV: test
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
