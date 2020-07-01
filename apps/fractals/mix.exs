@@ -33,7 +33,7 @@ defmodule Fractals.Mixfile do
     [
       {:complex, github: "jdfrens/elixir-complex", ref: "51e2804"},
       {:earmark, "~> 1.2", override: true},
-      {:inflex, "~> 2.0.0"},
+      {:inflex, "~> 2.1.0"},
       {:mox, "~> 0.4", only: :test},
       {:ppm, in_umbrella: true},
       {:stream_data, "~> 0.1", only: :test},
