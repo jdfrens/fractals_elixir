@@ -13,12 +13,12 @@ defmodule PNGOutput.BufferedOutput do
   """
   use GenServer
 
+  alias Fractals.{Job, Size}
+
   defmodule State do
     @moduledoc false
     defstruct png: nil, buffer: []
   end
-
-  alias Fractals.{Job, Size}
 
   @mode {:rgb, 8}
 

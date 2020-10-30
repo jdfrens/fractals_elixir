@@ -16,6 +16,7 @@ defmodule Fractals.Image do
             size: %Size{width: 512, height: 384},
             upper_left: Complex.new(5.0, 6.0)
 
+  @spec parse(map()) :: Image.t()
   def parse(params) do
     Enum.reduce(params, %Image{}, &parse_attribute/2)
   end

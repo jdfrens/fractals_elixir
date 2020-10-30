@@ -6,6 +6,7 @@ defmodule Integration.StageEngineTest do
   alias Fractals.Job
   alias Fractals.Reporters.{Broadcaster, Countdown}
 
+  @spec assert_same_images(String.t(), String.t()) :: any()
   def assert_same_images(file1, file2) do
     file_contents1 = File.read!(file1)
     file_contents2 = File.read!(file2)

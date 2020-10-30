@@ -7,6 +7,7 @@ defmodule Fractals.Reporters.Stdout do
 
   # client
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts) do
     puts = Keyword.get(opts, :puts, &IO.puts/1)
     name = Keyword.get(opts, :name, __MODULE__)

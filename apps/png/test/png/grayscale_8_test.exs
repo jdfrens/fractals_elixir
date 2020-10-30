@@ -36,6 +36,7 @@ defmodule PNG.Grayscale8Test do
     assert expected == actual
   end
 
+  @spec pixel({non_neg_integer(), non_neg_integer()}, float(), float()) :: binary
   def pixel({width, height}, x, y) do
     g = trunc(255 * (x / width + y / height) / 2)
     <<g>>

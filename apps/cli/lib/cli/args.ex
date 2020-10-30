@@ -8,6 +8,7 @@ defmodule CLI.Args do
   * a plain filename prefixed with `"output_filename:" to specify an output filename.
   """
 
+  alias CLI.Args
   alias Fractals.Job
 
   @type t :: %__MODULE__{
@@ -19,8 +20,6 @@ defmodule CLI.Args do
         }
 
   defstruct valid?: true, argv: [], errors: [], params_list: nil, jobs: nil
-
-  alias CLI.Args
 
   @spec process(OptionParser.argv()) :: t()
   def process(raw_args) do

@@ -8,6 +8,7 @@ defmodule PNG.ImageGenerationTestHelpers do
 
   `f` needs to be a function that receives `x` (column) and `y` (row).
   """
+  @spec make_image({non_neg_integer(), non_neg_integer()}, (non_neg_integer(), non_neg_integer -> binary())) :: list()
   def make_image({width, height}, f) do
     Enum.map(1..height, fn y ->
       Enum.map(1..width, fn x ->

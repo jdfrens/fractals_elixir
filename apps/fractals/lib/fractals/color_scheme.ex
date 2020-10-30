@@ -3,14 +3,14 @@ defmodule Fractals.ColorScheme do
   Representation of the coloring scheme for a fractal image.
   """
 
+  alias Fractals.ColorScheme.{BlackAndWhiteAndGray, Random, WarpPov}
+
   @type t :: %__MODULE__{
           type: atom() | nil,
           module: module()
         }
 
   defstruct type: nil, module: Fractals.Colorizer
-
-  alias Fractals.ColorScheme.{BlackAndWhiteAndGray, Random, WarpPov}
 
   @spec color_point({Complex.complex(), non_neg_integer}, Fractals.Job.t()) :: Fractals.Color.t()
   def color_point({_, iterations}, job) do

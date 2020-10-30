@@ -36,7 +36,7 @@ defmodule Fractals.Mixfile do
       {:inflex, "~> 2.1.0"},
       {:mox, "~> 1.0", only: :test},
       {:ppm, in_umbrella: true},
-      {:stream_data, "~> 0.1", only: :test},
+      {:stream_data, "~> 0.1", only: [:dev, :test]},
       {:uuid, "~> 1.1"},
       {:yaml_elixir, "~> 2.5.0"}
     ]

@@ -7,11 +7,12 @@ defmodule Fractals.Reporters.Supervisor do
 
   use DynamicSupervisor
 
-  @spec start_link([module]) :: Supervisor.on_start()
+  @spec start_link(list(module())) :: Supervisor.on_start()
   def start_link(reporters \\ []) do
     DynamicSupervisor.start_link(__MODULE__, reporters, name: __MODULE__)
   end
 
+  @spec add_reporter(module(), keyword()) :: DynamicSupervisor.on_start_child()
   def add_reporter(reporter, args \\ []) do
     child_spec = %{
       id: reporter,
@@ -21,7 +22,7 @@ defmodule Fractals.Reporters.Supervisor do
     DynamicSupervisor.start_child(__MODULE__, child_spec)
   end
 
-  @impl true
+  @impl DynamicSupervisor
   def init(_arg) do
     DynamicSupervisor.init(strategy: :one_for_one)
   end

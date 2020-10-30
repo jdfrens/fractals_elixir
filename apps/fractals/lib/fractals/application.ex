@@ -13,6 +13,7 @@ defmodule Fractals.Application do
     {:output, :no_output} => Fractals.Outputs.NoOutput
   }
 
+  @impl Application
   def start(_type, _args) do
     children = [
       # registry

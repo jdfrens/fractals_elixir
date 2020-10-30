@@ -50,9 +50,9 @@ defmodule Fractals.MixProject do
     [
       all_tests: [
         "compile --force --warnings-as-errors",
-        "coveralls --umbrella --raise",
-        "format --check-formatted",
         "credo --strict",
+        "format --check-formatted",
+        "coveralls --umbrella --raise",
         "dialyzer --list-unused-filters"
       ]
     ]

@@ -3,11 +3,11 @@ defmodule Fractals.Output do
   The functions needed to be a output.
   """
 
-  @type t :: map()
-  @type pixels :: [Fractals.Color.t()]
-
   alias Fractals.Job
   alias Fractals.Output.OutputState
+
+  @type t :: map()
+  @type pixels :: [Fractals.Color.t()]
 
   defmacro __using__(_opts) do
     quote do
