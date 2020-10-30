@@ -12,6 +12,7 @@ defmodule Fractals.ColorScheme.Random do
 
   ## Client
 
+  @spec start_link(any()) :: GenServer.on_start()
   def start_link(_) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end

@@ -9,15 +9,15 @@ defmodule PNG do
   @type mode :: {atom(), pos_integer()}
   @type bit_depth :: 8 | 16
   @type rgb_tuple :: {
-          red :: pos_integer(),
-          green :: pos_integer(),
-          blue :: pos_integer()
+          red :: non_neg_integer(),
+          green :: non_neg_integer(),
+          blue :: non_neg_integer()
         }
   @type rgba_tuple :: {
-          red :: pos_integer(),
-          green :: pos_integer(),
-          blue :: pos_integer(),
-          alpha :: pos_integer()
+          red :: non_neg_integer(),
+          green :: non_neg_integer(),
+          blue :: non_neg_integer(),
+          alpha :: non_neg_integer()
         }
   @type color_tuples :: list(rgb_tuple) | list(rgba_tuple)
   @type palette :: {:rgb, bit_depth, color_tuples}

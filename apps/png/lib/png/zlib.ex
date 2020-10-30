@@ -23,6 +23,7 @@ defmodule PNG.ZLib do
   @doc """
   Opens a zlib stream for deflating binaries.
   """
+  @spec open :: zstream()
   def open do
     z = :zlib.open()
     :ok = :zlib.deflateInit(z)

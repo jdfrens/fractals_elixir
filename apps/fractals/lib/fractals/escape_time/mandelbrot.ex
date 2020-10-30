@@ -3,9 +3,9 @@ defmodule Fractals.EscapeTime.Mandelbrot do
   Implements the iterated function for the Mandelbrot set.
   """
 
-  import Complex
-
   use Fractals.EscapeTime
+
+  import Complex
 
   @zero Complex.new(0.0, 0.0)
 
@@ -14,6 +14,7 @@ defmodule Fractals.EscapeTime.Mandelbrot do
     Stream.iterate(@zero, &iterator(&1, grid_point))
   end
 
+  @spec iterator(Complex.complex(), Complex.complex()) :: Complex.complex()
   def iterator(z, c) do
     z |> square |> add(c)
   end

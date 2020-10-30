@@ -5,10 +5,10 @@ defmodule LowLevelRGB16Test do
 
   use ExUnit.Case, async: true
 
-  alias PNG.LowLevel
-
   import PNG.FileHelpers
   import PNG.ImageGenerationTestHelpers
+
+  alias PNG.LowLevel
 
   setup do
     setup_filenames("low_level_rgb_16.png")
@@ -35,6 +35,7 @@ defmodule LowLevelRGB16Test do
     assert expected == actual
   end
 
+  @spec pixel({non_neg_integer(), non_neg_integer()}, float(), float()) :: <<_::48>>
   def pixel({width, height}, x, y) do
     r = trunc(x / width * 65_535)
     b = trunc(y / height * 65_535)

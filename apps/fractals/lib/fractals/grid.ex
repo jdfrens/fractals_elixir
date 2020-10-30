@@ -4,11 +4,11 @@ defmodule Fractals.Grid do
   complex numbers.
   """
 
-  @type t :: [Complex.complex()]
+  import Complex, only: :macros
 
   alias Fractals.{Chunk, Grid, Image, Job}
 
-  import Complex, only: :macros
+  @type t :: [Complex.complex()]
 
   @spec chunked_grid(Job.t()) :: [Chunk.t()]
   def chunked_grid(job) do

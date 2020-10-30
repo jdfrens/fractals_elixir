@@ -6,8 +6,8 @@ defmodule PNG.FileHelpers do
   @keep_files false
 
   @doc """
-  Given a `:filename` in a context, generates `:image_filename` and `:expected_filename`.  Also does cleanup of the
-  (generated) image file.
+  Given a `:filename` in a context, generates `:image_filename` and
+  `:expected_filename`.  Also does cleanup of the (generated) image file.
 
   To keep files after running tests, set `@keep_files` above to `true`.
 
@@ -17,6 +17,7 @@ defmodule PNG.FileHelpers do
   end
   ```
   """
+  @spec setup_filenames(String.t()) :: {:ok, image_filename: String.t(), expected_filename: String.t()}
   def setup_filenames(filename) do
     image_filename = "test/images/" <> filename
     expected_filename = "test/expected_outputs/" <> filename
@@ -37,6 +38,7 @@ defmodule PNG.FileHelpers do
 
   Primary purpose of the function is to flip the order of the arguments.
   """
+  @spec write_image_file(iodata(), String.t()) :: :ok
   def write_image_file(io_data, image_filename) do
     :ok = :file.write_file(image_filename, io_data)
   end

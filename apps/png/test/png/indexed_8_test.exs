@@ -35,15 +35,17 @@ defmodule Indexed8Test do
     assert expected == actual
   end
 
+  @spec write_rows(PNG.t()) :: :ok
   def write_rows(png) do
     write_row(png, 0)
   end
 
-  def write_row(%{size: {_, height}}, height) do
+  @spec write_row(PNG.t(), pos_integer()) :: :ok
+  def write_row(%PNG{size: {_, height}}, height) do
     :ok
   end
 
-  def write_row(%{size: {width, _}} = png, y) do
+  def write_row(%PNG{size: {width, _}} = png, y) do
     thickness = div(width, 4)
 
     f = fn

@@ -22,7 +22,7 @@ defmodule Fractals.MixProject do
 
   defp deps do
     [
-      {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
       {:dialyxir, "~> 1.0.0-rc.2", only: [:dev, :test], runtime: false}
     ]
@@ -50,9 +50,9 @@ defmodule Fractals.MixProject do
     [
       all_tests: [
         "compile --force --warnings-as-errors",
-        "coveralls --umbrella --raise",
-        "format --check-formatted",
         "credo --strict",
+        "format --check-formatted",
+        "coveralls --umbrella --raise",
         "dialyzer --list-unused-filters"
       ]
     ]

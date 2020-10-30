@@ -38,6 +38,7 @@ defmodule LowLevelIndexed8Test do
     assert expected == actual
   end
 
+  @spec pixel(non_neg_integer(), float(), float()) :: non_neg_integer()
   def pixel(thickness, x, y) do
     cond do
       x > y + thickness -> 2

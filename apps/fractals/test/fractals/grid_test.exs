@@ -4,6 +4,7 @@ defmodule Fractals.GridTest do
   alias Fractals.Grid
   alias Fractals.{Image, Job}
 
+  @spec job :: Job.t()
   def job do
     %Job{
       image: %Image{

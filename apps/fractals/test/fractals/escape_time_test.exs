@@ -6,9 +6,9 @@ defmodule Fractals.EscapeTimeTest do
   defmodule EscapingIteration do
     @moduledoc "A fake escape-time fractal."
 
-    use Fractals.EscapeTime
-
     @behaviour Fractals.FractalParser
+
+    use Fractals.EscapeTime
 
     @impl Fractals.FractalParser
     def parse(_params) do
@@ -24,9 +24,9 @@ defmodule Fractals.EscapeTimeTest do
   defmodule InsideIteration do
     @moduledoc "A fake escape-time fractal."
 
-    use Fractals.EscapeTime
-
     @behaviour Fractals.FractalParser
+
+    use Fractals.EscapeTime
 
     @impl Fractals.FractalParser
     def parse(_params) do

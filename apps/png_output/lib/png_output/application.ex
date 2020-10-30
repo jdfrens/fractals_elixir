@@ -5,6 +5,7 @@ defmodule PNGOutput.Application do
 
   alias Fractals.ParserRegistry
 
+  @impl Application
   def start(_type, _args) do
     {:ok, _} = Application.ensure_all_started(:fractals)
 

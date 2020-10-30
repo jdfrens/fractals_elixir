@@ -10,6 +10,7 @@ defmodule Fractals.Reporters.Broadcaster do
 
   # client
 
+  @spec start_link(list(module())) :: GenServer.on_start()
   def start_link(reporters \\ []) do
     GenServer.start_link(__MODULE__, reporters, name: __MODULE__)
   end

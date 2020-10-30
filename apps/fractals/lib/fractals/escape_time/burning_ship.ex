@@ -12,6 +12,7 @@ defmodule Fractals.EscapeTime.BurningShip do
     Stream.iterate(Complex.new(0.0), &iterator(&1, grid_point))
   end
 
+  @spec iterator(Complex.complex(), Complex.complex()) :: Complex.complex()
   def iterator(z, c) do
     z |> burn |> square |> add(c)
   end

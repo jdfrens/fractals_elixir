@@ -5,10 +5,10 @@ defmodule LogLevelRGB8Test do
 
   use ExUnit.Case, async: true
 
-  alias PNG.LowLevel
-
   import PNG.FileHelpers
   import PNG.ImageGenerationTestHelpers
+
+  alias PNG.LowLevel
 
   setup do
     setup_filenames("low_level_rgb_8.png")
@@ -35,6 +35,7 @@ defmodule LogLevelRGB8Test do
     assert expected == actual
   end
 
+  @spec pixel({non_neg_integer(), non_neg_integer()}, float(), float()) :: binary()
   def pixel({width, height}, x, y) do
     r = trunc(x / width * 255)
     b = trunc(y / height * 255)
